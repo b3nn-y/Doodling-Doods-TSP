@@ -1,4 +1,4 @@
-package com.game.doodlingdoods
+package com.game.doodlingdoods.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
