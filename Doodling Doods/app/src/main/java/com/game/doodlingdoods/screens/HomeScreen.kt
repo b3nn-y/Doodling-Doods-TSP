@@ -1,6 +1,7 @@
 package com.game.doodlingdoods.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.game.doodlingdoods.R
 
 
@@ -32,7 +34,7 @@ import com.game.doodlingdoods.R
 
 @Composable
 fun HomeScreen(
-
+    navController: NavController,
     modifier: Modifier = Modifier.padding(8.dp)
 ) {
     Column(
@@ -40,13 +42,20 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
+
+
         NavBar()
         Titlebar()
-        PlayOption()
+
+        PlayOption(
+            PlayButtonClick = {
+                navController.navigate("AccountSetup")
+            }
+        )
     }
 }
 
-
+// navbar contains user profile and their stats
 @Composable
 fun NavBar(modifier: Modifier = Modifier) {
     Box(
@@ -82,6 +91,8 @@ fun NavBar(modifier: Modifier = Modifier) {
     }
 }
 
+
+//title bar for game title it appears on middle of the screen
 @Composable
 fun Titlebar(modifier: Modifier = Modifier) {
     Box(
@@ -98,23 +109,33 @@ fun Titlebar(modifier: Modifier = Modifier) {
 
 
 }
+//play button
 
 @Composable
-fun PlayOption(modifier: Modifier = Modifier) {
+fun PlayOption(
+    modifier: Modifier = Modifier,
+    PlayButtonClick: () -> Unit
+) {
 
-        Card(
-            modifier.fillMaxWidth()
-                .padding(48.dp),
+    Card(
+        modifier
+            .fillMaxWidth()
+            .padding(48.dp)
+            .clickable {
+                       PlayButtonClick()
+            },
+
 
         ) {
-            Text(
-                text = "Play",
-                fontSize = 30.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-                    .padding(8.dp)
-            )
-        }
+        Text(
+            text = "Play",
+            fontSize = 30.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(8.dp)
+        )
+    }
 
 }
 
@@ -124,5 +145,5 @@ fun PreviewNavbar() {
 //    NavBar(modifier = Modifier)
 //    Titlebar()
 //    PlayOption()
-    HomeScreen()
+//    HomeScreen()
 }

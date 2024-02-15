@@ -1,5 +1,7 @@
 package com.game.doodlingdoods.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Card
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -18,14 +22,20 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 //This screen shows the option to either create a temp username and join a game, or to sign up or login with a email account to store their data
+
 @Composable
-fun AccountSetup(modifier: Modifier = Modifier) {
+fun AccountSetup(
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -45,21 +55,23 @@ fun AccountSetup(modifier: Modifier = Modifier) {
                 modifier.weight(1f),
                 contentAlignment = Alignment.Center
             ) {
-                OptionsHandler()
+                OptionsHandler(navController=navController)
             }
         }
     }
 }
 
 
-
+//for creating guest account
 @Composable
 fun GuestButton(modifier: Modifier = Modifier) {
     var guestName by rememberSaveable {
         mutableStateOf("")
     }
     Box(
-        modifier.fillMaxWidth()) {
+        modifier.fillMaxWidth()
+
+    ) {
         Column(
             modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -68,16 +80,23 @@ fun GuestButton(modifier: Modifier = Modifier) {
             Text(
                 text = "Play as Guest User",
                 fontSize = 20.sp,
-                modifier = Modifier.padding(8.dp))
+                modifier = Modifier.padding(8.dp)
+            )
 
-            TextField(
+
+            OutlinedTextField(
                 value = guestName,
                 onValueChange = { guestName = it },
                 modifier
-                    .padding(1.dp)
+                    .padding(horizontal = 35.dp)
                     .padding(16.dp)
+                    .fillMaxWidth(),
+                label = { Text(text = "Name") },
+                singleLine = true
+
 
             )
+
 
             Card(
                 modifier
@@ -101,36 +120,54 @@ fun GuestButton(modifier: Modifier = Modifier) {
 
 }
 
+// this function handles weather to launch login screen or sign up
 @Composable
-fun OptionsHandler(modifier: Modifier = Modifier) {
+fun OptionsHandler(
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier
             .fillMaxSize()
             .wrapContentSize(),
         contentAlignment = Alignment.Center,
 
-    ) {
+        ) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LoginButton()
+            LoginButton(
+                LoginButtonClick = {
+                    navController.navigate("LoginScreen")
+                }
+            )
             Text(
                 text = "Or",
                 modifier.padding(8.dp),
                 fontSize = 20.sp
             )
-            SignUpButton()
+            SignUpButton(
+                SignUpButtonClick = {
+                    navController.navigate("SignUpScreen")
+                }
+            )
         }
     }
 }
 
 @Composable
-fun LoginButton(modifier: Modifier = Modifier) {
+fun LoginButton(
+    modifier: Modifier = Modifier,
+    LoginButtonClick: () -> Unit
+) {
     Card(
         modifier
             .fillMaxWidth()
-            .padding(horizontal = 48.dp, vertical = 8.dp),
+            .padding(horizontal = 48.dp, vertical = 8.dp)
+            .clickable {
+                LoginButtonClick()
+            },
 
         ) {
         Text(
@@ -145,11 +182,17 @@ fun LoginButton(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SignUpButton(modifier: Modifier = Modifier) {
+fun SignUpButton(
+    modifier: Modifier = Modifier,
+    SignUpButtonClick: () -> Unit
+) {
     Card(
         modifier
             .fillMaxWidth()
-            .padding(horizontal = 48.dp, vertical = 8.dp),
+            .padding(horizontal = 48.dp, vertical = 8.dp)
+            .clickable {
+                SignUpButtonClick()
+            },
 
         ) {
         Text(
@@ -166,10 +209,10 @@ fun SignUpButton(modifier: Modifier = Modifier) {
 @Preview(showSystemUi = true)
 @Composable
 fun Prev() {
-//    LoginButton()
-//    SignUpButton()
+//    LoginButton(LoginButtonClick = {})
+//    SignUpButton(SignUpButtonClick = {})
 //    GuestButton()
-    AccountSetup()
+//    AccountSetup()
 //    OptionsHandler()
 }
 
