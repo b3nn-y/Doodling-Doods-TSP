@@ -35,7 +35,7 @@ import com.game.doodlingdoods.R
 @Composable
 fun HomeScreen(
     navController: NavController,
-    modifier: Modifier = Modifier.padding(8.dp)
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier.fillMaxSize(),
