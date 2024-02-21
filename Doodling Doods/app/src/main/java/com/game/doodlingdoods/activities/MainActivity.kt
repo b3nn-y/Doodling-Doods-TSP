@@ -22,7 +22,9 @@ import com.game.doodlingdoods.screens.LoginScreen
 import com.game.doodlingdoods.screens.SignUpScreen
 import com.game.doodlingdoods.ui.theme.DoodlingDoodsTheme
 import com.game.doodlingdoods.viewmodels.SignUpScreenViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @SuppressLint("RememberReturnType")
     override fun onCreate(savedInstanceState: Bundle?) {

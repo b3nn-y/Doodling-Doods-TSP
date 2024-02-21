@@ -1,4 +1,4 @@
-package com.game.doodlingdoods
+package com.game.doodlingdoods.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
