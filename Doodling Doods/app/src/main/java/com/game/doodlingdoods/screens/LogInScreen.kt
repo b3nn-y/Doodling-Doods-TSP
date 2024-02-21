@@ -127,6 +127,7 @@ private fun LoginForms(
                                 }
                             }
                         }
+                        navController.navigate("RoomsEntry")
 
                     },
 

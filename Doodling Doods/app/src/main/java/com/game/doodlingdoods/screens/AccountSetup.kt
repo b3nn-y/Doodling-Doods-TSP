@@ -49,7 +49,7 @@ fun AccountSetup(
                 modifier.weight(1f),
                 contentAlignment = Alignment.Center
             ) {
-                GuestButton()
+                GuestButton(navController = navController)
             }
             Box(
                 modifier.weight(1f),
@@ -64,7 +64,7 @@ fun AccountSetup(
 
 //for creating guest account
 @Composable
-fun GuestButton(modifier: Modifier = Modifier) {
+fun GuestButton(modifier: Modifier = Modifier, navController: NavController) {
     var guestName by rememberSaveable {
         mutableStateOf("")
     }
@@ -111,6 +111,9 @@ fun GuestButton(modifier: Modifier = Modifier) {
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(8.dp)
+                        .clickable {
+                            navController.navigate("RoomsEntry")
+                        }
                 )
             }
 
