@@ -1,7 +1,6 @@
 package com.game.doodlingdoods.screens
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,11 +37,13 @@ import com.game.doodlingdoods.viewmodels.LoginScreenViewModel
 //This screen is shown if the user wants to log in with their previous account
 @Composable
 fun LoginScreen(navController: NavHostController) {
-    LoginForms()
+    LoginForms(navController = navController)
 }
 
 @Composable
-private fun LoginForms(modifier: Modifier=Modifier) {
+private fun LoginForms(
+    modifier: Modifier =Modifier,
+    navController: NavHostController) {
     val viewmodel = viewModel(LoginScreenViewModel::class.java)
 
 
@@ -120,11 +121,13 @@ private fun LoginForms(modifier: Modifier=Modifier) {
                             viewmodel.firebaseAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener {
                                 if (it.isSuccessful){
                                     Log.i("firebase",it.isSuccessful.toString())
+                                    navController.navigate("RoomsEntry")
                                 }else{
                                     Log.i("firebase",it.exception.toString())
                                 }
                             }
                         }
+
                     },
 
 
@@ -143,8 +146,8 @@ private fun LoginForms(modifier: Modifier=Modifier) {
     }
 }
 
-@Preview
-@Composable
-fun PrevLoginScreen() {
-    LoginForms()
-}
+//@Preview
+//@Composable
+//fun PrevLoginScreen() {
+//    LoginForms()
+//}

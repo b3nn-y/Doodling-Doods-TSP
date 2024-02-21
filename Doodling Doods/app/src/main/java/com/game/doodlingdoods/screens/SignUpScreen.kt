@@ -35,14 +35,25 @@ import com.game.doodlingdoods.viewmodels.SignUpScreenViewModel
 
 //This screen is shown if the user wants to sign up.
 @Composable
-fun SignUpScreen(navController: NavHostController) {
-    SignUpForms()
+fun SignUpScreen(
+    navController: NavHostController,
+    signUpScreenViewModel: SignUpScreenViewModel
+) {
+    SignUpForms(
+        navController,
+        signUpScreenViewModel = SignUpScreenViewModel())
+
+
 }
 
 
 //Sign up forms for collecting email
 @Composable
-private fun SignUpForms(modifier: Modifier = Modifier) {
+private fun SignUpForms(
+    navController:NavHostController,
+    modifier: Modifier = Modifier,
+    signUpScreenViewModel: SignUpScreenViewModel
+) {
 
     val context = LocalContext.current
     // initializing view model
@@ -97,23 +108,7 @@ private fun SignUpForms(modifier: Modifier = Modifier) {
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
 
             )
-            //For google authentication
 
-//            Card(
-//                elevation = CardDefaults.cardElevation(
-//                    defaultElevation = 20.dp
-//                ),
-//                modifier = modifier.padding(8.dp)
-//
-//            ) {
-//                Image(
-//                    painter = painterResource(id = R.drawable.google_icon),
-//                    contentDescription = "google icon",
-//                    modifier.size(40.dp)
-//                        .padding(4.dp)
-//
-//                )
-//            }
 
 
             Card(
@@ -125,6 +120,17 @@ private fun SignUpForms(modifier: Modifier = Modifier) {
                     .width(200.dp)
                     .padding(24.dp)
                     .clickable {
+                        //Test
+
+//                        try {
+//                            signUpScreenViewModel.getRoomsFromApi()
+//
+//
+//                        } catch (e: Exception) {
+//                            Log.i("response",e.toString())
+//                        }
+
+
                         // creating account on fire base
                         if (name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
 
@@ -132,16 +138,24 @@ private fun SignUpForms(modifier: Modifier = Modifier) {
                                 .createUserWithEmailAndPassword(email, password)
                                 .addOnCompleteListener { it ->
                                     if (it.isSuccessful) {
+
                                         //Adding user name and email to our db
                                         Log.i("firebase", "User created")
-                                        viewModel.addUserDetailsToCloud(userEmail = email, name = name)
+                                        viewModel.addUserDetailsToCloud(
+                                            userEmail = email,
+                                            name = name
+                                        )
+
+                                        navController.navigate("RoomsEntry")
                                     } else {
                                         Log.i("firebase", it.exception.toString())
                                     }
 
                                 }
-                        }else{
-                            Toast.makeText(context,"Check you credentials",Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast
+                                .makeText(context, "Check you credentials", Toast.LENGTH_SHORT)
+                                .show()
                         }
 
                     },
@@ -165,5 +179,5 @@ private fun SignUpForms(modifier: Modifier = Modifier) {
 @Preview(showSystemUi = true)
 @Composable
 fun PrevSignupScreen() {
-//    SignUpScreen(navController)
+//    SignUpScreen()
 }
