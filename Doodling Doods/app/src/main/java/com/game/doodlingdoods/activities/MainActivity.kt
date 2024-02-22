@@ -4,7 +4,11 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,17 +25,26 @@ import com.game.doodlingdoods.screens.LobbyJoinerScreen
 import com.game.doodlingdoods.screens.LoginScreen
 import com.game.doodlingdoods.screens.SignUpScreen
 import com.game.doodlingdoods.ui.theme.DoodlingDoodsTheme
+import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
 import com.game.doodlingdoods.viewmodels.SignUpScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+//import androidx.hilt.navigation.compose.hiltViewModel
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @SuppressLint("RememberReturnType")
+    @SuppressLint("RememberReturnType", "CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             DoodlingDoodsTheme {
                 val navController = rememberNavController()
+
+
+
+
                 val signUpScreenViewModel = viewModel<SignUpScreenViewModel>()
                 val navGraph = remember(navController) {
 

@@ -112,6 +112,7 @@ fun GuestButton(modifier: Modifier = Modifier, navController: NavController) {
                         .align(Alignment.CenterHorizontally)
                         .padding(8.dp)
                         .clickable {
+                            navController.currentBackStackEntry?.savedStateHandle?.set("name", guestName)
                             navController.navigate("RoomsEntry")
                         }
                 )
