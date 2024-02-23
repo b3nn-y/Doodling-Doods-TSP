@@ -25,6 +25,7 @@ import com.game.doodlingdoods.screens.LobbyJoinerScreen
 import com.game.doodlingdoods.screens.LoginScreen
 import com.game.doodlingdoods.screens.SignUpScreen
 import com.game.doodlingdoods.ui.theme.DoodlingDoodsTheme
+import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
 import com.game.doodlingdoods.viewmodels.SignUpScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,10 +40,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+
             DoodlingDoodsTheme {
                 val navController = rememberNavController()
-
-
+                val playerDetailsViewModel: PlayerDetailsViewModel = viewModel()
 
 
                 val signUpScreenViewModel = viewModel<SignUpScreenViewModel>()
@@ -54,7 +55,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("AccountSetup") {
-                            AccountSetup(navController = navController)
+                            AccountSetup(navController = navController, playerDetailsViewModel)
                         }
 
                         composable("LoginScreen") {
@@ -68,16 +69,13 @@ class MainActivity : ComponentActivity() {
                                 signUpScreenViewModel
                             )
                         }
-                        composable("AccountSetup"){
-                            AccountSetup(navController = navController)
-                        }
 
                         composable("RoomsEntry"){
-                            RoomsEntryScreen(navController = navController)
+                            RoomsEntryScreen(navController = navController, playerDetailsViewModel)
                         }
 
                         composable("JoinRoom"){
-                            JoinRoomScreen(navController = navController)
+                            JoinRoomScreen(navController = navController, playerDetailsViewModel)
                         }
 
                         composable("CreateRoom"){
@@ -90,7 +88,7 @@ class MainActivity : ComponentActivity() {
                             GameScreen(navController =navController)
                         }
                         composable("LobbyJoinerScreen"){
-                           LobbyJoinerScreen(navController =navController)
+                           LobbyJoinerScreen(navController =navController, playerDetailsViewModel)
                         }
 
                     }

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,23 +33,21 @@ import kotlinx.coroutines.launch
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun RoomsEntryScreen(
-    navController: NavController
+    navController: NavController,
+    playerDetailsViewModel: PlayerDetailsViewModel
 ) {
 
-    val serverViewModel = hiltViewModel<ServerCommunicationViewModel>()
-    val state by serverViewModel.state.collectAsState()
-    val isConnecting by serverViewModel.isConnecting.collectAsState()
-    val showConnectionError by serverViewModel.showConnectionError.collectAsState()
-    println("state"+state)
-    println("is Conn"+isConnecting)
-    println(showConnectionError)
-    
+
+
+
     JoinGames(
-        CreateRoomButtonClick = {
+        createRoomButtonClick = {
+            playerDetailsViewModel.joinType = "create"
             navController.navigate("CreateRoom")
             println("create room btn")
         },
-        JoinRoomButtonClick = {
+        joinRoomButtonClick = {
+            playerDetailsViewModel.joinType = "join"
             navController.navigate("JoinRoom")
             println("Join room btn")
         }
@@ -59,8 +58,8 @@ fun RoomsEntryScreen(
 @Composable
 private fun JoinGames(
     modifier: Modifier = Modifier,
-    CreateRoomButtonClick: () -> Unit,
-    JoinRoomButtonClick: () -> Unit
+    createRoomButtonClick: () -> Unit,
+    joinRoomButtonClick: () -> Unit
 ) {
     Surface(
         modifier.fillMaxSize(),
@@ -78,7 +77,7 @@ private fun JoinGames(
 
                 Button(
                     onClick = {
-                        JoinRoomButtonClick()
+                        joinRoomButtonClick()
                     },
                     modifier
 
@@ -93,7 +92,7 @@ private fun JoinGames(
                 }
                 Button(
                     onClick = {
-                        CreateRoomButtonClick()
+                        createRoomButtonClick()
                     },
                     modifier
 

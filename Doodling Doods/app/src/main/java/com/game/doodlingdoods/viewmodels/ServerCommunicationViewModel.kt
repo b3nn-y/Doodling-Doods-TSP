@@ -2,6 +2,7 @@ package com.game.doodlingdoods.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playerManager.Player
 import com.game.doodlingdoods.data.RealtimeCommunicationClient
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +20,9 @@ import javax.inject.Inject
 class ServerCommunicationViewModel @Inject constructor(
     private val client: RealtimeCommunicationClient
 ) : ViewModel() {
+
+    lateinit var playerDetails: Player
+
 
     var messages = mutableListOf<String?>()
 

@@ -40,22 +40,20 @@ class SignUpScreenViewModel:ViewModel() {
 //    }
 
 
-    private suspend  fun getRooms(){
-        val response = KtorServerApi.api.getAllRooms()
-
-        if (response.isSuccessful && response.body() != null) {
-
-            Log.i("response " , response.body().toString())
-
-
-        }
-    }
-
-    private suspend fun addRooms(room_Id:String,create_by:String,password:String){
-        val data = RoomDetailsDataClass(id = 8, room_id = "005",created_by = "raghu", password = "pass" )
-        val response = KtorServerApi.api.addRooms(data)
-
-        Log.i("response",response.toString())
-
-    }
+//    private suspend  fun getRooms(){
+//        val response = KtorServerApi.api.getAllRooms()
+//
+//        if (response.isSuccessful && response.body() != null) {
+//
+//            Log.i("response " , response.body().toString())
+//        }
+//    }
+//
+//    private suspend fun addRooms(room_Id:String,create_by:String,password:String){
+//        val data = RoomDetailsDataClass(id = 8, room_id = "005",created_by = "raghu", password = "pass" )
+//        val response = KtorServerApi.api.addRooms(data)
+//
+//        Log.i("response",response.toString())
+//
+//    }
 }

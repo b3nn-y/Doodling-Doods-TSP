@@ -14,40 +14,36 @@ import com.game.doodlingdoods.screens.LoginScreen
 import com.game.doodlingdoods.screens.SignUpScreen
 import com.game.doodlingdoods.viewmodels.SignUpScreenViewModel
 
-@Composable
-fun AppPreview() {
-    val navController = rememberNavController()
-    val signUpScreenViewModel = viewModel<SignUpScreenViewModel>()
-    val navGraph = remember(navController) {
-
-        navController.createGraph(startDestination = "HomeScreen") {
-            composable("HomeScreen") {
-                HomeScreen(navController = navController)
-            }
-
-            composable("AccountSetup") {
-                AccountSetup(navController = navController)
-            }
-
-            composable("LoginScreen") {
-                LoginScreen(navController = navController)
-            }
-
-            composable("SignUpScreen") {
-
-                SignUpScreen(
-                    navController = navController,
-                    signUpScreenViewModel
-                )
-            }
-        }
-
-    }
-
-
-
-}
-
+//@Composable
+//fun AppPreview() {
+//    val navController = rememberNavController()
+//    val signUpScreenViewModel = viewModel<SignUpScreenViewModel>()
+//    val navGraph = remember(navController) {
+//
+//        navController.createGraph(startDestination = "HomeScreen") {
+//            composable("HomeScreen") {
+//                HomeScreen(navController = navController)
+//            }
+//
+//            composable("AccountSetup") {
+//                AccountSetup(navController = navController)
+//            }
+//
+//            composable("LoginScreen") {
+//                LoginScreen(navController = navController)
+//            }
+//
+//            composable("SignUpScreen") {
+//
+//                SignUpScreen(
+//                    navController = navController,
+//                    signUpScreenViewModel
+//                )
+//            }
+//        }
+//
+//    }
+//}
 
 
 
