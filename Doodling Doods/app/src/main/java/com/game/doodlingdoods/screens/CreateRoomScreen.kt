@@ -52,6 +52,7 @@ private fun CreateRoom(
         "" -> {}
         "no room" -> {
             roomAvailabilityState = ""
+            playerDetailsViewModel.admin = true
             navController.navigate("LobbyAdminScreen")}
         "wrong pass" -> {
             Toast.makeText(LocalContext.current, "Room $roomId already exists, try another name", Toast.LENGTH_SHORT).show()

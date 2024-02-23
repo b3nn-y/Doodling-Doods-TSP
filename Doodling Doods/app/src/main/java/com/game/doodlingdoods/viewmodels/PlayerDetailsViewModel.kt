@@ -21,7 +21,7 @@ class PlayerDetailsViewModel: ViewModel() {
     var joinType = ""
     var roomName = ""
     var roomPass = ""
-
+    var admin = false
     var roomAvailability = mutableStateOf("")
 
     private lateinit var serverCommunicationViewModel: ServerCommunicationViewModel
@@ -65,6 +65,6 @@ class PlayerDetailsViewModel: ViewModel() {
     }
 
     fun getPlayerData():Player{
-        return Player(name = playerName, joinType = joinType, roomName = roomName, roomPass = roomPass)
+        return Player(name = playerName, joinType = joinType, roomName = roomName, roomPass = roomPass, admin= admin)
     }
 }

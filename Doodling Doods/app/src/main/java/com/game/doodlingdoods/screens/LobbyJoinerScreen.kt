@@ -45,6 +45,9 @@ fun LobbyJoinerScreen(navController: NavController, playerDetailsViewModel: Play
 
     playerDetailsViewModel.initializeServerViewModel(serverViewModel)
     serverViewModel.sendMessage(Gson().toJson(playerDetailsViewModel.getPlayerData()))
+
+    serverViewModel.evaluateServerMessage(state)
+
     Scaffold {
         Column(
             modifier = Modifier.fillMaxSize(),
