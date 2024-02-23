@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun JoinRoomScreen(navController: NavHostController, playerDetailsViewModel: PlayerDetailsViewModel) {
+    playerDetailsViewModel.roomAvailability.value = ""
     JoinRoom(navController, playerDetailsViewModel = playerDetailsViewModel)
 }
 
@@ -56,8 +57,6 @@ private fun JoinRoom(
     }
 
     var roomAvailabilityState by playerDetailsViewModel.roomAvailability
-
-    // Access the current value of roomAvailabilityState
     val currentRoomAvailability = roomAvailabilityState
 
     when (currentRoomAvailability){

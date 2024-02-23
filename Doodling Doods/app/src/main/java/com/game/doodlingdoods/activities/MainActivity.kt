@@ -79,13 +79,13 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("CreateRoom"){
-                            CreateRoomScreen(navController = navController)
+                            CreateRoomScreen(navController = navController, playerDetailsViewModel)
                         }
                         composable("LobbyAdminScreen"){
-                            LobbyAdminScreen(navController=navController)
+                            LobbyAdminScreen(navController=navController, playerDetailsViewModel)
                         }
                         composable("GameScreen"){
-                            GameScreen(navController =navController)
+                            GameScreen(navController =navController, playerDetailsViewModel)
                         }
                         composable("LobbyJoinerScreen"){
                            LobbyJoinerScreen(navController =navController, playerDetailsViewModel)

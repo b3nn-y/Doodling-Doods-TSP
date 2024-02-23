@@ -31,16 +31,23 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.game.doodlingdoods.R
+import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
+import com.google.gson.Gson
 
 //This screen is shown after creating a room, where the leader sets the game settings, Here we will show the number of questions, theme, max players etc.
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun LobbyAdminScreen(navController: NavHostController) {
+fun LobbyAdminScreen(navController: NavHostController, playerDetailsViewModel: PlayerDetailsViewModel) {
     val serverViewModel = hiltViewModel<ServerCommunicationViewModel>()
     val state by serverViewModel.state.collectAsState()
     val isConnecting by serverViewModel.isConnecting.collectAsState()
     val showConnectionError by serverViewModel.showConnectionError.collectAsState()
+
+    playerDetailsViewModel.initializeServerViewModel(serverViewModel)
+    serverViewModel.sendMessage(Gson().toJson(playerDetailsViewModel.getPlayerData()))
+
+
     Scaffold {
         Column(
             modifier = Modifier.fillMaxSize(),

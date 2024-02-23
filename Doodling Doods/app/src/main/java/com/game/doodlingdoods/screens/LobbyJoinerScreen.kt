@@ -32,6 +32,7 @@ import androidx.navigation.NavHostController
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
+import com.google.gson.Gson
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -41,6 +42,9 @@ fun LobbyJoinerScreen(navController: NavController, playerDetailsViewModel: Play
     val state by serverViewModel.state.collectAsState()
     val isConnecting by serverViewModel.isConnecting.collectAsState()
     val showConnectionError by serverViewModel.showConnectionError.collectAsState()
+
+    playerDetailsViewModel.initializeServerViewModel(serverViewModel)
+    serverViewModel.sendMessage(Gson().toJson(playerDetailsViewModel.getPlayerData()))
     Scaffold {
         Column(
             modifier = Modifier.fillMaxSize(),

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playerManager.Player
 import com.game.doodlingdoods.GameApi.KtorServerApi
 import com.game.doodlingdoods.filesForServerCommunication.QueryRoom
 import com.game.doodlingdoods.filesForServerCommunication.RoomAvailability
@@ -23,32 +24,12 @@ class PlayerDetailsViewModel: ViewModel() {
 
     var roomAvailability = mutableStateOf("")
 
+    private lateinit var serverCommunicationViewModel: ServerCommunicationViewModel
 
-//    suspend fun isRoomAvailable(): Boolean {
-//        return suspendCoroutine { continuation ->
-//            viewModelScope.launch {
-//                try {
-//                    println("TestRoom1")
-//                    val response = KtorServerApi.api.checkRoom(QueryRoom("TestRoom1"))
-//                    if (response.isSuccessful) {
-//                        val msg = response.body()
-//                        println("Response success")
-//                        roomAvailability.value = msg ?: false
-//                        Log.i("roomAvailability", response.code().toString())
-//                        continuation.resume(msg ?: false)
-//                    } else {
-//                        roomAvailability.value = false
-//                        println("Response failure")
-//                        Log.i("roomAvailability", response.code().toString())
-//                        continuation.resume(false)
-//                    }
-//                } catch (e: Exception) {
-//                    println(e.message)
-//                    continuation.resume(false)
-//                }
-//            }
-//        }
-//    }
+    fun initializeServerViewModel(communicationViewModel: ServerCommunicationViewModel){
+        serverCommunicationViewModel = communicationViewModel
+    }
+
     fun checkRoomAvailability(){
         viewModelScope.launch {
             val response = pushPost(roomName)
@@ -83,4 +64,7 @@ class PlayerDetailsViewModel: ViewModel() {
         return KtorServerApi.api.checkRoom(post)
     }
 
+    fun getPlayerData():Player{
+        return Player(name = playerName, joinType = joinType, roomName = roomName, roomPass = roomPass)
+    }
 }
