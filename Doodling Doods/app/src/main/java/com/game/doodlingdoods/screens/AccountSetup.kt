@@ -27,13 +27,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 
 //This screen shows the option to either create a temp username and join a game, or to sign up or login with a email account to store their data
 
 @Composable
 fun AccountSetup(
     navController: NavController,
+    playerDetailsViewModel: PlayerDetailsViewModel,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -49,7 +53,7 @@ fun AccountSetup(
                 modifier.weight(1f),
                 contentAlignment = Alignment.Center
             ) {
-                GuestButton(navController = navController)
+                GuestButton(navController = navController, playerDetailsViewModel = playerDetailsViewModel)
             }
             Box(
                 modifier.weight(1f),
@@ -64,7 +68,7 @@ fun AccountSetup(
 
 //for creating guest account
 @Composable
-fun GuestButton(modifier: Modifier = Modifier, navController: NavController) {
+fun GuestButton(modifier: Modifier = Modifier, navController: NavController, playerDetailsViewModel: PlayerDetailsViewModel) {
     var guestName by rememberSaveable {
         mutableStateOf("")
     }
@@ -112,6 +116,7 @@ fun GuestButton(modifier: Modifier = Modifier, navController: NavController) {
                         .align(Alignment.CenterHorizontally)
                         .padding(8.dp)
                         .clickable {
+                            playerDetailsViewModel.playerName = guestName
                             navController.navigate("RoomsEntry")
                         }
                 )

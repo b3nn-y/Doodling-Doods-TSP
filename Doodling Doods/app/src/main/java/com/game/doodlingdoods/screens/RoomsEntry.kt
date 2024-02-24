@@ -1,5 +1,6 @@
 package com.game.doodlingdoods.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,25 +11,43 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
+import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 //This screen shows the options to join a existing room or create a new room for others to join.
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun RoomsEntryScreen(
-    navController: NavController
+    navController: NavController,
+    playerDetailsViewModel: PlayerDetailsViewModel
 ) {
+
+
+
+
     JoinGames(
-        CreateRoomButtonClick = {
+        createRoomButtonClick = {
+            playerDetailsViewModel.joinType = "create"
             navController.navigate("CreateRoom")
             println("create room btn")
         },
-        JoinRoomButtonClick = {
+        joinRoomButtonClick = {
+            playerDetailsViewModel.joinType = "join"
             navController.navigate("JoinRoom")
             println("Join room btn")
         }
@@ -39,8 +58,8 @@ fun RoomsEntryScreen(
 @Composable
 private fun JoinGames(
     modifier: Modifier = Modifier,
-    CreateRoomButtonClick: () -> Unit,
-    JoinRoomButtonClick: () -> Unit
+    createRoomButtonClick: () -> Unit,
+    joinRoomButtonClick: () -> Unit
 ) {
     Surface(
         modifier.fillMaxSize(),
@@ -58,7 +77,7 @@ private fun JoinGames(
 
                 Button(
                     onClick = {
-                        JoinRoomButtonClick()
+                        joinRoomButtonClick()
                     },
                     modifier
 
@@ -73,7 +92,7 @@ private fun JoinGames(
                 }
                 Button(
                     onClick = {
-                        CreateRoomButtonClick()
+                        createRoomButtonClick()
                     },
                     modifier
 

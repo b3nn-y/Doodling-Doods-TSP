@@ -1,8 +1,12 @@
 package com.game.doodlingdoods.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playerManager.Player
+import com.example.roomManager.Room
 import com.game.doodlingdoods.data.RealtimeCommunicationClient
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,12 +24,16 @@ class ServerCommunicationViewModel @Inject constructor(
     private val client: RealtimeCommunicationClient
 ) : ViewModel() {
 
+    private lateinit var room: Room
+
+
     var messages = mutableListOf<String?>()
 
     val state = client
         .getStateStream(path = "/connect")
         .onStart { _isConnecting.value = true }
-        .onEach { _isConnecting.value = false }
+        .onEach { _isConnecting.value = false
+        }
         .catch { t ->
             _isConnecting.value = false
             _showConnectionError.value = t is ConnectException
@@ -55,6 +63,25 @@ class ServerCommunicationViewModel @Inject constructor(
         viewModelScope.launch {
             client.close()
         }
+    }
+
+    fun evaluateServerMessage(data: String){
+
+        println(data)
+        try {
+            val roomData = Gson().fromJson(data, Room::class.java)
+            if (roomData.name == null || roomData.pass == null || roomData.players != null || roomData.createdBy != null ){
+                room = roomData
+                Log.i("Room", "Updated")
+            }
+        }
+        catch (e:Exception){
+//            println(e.message)
+        }
+    }
+
+    fun sendRoomUpdate(){
+        sendMessage(Gson().toJson(room))
     }
 
 

@@ -18,20 +18,36 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.game.doodlingdoods.R
+import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
+import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
+import com.google.gson.Gson
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun LobbyJoinerScreen(navController: NavController) {
+fun LobbyJoinerScreen(navController: NavController, playerDetailsViewModel: PlayerDetailsViewModel) {
+    val serverViewModel = hiltViewModel<ServerCommunicationViewModel>()
+    val state by serverViewModel.state.collectAsState()
+    val isConnecting by serverViewModel.isConnecting.collectAsState()
+    val showConnectionError by serverViewModel.showConnectionError.collectAsState()
+
+    playerDetailsViewModel.initializeServerViewModel(serverViewModel)
+    serverViewModel.sendMessage(Gson().toJson(playerDetailsViewModel.getPlayerData()))
+
+    serverViewModel.evaluateServerMessage(state)
+
     Scaffold {
         Column(
             modifier = Modifier.fillMaxSize(),

@@ -14,10 +14,11 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 
 // this is the ongoing game screen, where the live drawing is shown, along with hints, chat, players and their scores, timer etc.
 @Composable
-fun GameScreen(navController: NavHostController) {
+fun GameScreen(navController: NavHostController, playerDetailsViewModel: PlayerDetailsViewModel) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
