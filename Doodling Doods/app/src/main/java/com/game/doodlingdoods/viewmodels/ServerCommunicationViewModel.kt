@@ -89,7 +89,12 @@ class ServerCommunicationViewModel @Inject constructor(
                     playersList.add(it.name)
                 }
                 try {
-                    drawingCords = (Gson().fromJson(roomData.cords, LinesStorage::class.java).lines).toMutableStateList()
+                    if (roomData.cords == ""){
+                        drawingCords.clear()
+                    }
+                    else{
+                        drawingCords = (Gson().fromJson(roomData.cords, LinesStorage::class.java).lines).toMutableStateList()
+                    }
                     println(drawingCords + "\nI got some lines in viewmodel ${drawingCords.size}")
                 }
                 catch (e: Exception){
