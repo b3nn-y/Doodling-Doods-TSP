@@ -28,7 +28,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import com.game.doodlingdoods.drawingEssentials.Line
+import com.game.doodlingdoods.drawingEssentials.LinesStorage
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
 
 @Composable
@@ -49,6 +51,7 @@ fun UserDrawingScreen(navController: NavHostController ,playerDetailsViewModel: 
     }
 
     var lines by remember { mutableStateOf(mutableStateListOf<Line>()) }
+
     Surface {
         Column() {
 
@@ -68,9 +71,10 @@ fun UserDrawingScreen(navController: NavHostController ,playerDetailsViewModel: 
                                     end = change.position,
                                 )
 
-
                                 lines.add(line)
-
+                                println(lines)
+                                serverViewModel.room.cords = Gson().toJson(LinesStorage(lines))
+                                serverViewModel.sendRoomUpdate()
 
                             }
                         }

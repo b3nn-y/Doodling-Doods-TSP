@@ -55,7 +55,7 @@ fun LobbyAdminScreen(navController: NavHostController, playerDetailsViewModel: P
     serverViewModel.evaluateServerMessage(state)
 
     var roomChanges = Room("", "", ArrayList<Player>(), 0, 0,
-        Player("", "", "", ""), false, 0, "" , false, Player("", "", "", ""), 3, "")
+        Player("", "", "", ""), false, 0, "", false, Player("", "", "", ""), 3, "")
 
     var roomUpdates by remember {
         mutableStateOf(roomChanges)

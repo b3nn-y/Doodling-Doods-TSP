@@ -12,4 +12,7 @@ data class Line(
     val strokeWidth: Dp = 8.dp,
     )
 
+data class LinesStorage(
+    val lines: MutableList<Line>
+)
 
