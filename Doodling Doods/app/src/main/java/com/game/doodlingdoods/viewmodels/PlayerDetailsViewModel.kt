@@ -24,7 +24,7 @@ class PlayerDetailsViewModel: ViewModel() {
     var admin = false
     var roomAvailability = mutableStateOf("")
 
-    private lateinit var serverCommunicationViewModel: ServerCommunicationViewModel
+    lateinit var serverCommunicationViewModel: ServerCommunicationViewModel
 
     fun initializeServerViewModel(communicationViewModel: ServerCommunicationViewModel){
         serverCommunicationViewModel = communicationViewModel
