@@ -18,8 +18,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -29,16 +33,19 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.example.playerManager.Player
+import com.example.roomManager.Room
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
 import com.google.gson.Gson
+import kotlinx.coroutines.delay
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun LobbyJoinerScreen(navController: NavController, playerDetailsViewModel: PlayerDetailsViewModel) {
-    val serverViewModel = hiltViewModel<ServerCommunicationViewModel>()
+    var serverViewModel = hiltViewModel<ServerCommunicationViewModel>()
     val state by serverViewModel.state.collectAsState()
     val isConnecting by serverViewModel.isConnecting.collectAsState()
     val showConnectionError by serverViewModel.showConnectionError.collectAsState()
@@ -46,7 +53,31 @@ fun LobbyJoinerScreen(navController: NavController, playerDetailsViewModel: Play
     playerDetailsViewModel.initializeServerViewModel(serverViewModel)
     serverViewModel.sendMessage(Gson().toJson(playerDetailsViewModel.getPlayerData()))
 
-    serverViewModel.evaluateServerMessage(state)
+    var roomChanges = Room("", "", ArrayList<Player>(), 0, 0,Player("", "", "", ""), false, 0, "" , false, Player("", "", "", ""), 3, "")
+
+    var roomUpdates by remember {
+        mutableStateOf(roomChanges)
+    }
+
+    try {
+        var tempData = serverViewModel.evaluateServerMessage(state)
+        if (tempData != null){
+            roomChanges = tempData
+        }
+    }
+    catch (e:Exception){
+
+    }
+    println("Rooom Updated $roomUpdates")
+
+//    var room by remember {
+//        serverViewModel.roomUpdates
+//    }
+//    println("Current rooom $room")
+
+    if (serverViewModel.isGameStarted){
+        navController.navigate("GameScreen")
+    }
 
     Scaffold {
         Column(
@@ -55,11 +86,11 @@ fun LobbyJoinerScreen(navController: NavController, playerDetailsViewModel: Play
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TopBar()
+            val myList = serverViewModel.playersList
 
-            val myList = (1..5).toList()
             LazyColumn {
-                items(myList) { element ->
-                    PlayerCard()
+                items(myList) { playerName ->
+                    PlayerCard(playerName = playerName)
                 }
             }
 
@@ -99,7 +130,8 @@ private fun TopBar(
 
 @Composable
 private fun PlayerCard(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    playerName: String
 ) {
 
     Card(
@@ -125,7 +157,7 @@ private fun PlayerCard(
 
             )
             Text(
-                text = "User Name",
+                text = playerName,
                 fontSize = 25.sp,
                 modifier = modifier
                     .weight(0.8f)

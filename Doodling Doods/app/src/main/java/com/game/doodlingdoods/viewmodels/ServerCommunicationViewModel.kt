@@ -1,6 +1,7 @@
 package com.game.doodlingdoods.viewmodels
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playerManager.Player
@@ -24,7 +25,13 @@ class ServerCommunicationViewModel @Inject constructor(
     private val client: RealtimeCommunicationClient
 ) : ViewModel() {
 
-    private lateinit var room: Room
+    var isGameStarted = false
+
+    var currentPlayer = ""
+
+    lateinit var room: Room
+
+    var playersList = mutableStateListOf<String>()
 
 
     var messages = mutableListOf<String?>()
@@ -65,19 +72,27 @@ class ServerCommunicationViewModel @Inject constructor(
         }
     }
 
-    fun evaluateServerMessage(data: String){
+    fun evaluateServerMessage(data: String): Room? {
 
         println(data)
         try {
             val roomData = Gson().fromJson(data, Room::class.java)
             if (roomData.name == null || roomData.pass == null || roomData.players != null || roomData.createdBy != null ){
                 room = roomData
+                playersList = mutableStateListOf()
+                roomData.players.forEach{
+                    playersList.add(it.name)
+                }
+                isGameStarted = roomData.gameStarted
+                currentPlayer = roomData.currentPlayer.name
                 Log.i("Room", "Updated")
+                return roomData
             }
         }
         catch (e:Exception){
 //            println(e.message)
         }
+        return null
     }
 
     fun sendRoomUpdate(){

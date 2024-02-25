@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,6 +21,14 @@ import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 // this is the ongoing game screen, where the live drawing is shown, along with hints, chat, players and their scores, timer etc.
 @Composable
 fun GameScreen(navController: NavHostController, playerDetailsViewModel: PlayerDetailsViewModel) {
+    var serverViewModel = playerDetailsViewModel.serverCommunicationViewModel
+    val state by serverViewModel.state.collectAsState()
+    val isConnecting by serverViewModel.isConnecting.collectAsState()
+    val showConnectionError by serverViewModel.showConnectionError.collectAsState()
+    serverViewModel.evaluateServerMessage(state)
+    if (serverViewModel.currentPlayer == playerDetailsViewModel.playerName){
+        navController.navigate("DrawingScreen")
+    }
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
