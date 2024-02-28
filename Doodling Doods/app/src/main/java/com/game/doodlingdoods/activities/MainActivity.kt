@@ -12,7 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.createGraph
-import com.game.doodlingdoods.internetConnection.NetworkMonitorImpl
+
 import com.game.doodlingdoods.screens.AccountSetup
 import com.game.doodlingdoods.screens.CreateRoomScreen
 import com.game.doodlingdoods.screens.DrawingScreen
@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
                 val playerDetailsViewModel: PlayerDetailsViewModel = viewModel()
 
 
-                val signUpScreenViewModel = viewModel<SignUpScreenViewModel>()
+
                 val navGraph = remember(navController) {
 
                     navController.createGraph(startDestination = "HomeScreen") {

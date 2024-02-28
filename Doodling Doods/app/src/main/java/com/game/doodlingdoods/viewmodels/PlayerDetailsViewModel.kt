@@ -67,6 +67,7 @@ class PlayerDetailsViewModel: ViewModel() {
     }
 
     fun getPlayerData():Player{
+
         return Player(name = playerName, joinType = joinType, roomName = roomName, roomPass = roomPass, admin= admin)
     }
 }

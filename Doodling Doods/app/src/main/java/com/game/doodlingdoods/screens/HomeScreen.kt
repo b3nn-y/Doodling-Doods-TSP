@@ -31,8 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.game.doodlingdoods.R
-import com.game.doodlingdoods.internetConnection.NetWorkConnectivityObserver
-import com.game.doodlingdoods.internetConnection.NetworkMonitorImpl
+
 
 
 //This is the home screen, where the user either chooses online or local game mode.
@@ -42,9 +41,9 @@ fun HomeScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-    val networkMonitorImpl = NetworkMonitorImpl(context)
-    Log.i("Network", networkMonitorImpl.isNetAvailable.toString())
+
+//    val networkMonitorImpl = NetworkMonitorImpl()
+//    Log.i("Network", networkMonitorImpl.isNetAvailable.toString())
 
     Column(
         modifier.fillMaxSize(),

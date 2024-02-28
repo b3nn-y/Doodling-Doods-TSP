@@ -14,6 +14,7 @@ import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onEach
@@ -41,6 +42,14 @@ class ServerCommunicationViewModel @Inject constructor(
 
     var messages = mutableListOf<String?>()
 
+    private var  _isConnectedWithServer =  MutableStateFlow(false)
+    private var _isDataSent = MutableStateFlow(false)
+
+    val isConnectedWithServer:StateFlow<Boolean>
+        get() = _isConnectedWithServer.asStateFlow()
+
+    val isDataSent= _isDataSent.asStateFlow()
+
     val state = client
         .getStateStream(path = "/connect")
         .onStart { _isConnecting.value = true }
@@ -61,6 +70,8 @@ class ServerCommunicationViewModel @Inject constructor(
     fun sendMessage(messageEvent: String) {
         viewModelScope.launch {
             client.sendAction(messageEvent)
+            _isConnectedWithServer.value=true
+
         }
     }
 
