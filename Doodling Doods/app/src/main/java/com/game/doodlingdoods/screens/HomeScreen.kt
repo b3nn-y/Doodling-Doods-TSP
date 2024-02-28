@@ -1,5 +1,6 @@
 package com.game.doodlingdoods.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,9 +16,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -28,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.game.doodlingdoods.R
+import com.game.doodlingdoods.internetConnection.NetWorkConnectivityObserver
+import com.game.doodlingdoods.internetConnection.NetworkMonitorImpl
 
 
 //This is the home screen, where the user either chooses online or local game mode.
@@ -37,6 +42,10 @@ fun HomeScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val networkMonitorImpl = NetworkMonitorImpl(context)
+    Log.i("Network", networkMonitorImpl.isNetAvailable.toString())
+
     Column(
         modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -122,7 +131,7 @@ fun PlayOption(
             .fillMaxWidth()
             .padding(48.dp)
             .clickable {
-                       PlayButtonClick()
+                PlayButtonClick()
             },
 
 

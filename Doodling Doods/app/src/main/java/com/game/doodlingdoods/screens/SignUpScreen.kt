@@ -1,21 +1,25 @@
 package com.game.doodlingdoods.screens
 
+import android.annotation.SuppressLint
 import android.util.Log
-import android.widget.Toast
+import android.widget.ProgressBar
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -30,44 +34,54 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
 import com.game.doodlingdoods.viewmodels.SignUpScreenViewModel
 
 //This screen is shown if the user wants to sign up.
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun SignUpScreen(
     navController: NavHostController,
-    signUpScreenViewModel: SignUpScreenViewModel
+
 ) {
+    val viewModel = viewModel(SignUpScreenViewModel::class.java)
+
+
     SignUpForms(
         navController,
-        signUpScreenViewModel = SignUpScreenViewModel())
+        viewModel = viewModel)
+
 
 
 }
 
 
 //Sign up forms for collecting email
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 private fun SignUpForms(
-    navController:NavHostController,
+    navController: NavHostController,
     modifier: Modifier = Modifier,
-    signUpScreenViewModel: SignUpScreenViewModel
+    viewModel: SignUpScreenViewModel
 ) {
+    val isSignUpSuccess by viewModel.isSignUpSuccess.collectAsState()
 
-    val context = LocalContext.current
-    // initializing view model
-    val viewModel = viewModel(modelClass = SignUpScreenViewModel::class.java)
+    if (isSignUpSuccess) navController.navigate("RoomsEntry")
 
-    var name by rememberSaveable {
+
+    var userName by rememberSaveable {
         mutableStateOf("")
     }
-    var email by rememberSaveable {
+    var mailId by rememberSaveable {
         mutableStateOf("")
     }
     var password by rememberSaveable {
         mutableStateOf("")
     }
+
+
+
     Surface(
         modifier.fillMaxSize()
 
@@ -81,8 +95,8 @@ private fun SignUpForms(
 
             //name text field
             OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
+                value = userName,
+                onValueChange = { userName = it },
                 label = { Text(text = "Name") },
                 singleLine = true,
                 modifier = Modifier.padding(8.dp)
@@ -90,8 +104,8 @@ private fun SignUpForms(
 
             //email text field
             OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
+                value = mailId,
+                onValueChange = { mailId = it },
                 label = { Text(text = "E-mail") },
                 singleLine = true,
                 modifier = Modifier.padding(8.dp)
@@ -120,42 +134,21 @@ private fun SignUpForms(
                     .width(200.dp)
                     .padding(24.dp)
                     .clickable {
-                        //Test
-
-//                        try {
-//                            signUpScreenViewModel.getRoomsFromApi()
-//
-//
-//                        } catch (e: Exception) {
-//                            Log.i("response",e.toString())
-//                        }
 
 
-                        // creating account on fire base
-                        if (name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
+                        // creating account on Server
+                        if (viewModel.userInputFilter(
+                                userName = userName,
+                                mailId = mailId,
+                                password = password
+                            )
+                        ) {
 
-                            viewModel.firebaseAuth
-                                .createUserWithEmailAndPassword(email, password)
-                                .addOnCompleteListener { it ->
-                                    if (it.isSuccessful) {
+                            viewModel.signUpWithCredentials(userName, mailId, password)
 
-                                        //Adding user name and email to our db
-                                        Log.i("firebase", "User created")
-                                        viewModel.addUserDetailsToCloud(
-                                            userEmail = email,
-                                            name = name
-                                        )
-
-                                        navController.navigate("RoomsEntry")
-                                    } else {
-                                        Log.i("firebase", it.exception.toString())
-                                    }
-
-                                }
                         } else {
-                            Toast
-                                .makeText(context, "Check you credentials", Toast.LENGTH_SHORT)
-                                .show()
+                            Log.i("signup", "failed")
+
                         }
 
                     },
@@ -172,6 +165,10 @@ private fun SignUpForms(
                         .padding(8.dp)
                 )
             }
+
+            CircularProgressIndicator(
+                modifier = Modifier.size(50.dp)
+            )
         }
     }
 }
@@ -179,5 +176,6 @@ private fun SignUpForms(
 @Preview(showSystemUi = true)
 @Composable
 fun PrevSignupScreen() {
-//    SignUpScreen()
+    val navController =NavHostController(LocalContext.current)
+    SignUpScreen(navController)
 }

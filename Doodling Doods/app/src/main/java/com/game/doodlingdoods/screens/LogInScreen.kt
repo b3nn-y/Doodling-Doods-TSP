@@ -16,6 +16,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -37,17 +38,21 @@ import com.game.doodlingdoods.viewmodels.LoginScreenViewModel
 //This screen is shown if the user wants to log in with their previous account
 @Composable
 fun LoginScreen(navController: NavHostController) {
-    LoginForms(navController = navController)
+    val viewmodel = viewModel(LoginScreenViewModel::class.java)
+    LoginForms(navController = navController, viewmodel = viewmodel)
+
 }
 
 @Composable
 private fun LoginForms(
-    modifier: Modifier =Modifier,
-    navController: NavHostController) {
-    val viewmodel = viewModel(LoginScreenViewModel::class.java)
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    viewmodel: LoginScreenViewModel
+) {
+    val isSignInSuccess by viewmodel.isSignInSuccess.collectAsState()
+    if (isSignInSuccess) navController.navigate("RoomsEntry")
 
-
-    var email by rememberSaveable {
+    var mailId by rememberSaveable {
         mutableStateOf("")
     }
 
@@ -56,6 +61,7 @@ private fun LoginForms(
     }
 
     Surface(
+
         modifier.fillMaxSize()
 
     ) {
@@ -69,8 +75,8 @@ private fun LoginForms(
 
             //email text field
             OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
+                value = mailId,
+                onValueChange = { mailId = it },
                 label = { Text(text = "E-mail") },
                 singleLine = true,
                 modifier = Modifier.padding(8.dp)
@@ -107,7 +113,6 @@ private fun LoginForms(
 //            }
 
 
-
             Card(
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 10.dp
@@ -117,17 +122,11 @@ private fun LoginForms(
                     .width(200.dp)
                     .padding(24.dp)
                     .clickable {
-                        if (email.isNotEmpty() && password.isNotEmpty()){
-                            viewmodel.firebaseAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener {
-                                if (it.isSuccessful){
-                                    Log.i("firebase",it.isSuccessful.toString())
-                                    navController.navigate("RoomsEntry")
-                                }else{
-                                    Log.i("firebase",it.exception.toString())
-                                }
-                            }
+                        if (viewmodel.userInputFilter(mailId = mailId, password = password)) {
+                            viewmodel.signInWithCredentials(mailId, password)
+
                         }
-                        navController.navigate("RoomsEntry")
+
 
                     },
 

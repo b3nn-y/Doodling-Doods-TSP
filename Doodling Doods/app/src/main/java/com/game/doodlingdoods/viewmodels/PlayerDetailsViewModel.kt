@@ -32,7 +32,9 @@ class PlayerDetailsViewModel: ViewModel() {
 
     fun checkRoomAvailability(){
         viewModelScope.launch {
+
             val response = pushPost(roomName)
+
             if (response.isSuccessful){
                 Log.i("Api", response.body().toString())
                 val data = response.body()

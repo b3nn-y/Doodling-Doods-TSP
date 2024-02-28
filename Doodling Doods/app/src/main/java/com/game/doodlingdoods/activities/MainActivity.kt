@@ -4,16 +4,15 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.createGraph
+import com.game.doodlingdoods.internetConnection.NetworkMonitorImpl
 import com.game.doodlingdoods.screens.AccountSetup
 import com.game.doodlingdoods.screens.CreateRoomScreen
 import com.game.doodlingdoods.screens.DrawingScreen
@@ -36,6 +35,7 @@ import kotlinx.coroutines.launch
 //import androidx.hilt.navigation.compose.hiltViewModel
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     @SuppressLint("RememberReturnType", "CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,34 +65,31 @@ class MainActivity : ComponentActivity() {
 
                         composable("SignUpScreen") {
 
-                            SignUpScreen(
-                                navController = navController,
-                                signUpScreenViewModel
-                            )
+                            SignUpScreen(navController = navController,)
                         }
 
-                        composable("RoomsEntry"){
+                        composable("RoomsEntry") {
                             RoomsEntryScreen(navController = navController, playerDetailsViewModel)
                         }
 
-                        composable("JoinRoom"){
+                        composable("JoinRoom") {
                             JoinRoomScreen(navController = navController, playerDetailsViewModel)
                         }
 
-                        composable("CreateRoom"){
+                        composable("CreateRoom") {
                             CreateRoomScreen(navController = navController, playerDetailsViewModel)
                         }
-                        composable("LobbyAdminScreen"){
-                            LobbyAdminScreen(navController=navController, playerDetailsViewModel)
+                        composable("LobbyAdminScreen") {
+                            LobbyAdminScreen(navController = navController, playerDetailsViewModel)
                         }
-                        composable("GameScreen"){
-                            GameScreen(navController =navController, playerDetailsViewModel)
+                        composable("GameScreen") {
+                            GameScreen(navController = navController, playerDetailsViewModel)
                         }
-                        composable("LobbyJoinerScreen"){
-                           LobbyJoinerScreen(navController =navController, playerDetailsViewModel)
+                        composable("LobbyJoinerScreen") {
+                            LobbyJoinerScreen(navController = navController, playerDetailsViewModel)
                         }
-                        composable("DrawingScreen"){
-                            DrawingScreen(navController =navController, playerDetailsViewModel)
+                        composable("DrawingScreen") {
+                            DrawingScreen(navController = navController, playerDetailsViewModel)
                         }
 
                     }
