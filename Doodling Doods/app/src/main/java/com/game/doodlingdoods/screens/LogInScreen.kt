@@ -38,10 +38,14 @@ import com.game.doodlingdoods.R
 import com.game.doodlingdoods.internetConnection.ConnectivityObserver
 import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
 import com.game.doodlingdoods.viewmodels.LoginScreenViewModel
+import com.game.doodlingdoods.viewmodels.MainActivityViewModel
 
 //This screen is shown if the user wants to log in with their previous account
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(
+    navController: NavHostController,
+    mainActivityViewModel: MainActivityViewModel
+) {
     val viewmodel = viewModel(LoginScreenViewModel::class.java)
 
     val connectivityObserver: ConnectivityObserver =
@@ -49,7 +53,9 @@ fun LoginScreen(navController: NavHostController) {
     LoginForms(
         navController = navController,
         viewmodel = viewmodel,
-        connectivityObserver = connectivityObserver
+        connectivityObserver = connectivityObserver,
+        mainActivityViewModel = mainActivityViewModel
+
     )
 
 }
@@ -59,10 +65,16 @@ private fun LoginForms(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     viewmodel: LoginScreenViewModel,
-    connectivityObserver: ConnectivityObserver
+    connectivityObserver: ConnectivityObserver,
+    mainActivityViewModel:MainActivityViewModel
 ) {
     val isSignInSuccess by viewmodel.isSignInSuccess.collectAsState()
-    if (isSignInSuccess) navController.navigate("RoomsEntry")
+
+    if (isSignInSuccess) {
+        mainActivityViewModel.makeAsLoggedUser()
+        navController.navigate("RoomsEntry")
+    }
+
 
     var mailId by rememberSaveable {
         mutableStateOf("")

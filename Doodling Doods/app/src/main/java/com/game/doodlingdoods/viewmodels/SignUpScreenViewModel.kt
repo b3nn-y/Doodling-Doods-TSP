@@ -1,28 +1,27 @@
 package com.game.doodlingdoods.viewmodels
 
-import android.content.Context
+
 import android.util.Log
-import android.widget.Toast
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
+
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.game.doodlingdoods.GameApi.KtorServerApi
-import com.game.doodlingdoods.internetConnection.ConnectivityObserver
-import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
+
 import com.game.doodlingdoods.utils.PasswordHash
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+
 
 class SignUpScreenViewModel : ViewModel() {
 
     private var _isSignUpSuccess = MutableStateFlow(false)
     private val passwordHash = PasswordHash()
-
-    lateinit var  connectivityObserver:ConnectivityObserver
 
 
     val  isSignUpSuccess :StateFlow<Boolean>
@@ -40,6 +39,8 @@ class SignUpScreenViewModel : ViewModel() {
                 if (response.isSuccessful && response.body()?.isAuthorized==true){
 
                     _isSignUpSuccess.value = true
+
+
 
                     println(isSignUpSuccess.value)
                 }

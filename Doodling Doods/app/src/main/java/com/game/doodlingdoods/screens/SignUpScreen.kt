@@ -38,6 +38,7 @@ import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
 import com.game.doodlingdoods.internetConnection.ConnectivityObserver
 import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
+import com.game.doodlingdoods.viewmodels.MainActivityViewModel
 import com.game.doodlingdoods.viewmodels.SignUpScreenViewModel
 
 //This screen is shown if the user wants to sign up.
@@ -45,16 +46,20 @@ import com.game.doodlingdoods.viewmodels.SignUpScreenViewModel
 @Composable
 fun SignUpScreen(
     navController: NavHostController,
+    mainActivityViewModel: MainActivityViewModel
 
     ) {
-    val viewModel = viewModel(SignUpScreenViewModel::class.java)
+
+    val viewModel = viewModel<SignUpScreenViewModel>()
+
     val connectivityObserver: ConnectivityObserver =
         NetworkConnectivityObserver(LocalContext.current)
 
     SignUpForms(
         navController,
         viewModel = viewModel,
-        connectivityObserver = connectivityObserver
+        connectivityObserver = connectivityObserver,
+        mainActivityViewModel = mainActivityViewModel
     )
 
 
@@ -68,11 +73,16 @@ private fun SignUpForms(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     viewModel: SignUpScreenViewModel,
-    connectivityObserver: ConnectivityObserver
+    connectivityObserver: ConnectivityObserver,
+    mainActivityViewModel: MainActivityViewModel
 ) {
     val isSignUpSuccess by viewModel.isSignUpSuccess.collectAsState()
 
-    if (isSignUpSuccess) navController.navigate("RoomsEntry")
+    if (isSignUpSuccess) {
+        mainActivityViewModel.makeAsLoggedUser()
+        navController.navigate("RoomsEntry")
+
+    }
 
 
     var userName by rememberSaveable {
@@ -197,5 +207,5 @@ private fun SignUpForms(
 @Composable
 fun PrevSignupScreen() {
     val navController = NavHostController(LocalContext.current)
-    SignUpScreen(navController)
+    SignUpScreen(navController,MainActivityViewModel(LocalContext.current))
 }

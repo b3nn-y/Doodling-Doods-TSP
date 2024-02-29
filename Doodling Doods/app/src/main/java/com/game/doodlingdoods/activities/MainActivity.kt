@@ -2,11 +2,11 @@ package com.game.doodlingdoods.activities
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,12 +25,10 @@ import com.game.doodlingdoods.screens.LobbyJoinerScreen
 import com.game.doodlingdoods.screens.LoginScreen
 import com.game.doodlingdoods.screens.SignUpScreen
 import com.game.doodlingdoods.ui.theme.DoodlingDoodsTheme
+import com.game.doodlingdoods.viewmodels.MainActivityViewModel
+import com.game.doodlingdoods.factory.MainActivityViewModelFactory
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
-import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
-import com.game.doodlingdoods.viewmodels.SignUpScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 //import androidx.hilt.navigation.compose.hiltViewModel
 @AndroidEntryPoint
@@ -47,12 +45,23 @@ class MainActivity : ComponentActivity() {
                 val playerDetailsViewModel: PlayerDetailsViewModel = viewModel()
 
 
+                val mainActivityViewModel:MainActivityViewModel = viewModel<MainActivityViewModel>(
+                    factory = MainActivityViewModelFactory(LocalContext.current)
+                )
+
 
                 val navGraph = remember(navController) {
 
                     navController.createGraph(startDestination = "HomeScreen") {
                         composable("HomeScreen") {
-                            HomeScreen(navController = navController)
+                            if (mainActivityViewModel.convertEntityToData()){
+                                RoomsEntryScreen(navController = navController, playerDetailsViewModel)
+                            }else{
+                                HomeScreen(navController = navController)
+
+                            }
+                            Log.i("RoomDb",mainActivityViewModel.convertEntityToData().toString())
+
                         }
 
                         composable("AccountSetup") {
@@ -60,12 +69,11 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("LoginScreen") {
-                            LoginScreen(navController = navController)
+                            LoginScreen(navController = navController,mainActivityViewModel)
                         }
 
                         composable("SignUpScreen") {
-
-                            SignUpScreen(navController = navController,)
+                            SignUpScreen(navController = navController,mainActivityViewModel)
                         }
 
                         composable("RoomsEntry") {
