@@ -12,21 +12,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.createGraph
-
+import com.game.doodlingdoods.factory.MainActivityViewModelFactory
 import com.game.doodlingdoods.screens.AccountSetup
 import com.game.doodlingdoods.screens.CreateRoomScreen
 import com.game.doodlingdoods.screens.DrawingScreen
 import com.game.doodlingdoods.screens.GameScreen
-import com.game.doodlingdoods.screens.RoomsEntryScreen
-import com.game.doodlingdoods.screens.LobbyAdminScreen
 import com.game.doodlingdoods.screens.HomeScreen
 import com.game.doodlingdoods.screens.JoinRoomScreen
+import com.game.doodlingdoods.screens.LobbyAdminScreen
 import com.game.doodlingdoods.screens.LobbyJoinerScreen
 import com.game.doodlingdoods.screens.LoginScreen
+import com.game.doodlingdoods.screens.RoomsEntryScreen
 import com.game.doodlingdoods.screens.SignUpScreen
 import com.game.doodlingdoods.ui.theme.DoodlingDoodsTheme
 import com.game.doodlingdoods.viewmodels.MainActivityViewModel
-import com.game.doodlingdoods.factory.MainActivityViewModelFactory
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 

@@ -121,5 +121,7 @@ dependencies {
     annotationProcessor("androidx.room:room-compiler:$roomVersion")
     kapt("androidx.room:room-compiler:$roomVersion")
 
+    //Lottie Animation
+    implementation ("com.airbnb.android:lottie-compose:6.3.0")
 
 }
