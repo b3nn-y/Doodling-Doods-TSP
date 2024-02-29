@@ -1,5 +1,6 @@
 package com.game.doodlingdoods.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.currentCompositionLocalContext
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -23,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -72,6 +75,7 @@ fun GuestButton(modifier: Modifier = Modifier, navController: NavController, pla
     var guestName by rememberSaveable {
         mutableStateOf("")
     }
+    val conext = LocalContext.current
     Box(
         modifier.fillMaxWidth()
 
@@ -106,6 +110,18 @@ fun GuestButton(modifier: Modifier = Modifier, navController: NavController, pla
                 modifier
                     .width(200.dp)
                     .padding(20.dp)
+                .clickable {
+
+                if (guestName.isNotEmpty() && usernameInputFilter(guestName)) {
+
+                    playerDetailsViewModel.playerName = guestName
+                    navController.navigate("RoomsEntry")
+                }else{
+
+                    Toast.makeText(conext,"Check your credentials",Toast.LENGTH_SHORT).show()
+                }
+
+            }
 
             ) {
                 Text(
@@ -115,10 +131,7 @@ fun GuestButton(modifier: Modifier = Modifier, navController: NavController, pla
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(8.dp)
-                        .clickable {
-                            playerDetailsViewModel.playerName = guestName
-                            navController.navigate("RoomsEntry")
-                        }
+
                 )
             }
 
@@ -217,12 +230,15 @@ fun SignUpButton(
 @Preview(showSystemUi = true)
 @Composable
 fun Prev() {
-//    LoginButton(LoginButtonClick = {})
-//    SignUpButton(SignUpButtonClick = {})
-//    GuestButton()
-//    AccountSetup()
-//    OptionsHandler()
+    AccountSetup(navController = NavController(LocalContext.current),
+        playerDetailsViewModel = PlayerDetailsViewModel() )
+
+
 }
 
 
 
+private fun usernameInputFilter(username:String):Boolean{
+    val usernameRegex = Regex("^[a-zA-Z][a-zA-Z0-9_-]{2,19}\$")
+    return username.matches(usernameRegex)
+}
