@@ -4,12 +4,16 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -22,13 +26,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.game.doodlingdoods.internetConnection.ConnectivityObserver
+import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 
 //THis is the screen where the user creates the room, with a passcode. (THis should also have the room related settings.)
 @Composable
-fun CreateRoomScreen(navController: NavController, playerDetailsViewModel: PlayerDetailsViewModel) {
+fun CreateRoomScreen(
+    navController: NavController,
+    playerDetailsViewModel: PlayerDetailsViewModel
+) {
     playerDetailsViewModel.roomAvailability.value = ""
-    CreateRoom(navController , playerDetailsViewModel)
+    val connectivityObserver: ConnectivityObserver =
+        NetworkConnectivityObserver(LocalContext.current)
+    CreateRoom(navController,
+        playerDetailsViewModel,
+        connectivityObserver=connectivityObserver
+    )
 }
 
 @Composable
@@ -36,8 +50,9 @@ private fun CreateRoom(
     navController: NavController,
     playerDetailsViewModel: PlayerDetailsViewModel,
     modifier: Modifier = Modifier,
+    connectivityObserver: ConnectivityObserver
 
-) {
+    ) {
     var roomId by rememberSaveable {
         mutableStateOf("")
     }
@@ -45,21 +60,36 @@ private fun CreateRoom(
         mutableStateOf("")
     }
 
+    val networkStatus by connectivityObserver.observe().collectAsState(
+        initial = ConnectivityObserver.Status.Unavailable
+    )
+
     var roomAvailabilityState by playerDetailsViewModel.roomAvailability
     val currentRoomAvailability = roomAvailabilityState
 
-    when (currentRoomAvailability){
+    when (currentRoomAvailability) {
         "" -> {}
         "no room" -> {
             roomAvailabilityState = ""
             playerDetailsViewModel.admin = true
-            navController.navigate("LobbyAdminScreen")}
+            navController.navigate("LobbyAdminScreen")
+        }
+
         "wrong pass" -> {
-            Toast.makeText(LocalContext.current, "Room $roomId already exists, try another name", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                LocalContext.current,
+                "Room $roomId already exists, try another name",
+                Toast.LENGTH_SHORT
+            ).show()
             roomAvailabilityState = ""
-            }
+        }
+
         "verified" -> {
-            Toast.makeText(LocalContext.current, "Room $roomId already exists, try another name", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                LocalContext.current,
+                "Room $roomId already exists, try another name",
+                Toast.LENGTH_SHORT
+            ).show()
             roomAvailabilityState = ""
         }
     }
@@ -75,7 +105,7 @@ private fun CreateRoom(
             ) {
             OutlinedTextField(
                 value = roomId,
-                onValueChange = {roomId = it},
+                onValueChange = { roomId = it },
                 label = {
                     Text(
                         text = "Room Id",
@@ -90,7 +120,7 @@ private fun CreateRoom(
             )
             OutlinedTextField(
                 value = password,
-                onValueChange = {password= it},
+                onValueChange = { password = it },
                 label = {
                     Text(
                         text = "Password",
@@ -111,14 +141,21 @@ private fun CreateRoom(
 
             Button(
                 onClick = {
-                    if (roomId.isNotEmpty() && password.isNotEmpty()){
-                        playerDetailsViewModel.roomName = roomId
-                        playerDetailsViewModel.roomPass = password
-                        playerDetailsViewModel.checkRoomAvailability()
+                    if (networkStatus.toString()=="Available"){
+                        if ( userInputFilter(roomId,password)) {
+                            playerDetailsViewModel.roomName = roomId
+                            playerDetailsViewModel.roomPass = password
+                            playerDetailsViewModel.checkRoomAvailability()
+                        }
                     }
+
                 }
             ) {
                 Text(text = "Create")
+            }
+
+            if (networkStatus.toString() =="Unavailable" || networkStatus.toString() =="Lost"){
+                CircularProgressIndicator(modifier = Modifier.width(50.dp))
             }
         }
     }
@@ -128,5 +165,13 @@ private fun CreateRoom(
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewCreateRoom() {
-//    CreateRoom()
+    CreateRoomScreen(navController = NavController(LocalContext.current),PlayerDetailsViewModel())
+}
+
+private fun userInputFilter(room_id: String, password: String): Boolean {
+    val regex= Regex("^[a-zA-Z][a-zA-Z0-9_-]{2,19}\$")
+
+    return room_id.matches(regex = regex) && password.matches(regex)
+
+
 }

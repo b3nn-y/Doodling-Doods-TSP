@@ -36,6 +36,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
+import com.game.doodlingdoods.internetConnection.ConnectivityObserver
+import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
+import com.game.doodlingdoods.viewmodels.MainActivityViewModel
 import com.game.doodlingdoods.viewmodels.SignUpScreenViewModel
 
 //This screen is shown if the user wants to sign up.
@@ -43,15 +46,21 @@ import com.game.doodlingdoods.viewmodels.SignUpScreenViewModel
 @Composable
 fun SignUpScreen(
     navController: NavHostController,
+    mainActivityViewModel: MainActivityViewModel
 
-) {
-    val viewModel = viewModel(SignUpScreenViewModel::class.java)
+    ) {
 
+    val viewModel = viewModel<SignUpScreenViewModel>()
+
+    val connectivityObserver: ConnectivityObserver =
+        NetworkConnectivityObserver(LocalContext.current)
 
     SignUpForms(
         navController,
-        viewModel = viewModel)
-
+        viewModel = viewModel,
+        connectivityObserver = connectivityObserver,
+        mainActivityViewModel = mainActivityViewModel
+    )
 
 
 }
@@ -63,11 +72,17 @@ fun SignUpScreen(
 private fun SignUpForms(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    viewModel: SignUpScreenViewModel
+    viewModel: SignUpScreenViewModel,
+    connectivityObserver: ConnectivityObserver,
+    mainActivityViewModel: MainActivityViewModel
 ) {
     val isSignUpSuccess by viewModel.isSignUpSuccess.collectAsState()
 
-    if (isSignUpSuccess) navController.navigate("RoomsEntry")
+    if (isSignUpSuccess) {
+        mainActivityViewModel.makeAsLoggedUser()
+        navController.navigate("RoomsEntry")
+
+    }
 
 
     var userName by rememberSaveable {
@@ -79,7 +94,15 @@ private fun SignUpForms(
     var password by rememberSaveable {
         mutableStateOf("")
     }
+    val networkStatus by connectivityObserver.observe().collectAsState(
+        initial = ConnectivityObserver.Status.Unavailable
+    )
 
+    Log.i("Network", networkStatus.toString())
+
+//    val status by viewModel.connectivityObserver.observe().collectAsState(
+//        initial = ConnectivityObserver.Status.Unavailable
+//    )
 
 
     Surface(
@@ -136,19 +159,23 @@ private fun SignUpForms(
                     .clickable {
 
 
-                        // creating account on Server
-                        if (viewModel.userInputFilter(
-                                userName = userName,
-                                mailId = mailId,
-                                password = password
-                            )
-                        ) {
+                        if (networkStatus.toString() == "Available") {
+                            // creating account on Server
+                            if (viewModel.userInputFilter(
+                                    userName = userName,
+                                    mailId = mailId,
+                                    password = password
+                                )
+                            ) {
 
-                            viewModel.signUpWithCredentials(userName, mailId, password)
+                                viewModel.signUpWithCredentials(userName, mailId, password)
 
+                            } else {
+                                Log.i("signup", "failed")
+
+                            }
                         } else {
-                            Log.i("signup", "failed")
-
+                            Log.i("Network", networkStatus.toString())
                         }
 
                     },
@@ -165,10 +192,13 @@ private fun SignUpForms(
                         .padding(8.dp)
                 )
             }
+            if (networkStatus.toString() == "Unavailable"
+                || networkStatus.toString() == "Lost") {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(50.dp)
+                )
+            }
 
-            CircularProgressIndicator(
-                modifier = Modifier.size(50.dp)
-            )
         }
     }
 }
@@ -176,6 +206,6 @@ private fun SignUpForms(
 @Preview(showSystemUi = true)
 @Composable
 fun PrevSignupScreen() {
-    val navController =NavHostController(LocalContext.current)
-    SignUpScreen(navController)
+    val navController = NavHostController(LocalContext.current)
+    SignUpScreen(navController,MainActivityViewModel(LocalContext.current))
 }

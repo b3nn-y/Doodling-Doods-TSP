@@ -1,33 +1,46 @@
 package com.game.doodlingdoods.viewmodels
 
+
 import android.util.Log
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
+
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.game.doodlingdoods.GameApi.KtorServerApi
+
 import com.game.doodlingdoods.utils.PasswordHash
+
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+
 
 class SignUpScreenViewModel : ViewModel() {
 
     private var _isSignUpSuccess = MutableStateFlow(false)
     private val passwordHash = PasswordHash()
+
+
     val  isSignUpSuccess :StateFlow<Boolean>
         get() = _isSignUpSuccess.asStateFlow()
     fun signUpWithCredentials(userName: String, mailId: String, password: String) {
         viewModelScope.launch {
             try {
                 val hashedPassword =  passwordHash.hashPassword(password)
+
+                Log.i("hash",hashedPassword)
+                Log.i("request","$userName, $mailId, $hashedPassword")
                 val response = KtorServerApi.api.signInWithCredentials(userName, mailId, hashedPassword)
                 Log.i("Api","Sign up call ${response.body().toString()}")
 
                 if (response.isSuccessful && response.body()?.isAuthorized==true){
 
                     _isSignUpSuccess.value = true
+
+
 
                     println(isSignUpSuccess.value)
                 }
@@ -54,4 +67,7 @@ class SignUpScreenViewModel : ViewModel() {
 
 
     }
+
+
+
 }

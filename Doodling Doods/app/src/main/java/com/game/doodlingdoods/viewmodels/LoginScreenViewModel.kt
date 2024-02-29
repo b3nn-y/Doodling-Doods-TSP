@@ -22,7 +22,8 @@ class LoginScreenViewModel : ViewModel() {
             try {
                 val hashedPassword = passwordHash.hashPassword(password)
                 val response = KtorServerApi.api.signInWithCredentials(mailId, hashedPassword)
-                if (response.isSuccessful) _isSignInSuccess.value = true
+                //check here for response body is authorized or not //Todo
+                if (response.isSuccessful && response.body()?.isAuthorized == true) _isSignInSuccess.value = true
                 else Log.i("Response", response.errorBody().toString())
 
             } catch (e: Exception) {

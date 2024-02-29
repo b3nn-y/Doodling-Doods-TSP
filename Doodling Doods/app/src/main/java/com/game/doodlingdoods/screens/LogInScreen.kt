@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,6 +24,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -33,13 +35,28 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.game.doodlingdoods.R
+import com.game.doodlingdoods.internetConnection.ConnectivityObserver
+import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
 import com.game.doodlingdoods.viewmodels.LoginScreenViewModel
+import com.game.doodlingdoods.viewmodels.MainActivityViewModel
 
 //This screen is shown if the user wants to log in with their previous account
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(
+    navController: NavHostController,
+    mainActivityViewModel: MainActivityViewModel
+) {
     val viewmodel = viewModel(LoginScreenViewModel::class.java)
-    LoginForms(navController = navController, viewmodel = viewmodel)
+
+    val connectivityObserver: ConnectivityObserver =
+        NetworkConnectivityObserver(LocalContext.current)
+    LoginForms(
+        navController = navController,
+        viewmodel = viewmodel,
+        connectivityObserver = connectivityObserver,
+        mainActivityViewModel = mainActivityViewModel
+
+    )
 
 }
 
@@ -47,10 +64,17 @@ fun LoginScreen(navController: NavHostController) {
 private fun LoginForms(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    viewmodel: LoginScreenViewModel
+    viewmodel: LoginScreenViewModel,
+    connectivityObserver: ConnectivityObserver,
+    mainActivityViewModel:MainActivityViewModel
 ) {
     val isSignInSuccess by viewmodel.isSignInSuccess.collectAsState()
-    if (isSignInSuccess) navController.navigate("RoomsEntry")
+
+    if (isSignInSuccess) {
+        mainActivityViewModel.makeAsLoggedUser()
+        navController.navigate("RoomsEntry")
+    }
+
 
     var mailId by rememberSaveable {
         mutableStateOf("")
@@ -59,6 +83,11 @@ private fun LoginForms(
     var password by rememberSaveable {
         mutableStateOf("")
     }
+
+    val networkStatus by connectivityObserver.observe().collectAsState(
+        initial = ConnectivityObserver.Status.Unavailable
+    )
+    Log.i("Network",networkStatus.toString())
 
     Surface(
 
@@ -122,14 +151,16 @@ private fun LoginForms(
                     .width(200.dp)
                     .padding(24.dp)
                     .clickable {
-                        if (viewmodel.userInputFilter(mailId = mailId, password = password)) {
-                            viewmodel.signInWithCredentials(mailId, password)
 
+                        if (networkStatus.toString() == "Available") {
+                            if (viewmodel.userInputFilter(mailId = mailId, password = password)) {
+                                viewmodel.signInWithCredentials(mailId, password)
+
+                            }
                         }
 
 
                     },
-
 
                 ) {
 
@@ -142,6 +173,15 @@ private fun LoginForms(
                         .padding(8.dp)
                 )
             }
+
+            if (networkStatus.toString() == "Unavailable"
+                || networkStatus.toString() == "Lost") {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(50.dp)
+                )
+            }
+
+
         }
     }
 }
