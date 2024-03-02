@@ -2,36 +2,39 @@ package com.game.doodlingdoods.screens
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.lifecycleScope
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import com.game.doodlingdoods.R
 import com.game.doodlingdoods.internetConnection.ConnectivityObserver
 import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
+import com.game.doodlingdoods.viewmodels.MainActivityViewModel
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
-import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 //This screen shows the options to join a existing room or create a new room for others to join.
 
@@ -41,13 +44,20 @@ fun RoomsEntryScreen(
     navController: NavController,
     playerDetailsViewModel: PlayerDetailsViewModel
 ) {
-
+    val mainActivityViewModel = MainActivityViewModel(LocalContext.current)
+    val currentUserName = mainActivityViewModel.getCurrentUserName().toString()
+//    val currentUserName =
+//        mainActivityViewModel.getCurrentUserName() // for getting user name if already signed up
 
     val connectivityObserver: ConnectivityObserver =
         NetworkConnectivityObserver(LocalContext.current)
 
     JoinGames(
         createRoomButtonClick = {
+            if (currentUserName != null) {
+                playerDetailsViewModel.playerName = currentUserName
+            }
+
             playerDetailsViewModel.joinType = "create"
             navController.navigate("CreateRoom")
             println("create room btn")
@@ -72,72 +82,106 @@ private fun JoinGames(
     val networkStatus by connectivityObserver.observe().collectAsState(
         initial = ConnectivityObserver.Status.Unavailable
     )
-    Log.i("network",networkStatus.toString())
+    val interactionSource = remember { MutableInteractionSource() }
+    Log.i("network", networkStatus.toString())
 
     Surface(
         modifier.fillMaxSize(),
         shadowElevation = 40.dp
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.background),
+            contentDescription = "bg image",
+            contentScale = ContentScale.FillBounds,
+            modifier = modifier.fillMaxSize()
+        )
 
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
+            Image(painter = painterResource(id = R.drawable.editpencil),
+                contentDescription = "edit pencil",
+                modifier = Modifier
+                    .padding(start = 150.dp, top = 150.dp)
+                    .zIndex(10f)
+                    .align(Alignment.TopCenter)
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) {
+                        //Edit Profile actions
+                    }
+            )
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-                Button(
-                    onClick = {
-                        if (networkStatus.toString()=="Available") joinRoomButtonClick()
-
-                    },
-                    modifier
-
-                        .padding(4.dp)
-                        .padding(8.dp)
-
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text = "Join Room",
-                        fontSize = 22.sp
+
+                    Image(
+                        painter = painterResource(id = R.drawable.profile),
+                        contentDescription = "profile",
+                        modifier = Modifier.padding(top = 16.dp)
                     )
                 }
-                Button(
-                    onClick = {
-                        if (networkStatus.toString()=="Available") createRoomButtonClick()
-                    },
-                    modifier
+                Spacer(modifier = Modifier.height(50.dp))
 
-                        .padding(4.dp)
-                        .padding(8.dp)
-
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = "Create Room",
-                        fontSize = 22.sp
+
+                    Image(painter = painterResource(id = R.drawable.join_room_button),
+                        contentDescription = "join_room_button",
+                        modifier = Modifier
+                            .height(100.dp)
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = null
+                            ) {
+                                if (networkStatus.toString() == "Available") joinRoomButtonClick()
+                            }
                     )
                 }
 
-                if (networkStatus.toString()=="UnAvailable" || networkStatus.toString()=="Lost" ) {
+                Image(painter = painterResource(id = R.drawable.create_room_button),
+                    contentDescription = "create_room_button",
+                    modifier = Modifier
+                        .height(100.dp)
+
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = null
+                        ) {
+                            if (networkStatus.toString() == "Available") createRoomButtonClick()
+                        }
+
+                )
+
+                Image(painter = painterResource(id = R.drawable.public_rooms_button),
+                    contentDescription = "Public Rooms Button",
+                    modifier = Modifier
+                        .clickable {
+                            //public room entry actions
+                        }
+                        .height(100.dp)
+                )
+
+                if (networkStatus.toString() == "UnAvailable" || networkStatus.toString() == "Lost") {
                     CircularProgressIndicator(modifier = Modifier.width(50.dp))
 
                 }
-                //below button for find ongoing rooms
 
-//                Button(
-//                    onClick = { /*TODO*/ },
-//                    modifier
-//                        .padding(4.dp)
-//                        .padding(8.dp)
-//
-//                ) {
-//                    Text(
-//                        text = "Join Room",
-//                        fontSize = 22.sp
-//                    )
-//                }
+                if (networkStatus.toString() == "UnAvailable" || networkStatus.toString() == "Lost") {
+                    CircularProgressIndicator(modifier = Modifier.width(50.dp))
+
+                }
+
             }
         }
     }
@@ -147,7 +191,10 @@ private fun JoinGames(
 @Preview
 @Composable
 fun PrevOptions() {
-    val context= LocalContext
-    val navController =NavController(LocalContext.current)
-    RoomsEntryScreen(navController = navController, playerDetailsViewModel =PlayerDetailsViewModel() )
+    val context = LocalContext
+    val navController = NavController(LocalContext.current)
+    RoomsEntryScreen(
+        navController = navController,
+        playerDetailsViewModel = PlayerDetailsViewModel()
+    )
 }

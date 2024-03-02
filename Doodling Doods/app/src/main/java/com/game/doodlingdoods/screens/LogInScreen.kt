@@ -80,14 +80,6 @@ private fun LoginForms(
     connectivityObserver: ConnectivityObserver,
     mainActivityViewModel:MainActivityViewModel
 ) {
-    val isSignInSuccess by viewmodel.isSignInSuccess.collectAsState()
-
-    if (isSignInSuccess) {
-        mainActivityViewModel.makeAsLoggedUser()
-        navController.navigate("RoomsEntry")
-    }
-
-
     var mailId by rememberSaveable {
         mutableStateOf("")
     }
@@ -95,6 +87,17 @@ private fun LoginForms(
     var password by rememberSaveable {
         mutableStateOf("")
     }
+
+    val isSignInSuccess by viewmodel.isSignInSuccess.collectAsState()
+
+    if (isSignInSuccess) {
+
+        mainActivityViewModel.makeAsLoggedUser("nameFromServer", mailId)
+
+        navController.navigate("RoomsEntry")
+    }
+
+
 
     val networkStatus by connectivityObserver.observe().collectAsState(
         initial = ConnectivityObserver.Status.Unavailable

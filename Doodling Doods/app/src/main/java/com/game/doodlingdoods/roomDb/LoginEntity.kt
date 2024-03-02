@@ -11,4 +11,10 @@ data class LoginEntity (
 
     @ColumnInfo(name = "is_logged_in")
     val is_logged_in: Boolean,
+
+    @ColumnInfo(name = "user_name")
+    val user_name:String,
+
+    @ColumnInfo(name = "mail_id")
+    val mail_id:String,
 )

@@ -36,6 +36,7 @@ import androidx.navigation.NavHostController
 import com.example.playerManager.Player
 import com.example.roomManager.Room
 import com.game.doodlingdoods.R
+import com.game.doodlingdoods.screens.utils.UserCard
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
 import com.google.gson.Gson
@@ -84,7 +85,7 @@ fun LobbyAdminScreen(navController: NavHostController, playerDetailsViewModel: P
 
             LazyColumn {
                 items(myList) { playerName ->
-                    PlayerCard(playerName = playerName)
+                    UserCard(playerName = playerName)
                 }
             }
 

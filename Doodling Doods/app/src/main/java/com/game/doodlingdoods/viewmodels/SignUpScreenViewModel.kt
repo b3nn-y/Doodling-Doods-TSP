@@ -2,19 +2,14 @@ package com.game.doodlingdoods.viewmodels
 
 
 import android.util.Log
-
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.game.doodlingdoods.GameApi.KtorServerApi
-
 import com.game.doodlingdoods.utils.PasswordHash
-
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
 
@@ -26,6 +21,7 @@ class SignUpScreenViewModel : ViewModel() {
 
     val  isSignUpSuccess :StateFlow<Boolean>
         get() = _isSignUpSuccess.asStateFlow()
+
     fun signUpWithCredentials(userName: String, mailId: String, password: String) {
         viewModelScope.launch {
             try {
@@ -39,8 +35,6 @@ class SignUpScreenViewModel : ViewModel() {
                 if (response.isSuccessful && response.body()?.isAuthorized==true){
 
                     _isSignUpSuccess.value = true
-
-
 
                     println(isSignUpSuccess.value)
                 }

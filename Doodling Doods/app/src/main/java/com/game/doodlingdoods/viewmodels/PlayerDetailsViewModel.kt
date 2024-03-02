@@ -1,20 +1,14 @@
 package com.game.doodlingdoods.viewmodels
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playerManager.Player
 import com.game.doodlingdoods.GameApi.KtorServerApi
-import com.game.doodlingdoods.filesForServerCommunication.QueryRoom
 import com.game.doodlingdoods.filesForServerCommunication.RoomAvailability
 import kotlinx.coroutines.launch
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.http.POST
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class PlayerDetailsViewModel: ViewModel() {
     var playerName = ""
@@ -23,6 +17,10 @@ class PlayerDetailsViewModel: ViewModel() {
     var roomPass = ""
     var admin = false
     var roomAvailability = mutableStateOf("")
+
+    val currentPlayer = "Abc"
+    val guessWord = "Y_u_ W_r_"
+    val randomWord = "Your word" //for drawer screen
 
     lateinit var serverCommunicationViewModel: ServerCommunicationViewModel
 

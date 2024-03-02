@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -85,15 +83,6 @@ private fun SignUpForms(
     connectivityObserver: ConnectivityObserver,
     mainActivityViewModel: MainActivityViewModel
 ) {
-    val isSignUpSuccess by viewModel.isSignUpSuccess.collectAsState()
-
-    if (isSignUpSuccess) {
-        mainActivityViewModel.makeAsLoggedUser()
-        navController.navigate("RoomsEntry")
-
-    }
-
-
     var userName by rememberSaveable {
         mutableStateOf("")
     }
@@ -106,9 +95,24 @@ private fun SignUpForms(
     val networkStatus by connectivityObserver.observe().collectAsState(
         initial = ConnectivityObserver.Status.Unavailable
     )
-    val interactionSource = remember { MutableInteractionSource() }
+//    val interactionSource = remember { MutableInteractionSource() }
+
+
 
     Log.i("Network", networkStatus.toString())
+
+    val isSignUpSuccess by viewModel.isSignUpSuccess.collectAsState()
+
+    if (isSignUpSuccess) {
+
+        mainActivityViewModel.makeAsLoggedUser(userName,mailId)
+
+        navController.navigate("RoomsEntry")
+
+    }
+
+
+
 
 //    val status by viewModel.connectivityObserver.observe().collectAsState(
 //        initial = ConnectivityObserver.Status.Unavailable

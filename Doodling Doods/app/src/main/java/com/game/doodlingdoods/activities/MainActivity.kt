@@ -1,5 +1,6 @@
 package com.game.doodlingdoods.activities
 
+//import com.game.doodlingdoods.test.DrawingScreen
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
@@ -16,7 +17,7 @@ import com.game.doodlingdoods.factory.MainActivityViewModelFactory
 import com.game.doodlingdoods.screens.AccountSetup
 import com.game.doodlingdoods.screens.CreateRoomScreen
 import com.game.doodlingdoods.screens.DrawingScreen
-import com.game.doodlingdoods.screens.GameScreen
+import com.game.doodlingdoods.screens.GuestAccountScreen
 import com.game.doodlingdoods.screens.HomeScreen
 import com.game.doodlingdoods.screens.JoinRoomScreen
 import com.game.doodlingdoods.screens.LobbyAdminScreen
@@ -24,6 +25,7 @@ import com.game.doodlingdoods.screens.LobbyJoinerScreen
 import com.game.doodlingdoods.screens.LoginScreen
 import com.game.doodlingdoods.screens.RoomsEntryScreen
 import com.game.doodlingdoods.screens.SignUpScreen
+import com.game.doodlingdoods.screens.ViewerGameScreen
 import com.game.doodlingdoods.ui.theme.DoodlingDoodsTheme
 import com.game.doodlingdoods.viewmodels.MainActivityViewModel
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
@@ -90,13 +92,16 @@ class MainActivity : ComponentActivity() {
                             LobbyAdminScreen(navController = navController, playerDetailsViewModel)
                         }
                         composable("GameScreen") {
-                            GameScreen(navController = navController, playerDetailsViewModel)
+                            ViewerGameScreen(navController = navController, playerDetailsViewModel)
                         }
                         composable("LobbyJoinerScreen") {
                             LobbyJoinerScreen(navController = navController, playerDetailsViewModel)
                         }
                         composable("DrawingScreen") {
                             DrawingScreen(navController = navController, playerDetailsViewModel)
+                        }
+                        composable("GuestAccountScreen") {
+                            GuestAccountScreen(navController = navController, playerDetailsViewModel)
                         }
 
                     }

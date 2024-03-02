@@ -10,4 +10,6 @@ interface LoginDao {
     fun insertLoginStatus(isLoggedIn:LoginEntity)
     @Query("SELECT * FROM login_status_table")
     fun getAllRow(): List<LoginEntity>
+    @Query("SELECT * FROM login_status_table LIMIT 1")
+    fun getFirstRow(): LoginEntity?
 }

@@ -78,7 +78,7 @@ fun AccountSetup(
 
 //for creating guest account
 @Composable
-fun GuestButton(
+private fun GuestButton(
     modifier: Modifier = Modifier,
     navController: NavController,
     playerDetailsViewModel: PlayerDetailsViewModel
@@ -171,7 +171,7 @@ fun GuestButton(
                         indication = null
                     ) {
                         playerDetailsViewModel.playerName = guestName
-                        navController.navigate("RoomsEntry")
+                        navController.navigate("GuestAccountScreen")
                     }
                     .height(70.dp)
             )
