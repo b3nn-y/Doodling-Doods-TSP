@@ -66,7 +66,7 @@ fun AccountSetup(
                 modifier.weight(1f),
                 contentAlignment = Alignment.Center
             ) {
-                GuestButton(
+                GuestScreen(
                     navController = navController,
                     playerDetailsViewModel = playerDetailsViewModel
                 )
@@ -78,7 +78,7 @@ fun AccountSetup(
 
 //for creating guest account
 @Composable
-private fun GuestButton(
+private fun GuestScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
     playerDetailsViewModel: PlayerDetailsViewModel
@@ -183,7 +183,7 @@ private fun GuestButton(
 @Preview(showSystemUi = true)
 @Composable
 fun Prev() {
-    GuestButton(
+    GuestScreen(
         navController = NavController(LocalContext.current),
         playerDetailsViewModel = PlayerDetailsViewModel()
     )
