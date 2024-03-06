@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -48,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.drawingEssentials.Line
@@ -60,6 +62,7 @@ import com.game.doodlingdoods.ui.theme.Green
 import com.game.doodlingdoods.ui.theme.Red
 import com.game.doodlingdoods.ui.theme.Yellow
 import com.game.doodlingdoods.ui.theme.ov_soge_bold
+import com.game.doodlingdoods.viewmodels.DrawingScreenViewModel
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
 import com.github.skydoves.colorpicker.compose.ColorEnvelope
@@ -70,13 +73,20 @@ import com.google.gson.Gson
 fun DrawingScreen(
     navController: NavController, playerDetailsViewModel: PlayerDetailsViewModel
 ) {
-    UserDrawingScreen(navController, playerDetailsViewModel)
+    val drawingScreenViewModel = viewModel<DrawingScreenViewModel>()
+    UserDrawingScreen(navController, playerDetailsViewModel, drawingScreenViewModel = drawingScreenViewModel)
 }
 
-@SuppressLint("MutableCollectionMutableState", "UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint(
+    "MutableCollectionMutableState",
+    "UnusedMaterial3ScaffoldPaddingParameter",
+    "StateFlowValueCalledInComposition"
+)
 @Composable
 fun UserDrawingScreen(
-    navController: NavController, playerDetailsViewModel: PlayerDetailsViewModel
+    navController: NavController,
+    playerDetailsViewModel: PlayerDetailsViewModel,
+    drawingScreenViewModel: DrawingScreenViewModel
 ) {
     val serverViewModel = playerDetailsViewModel.serverCommunicationViewModel
     val state by serverViewModel.state.collectAsState()
@@ -153,6 +163,11 @@ fun UserDrawingScreen(
 
 
             }
+        }
+        val isBottomSheetOpen by drawingScreenViewModel.isBottomSheetOpen.collectAsState()
+        if (isBottomSheetOpen){
+            BottomBar(words = "Hello")
+            drawingScreenViewModel.closeBottomSheet()
         }
     }
 
@@ -289,10 +304,27 @@ fun RoundBoxIcon() {
 
         )
     }
+
 }
 
 
-
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BottomBar (words:String) {
+    val bottomSheetState = rememberModalBottomSheetState()
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ){
+        ModalBottomSheet(
+            sheetState = bottomSheetState,
+            onDismissRequest = { /*TODO*/ }
+        ) {
+            Text(text = words)
+        }
+    }
+}
 
 @Preview(showSystemUi = true)
 @Composable
