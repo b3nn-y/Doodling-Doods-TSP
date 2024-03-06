@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "711554547971",
+    "project_id": "doodling-doods",
+    "storage_bucket": "doodling-doods.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:711554547971:android:2cd0addca5424318f0a936",
+        "android_client_info": {
+          "package_name": "com.game.doodlingdoods"
+        }
+      },
+      "oauth_client": ["386313679385-i12jjnng70cflp4hqe6ujrlpqhp90o4n.apps.googleusercontent.com"],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjNl639yjUH89IImzq5yc3v9DL7EMvkxU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
