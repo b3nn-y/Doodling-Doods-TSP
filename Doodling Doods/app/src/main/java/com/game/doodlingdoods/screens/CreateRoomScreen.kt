@@ -42,6 +42,8 @@ import androidx.navigation.NavController
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.internetConnection.ConnectivityObserver
 import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
+import com.game.doodlingdoods.screens.utils.CustomPasswordField
+import com.game.doodlingdoods.screens.utils.CustomTextField
 import com.game.doodlingdoods.ui.theme.signInFontFamily
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 
@@ -129,7 +131,7 @@ private fun CreateRoom(
             ) {
 
             Text(
-                text = "Room id",
+                text = "Room name",
                 color = Color.White,
                 fontSize = 20.sp,
                 fontFamily = signInFontFamily,
@@ -138,14 +140,17 @@ private fun CreateRoom(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedTextField(
+            CustomTextField(
                 text = roomId,
                 onValueChange = {roomId = it},
                 modifier = Modifier
                     .padding(4.dp)
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White)
+                backgroundColor = Color.White,
+                placeholder = "Room name"
+            )
+
 
             Text(
                 text = "Password",
@@ -157,14 +162,15 @@ private fun CreateRoom(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedPasswordField(
+            CustomPasswordField(
                 text = password,
                 onValueChange = {password = it},
                 modifier = Modifier
                     .padding(4.dp)
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Password"
             )
 
 

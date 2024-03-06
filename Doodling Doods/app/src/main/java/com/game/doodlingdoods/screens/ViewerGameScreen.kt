@@ -120,7 +120,7 @@ fun ViewerGameScreen(navController: NavController, playerDetailsViewModel: Playe
 
 
                 Text(
-                    text = playerDetailsViewModel.guessWord,
+                    text = ""+serverViewModel.room.currentWordToGuess,
                     fontFamily = ov_soge_bold,
                     fontSize = 35.sp,
                     fontWeight = FontWeight.Bold,

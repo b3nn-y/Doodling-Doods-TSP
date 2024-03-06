@@ -12,18 +12,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -49,6 +52,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.drawingEssentials.Line
@@ -61,6 +66,7 @@ import com.game.doodlingdoods.ui.theme.Green
 import com.game.doodlingdoods.ui.theme.Red
 import com.game.doodlingdoods.ui.theme.Yellow
 import com.game.doodlingdoods.ui.theme.ov_soge_bold
+import com.game.doodlingdoods.viewmodels.DrawingScreenViewModel
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
 import com.github.skydoves.colorpicker.compose.ColorEnvelope
@@ -156,6 +162,21 @@ fun UserDrawingScreen(
 
             }
         }
+        val drawingScreenViewModel = viewModel<DrawingScreenViewModel>()
+        val isBottomSheetOpen by drawingScreenViewModel.isBottomSheetOpen.collectAsState()
+        if (isBottomSheetOpen) {
+            BottomBar(
+                words = serverViewModel.room.wordList,
+                serverViewModel,
+                wordsOnclick = { //TODO need to update this line
+                    drawingScreenViewModel._isBottomSheetOpen.value=false
+                }
+            )
+
+//            drawingScreenViewModel.closeBottomSheet()
+        }
+
+
     }
 
 
@@ -219,7 +240,7 @@ private fun ColorBars(
 
 
 ) {
-    val colorList = listOf( Black,Red, Yellow, Green,)
+    val colorList = listOf(Black, Red, Yellow, Green)
 
     Row(
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
@@ -229,7 +250,7 @@ private fun ColorBars(
 
             ) {
             items(items = colorList) { item ->
-               RoundBox(color = item)
+                RoundBox(color = item)
             }
         }
 
@@ -257,6 +278,7 @@ fun RoundBox(color: Color) {
             .border(4.dp, Color.Black, shape = CircleShape)
     )
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
@@ -280,10 +302,10 @@ fun RoundBoxIcon() {
 //                ColorPicker()
 
             }
-    ){
+    ) {
         Image(
             painter = painterResource(id = R.drawable.rainbow_icon),
-            contentDescription ="color picker",
+            contentDescription = "color picker",
             modifier = Modifier
                 .size(40.dp)
 
@@ -294,13 +316,12 @@ fun RoundBoxIcon() {
 }
 
 
-
-
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewTest() {
     ColorPicker()
 }
+
 @Preview(
     showSystemUi = true,
     showBackground = true,
@@ -315,4 +336,48 @@ fun PreviewDrawingScreen() {
 //    DrawingLogicScreen(serverViewModel = PlayerDetailsViewModel().serverCommunicationViewModel)
 //    ColorBars()
 //     ChatBar()
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BottomBar(
+    words: ArrayList<String>,
+    serverViewModel: ServerCommunicationViewModel,
+    wordsOnclick: () -> Unit
+) {
+    val bottomSheetState = rememberModalBottomSheetState()
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(8F),
+        contentAlignment = Alignment.Center
+    ) {
+        ModalBottomSheet(
+            sheetState = bottomSheetState,
+            onDismissRequest = { }
+        ) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp) // Adjust the spacing as needed
+            ) {
+                items(words) { word ->
+                    Text(
+                        text = word,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .height(50.dp) // Adjust the height as needed for visibility
+                            .clickable {
+                                // Handle the click action here
+                                wordsOnclick()
+                                serverViewModel.sendWord(word)
+                                println("Clicked on word: $word")
+                            },
+                        textAlign = TextAlign.Center,
+                        fontSize = 18.sp, // Adjust the font size as needed
+                    )
+                }
+            }
+        }
+    }
 }

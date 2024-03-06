@@ -137,5 +137,10 @@ class ServerCommunicationViewModel @Inject constructor(
         println("Sent data")
     }
 
+    fun sendWord(word:String){
+        room.currentWordToGuess = word
+        sendRoomUpdate()
+    }
+
 
 }

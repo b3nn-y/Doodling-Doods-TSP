@@ -28,8 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.game.doodlingdoods.R
-import com.game.doodlingdoods.screens.utils.CustomOutlinedPasswordFields
-import com.game.doodlingdoods.screens.utils.CustomOutlinedTextFields
+
+import com.game.doodlingdoods.screens.utils.CustomPasswordField
+import com.game.doodlingdoods.screens.utils.CustomTextField
 import com.game.doodlingdoods.ui.theme.signInFontFamily
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 
@@ -105,7 +106,7 @@ private fun JoinRoom(
             ) {
 
             Text(
-                text = "Room id",
+                text = "Room name",
                 color = Color.White,
                 fontSize = 20.sp,
                 fontFamily = signInFontFamily,
@@ -114,14 +115,15 @@ private fun JoinRoom(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedTextFields(
+            CustomTextField(
                 text = roomId,
                 onValueChange = { roomId = it },
                 modifier = Modifier
                     .padding(4.dp)
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Room name"
             )
 
             Text(
@@ -134,14 +136,15 @@ private fun JoinRoom(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedPasswordFields(
+            CustomPasswordField(
                 text = password,
                 onValueChange = { password = it },
                 modifier = Modifier
                     .padding(4.dp)
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Password"
             )
 
             Image(painter = painterResource(id = R.drawable.join_room_button),

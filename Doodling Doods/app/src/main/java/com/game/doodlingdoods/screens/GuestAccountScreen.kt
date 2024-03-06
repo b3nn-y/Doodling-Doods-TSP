@@ -29,7 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.game.doodlingdoods.R
-import com.game.doodlingdoods.screens.utils.CustomOutlinedTextFields
+import com.game.doodlingdoods.screens.utils.CustomTextField
+
 import com.game.doodlingdoods.ui.theme.dayLight
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 
@@ -76,10 +77,10 @@ private fun GuestScreen(modifier: Modifier = Modifier, navController: NavControl
                 modifier = Modifier.padding(20.dp)
             )
 
-            CustomOutlinedTextFields(
+            CustomTextField(
                 text = guestName,
                 onValueChange = { guestName = it },
-
+                placeholder = "Name"
 
 //                value = guestName,
 //                onValueChange = { guestName = it },

@@ -44,6 +44,8 @@ import androidx.navigation.NavHostController
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.internetConnection.ConnectivityObserver
 import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
+import com.game.doodlingdoods.screens.utils.CustomPasswordField
+import com.game.doodlingdoods.screens.utils.CustomTextField
 import com.game.doodlingdoods.ui.theme.signInFontFamily
 import com.game.doodlingdoods.viewmodels.MainActivityViewModel
 import com.game.doodlingdoods.viewmodels.SignUpScreenViewModel
@@ -146,13 +148,14 @@ private fun SignUpForms(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedTextField(
+            CustomTextField(
                 text = userName,
                 onValueChange = { userName = it },
                 modifier = Modifier
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Name"
             )
 
             //email text field
@@ -166,13 +169,14 @@ private fun SignUpForms(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedTextField(
+            CustomTextField(
                 text = mailId,
                 onValueChange = { mailId = it },
                 modifier = Modifier
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Email"
             )
 
             //password text field
@@ -186,13 +190,14 @@ private fun SignUpForms(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedPasswordField(
+            CustomPasswordField(
                 text = password,
                 onValueChange = { password = it },
                 modifier = Modifier
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Password"
             )
 
             Spacer(modifier = Modifier.height(40.dp))
