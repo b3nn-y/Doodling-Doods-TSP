@@ -1,61 +1,67 @@
 package com.game.doodlingdoods.viewmodels
 
+
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.game.doodlingdoods.GameApi.KtorServerApi
-import com.game.doodlingdoods.GameApi.RoomDetailsDataClass
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+import com.game.doodlingdoods.utils.PasswordHash
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class SignUpScreenViewModel:ViewModel() {
-
-    val firebaseAuth:FirebaseAuth by lazy {
-        FirebaseAuth.getInstance()
-    }
-    val firestoreDB: FirebaseFirestore by lazy {
-        FirebaseFirestore.getInstance()
-    }
-
-    fun addUserDetailsToCloud(userEmail:String, name:String){
-
-        val data = hashMapOf("Email" to userEmail,"name" to name)
-        val userDocument = firestoreDB.collection("Users").document(userEmail)
-
-        userDocument.set(data).addOnCompleteListener {it->
-            if (it.isSuccessful) println("name added document") else Log.i("firebase",it.exception.toString())
-        }
 
 
+class SignUpScreenViewModel : ViewModel() {
 
-    }
-
-//    fun getRoomsFromApi(){
-//        viewModelScope.launch {
-//            getRooms()
-//
-//            addRooms("004","SundarC maams","Kushboo")
-//        }
-//    }
+    private var _isSignUpSuccess = MutableStateFlow(false)
+    private val passwordHash = PasswordHash()
 
 
-    private suspend  fun getRooms(){
-        val response = KtorServerApi.api.getAllRooms()
+    val  isSignUpSuccess :StateFlow<Boolean>
+        get() = _isSignUpSuccess.asStateFlow()
 
-        if (response.isSuccessful && response.body() != null) {
+    fun signUpWithCredentials(userName: String, mailId: String, password: String) {
+        viewModelScope.launch {
+            try {
+                val hashedPassword =  passwordHash.hashPassword(password)
 
-            Log.i("response " , response.body().toString())
+                Log.i("hash",hashedPassword)
+                Log.i("request","$userName, $mailId, $hashedPassword")
+                val response = KtorServerApi.api.signInWithCredentials(userName, mailId, hashedPassword)
+                Log.i("Api","Sign up call ${response.body().toString()}")
+
+                if (response.isSuccessful && response.body()?.isAuthorized==true){
+
+                    _isSignUpSuccess.value = true
+
+                    println(isSignUpSuccess.value)
+                }
+                else {
+                    Log.i("Response", response.errorBody().toString())
+                }
+            } catch (e: Exception) {
+                Log.e("Exception",e.toString())
+            }
 
 
         }
     }
 
-    private suspend fun addRooms(room_Id:String,create_by:String,password:String){
-        val data = RoomDetailsDataClass(id = 8, room_id = "005",created_by = "raghu", password = "pass" )
-        val response = KtorServerApi.api.addRooms(data)
 
-        Log.i("response",response.toString())
+    fun userInputFilter(userName: String, mailId: String, password: String): Boolean {
+        val emailRegex = Regex("[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\\.[a-zA-Z]{2,}")
+        val passwordRegex =
+            Regex("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=\\S+\$).{8,}\$")
+        val usernameRegex = Regex("^[a-zA-Z][a-zA-Z0-9_-]{2,19}\$")
+
+        return userName.matches(usernameRegex) &&
+                mailId.matches(emailRegex) && password.matches(passwordRegex)
+
 
     }
+
+
+
 }

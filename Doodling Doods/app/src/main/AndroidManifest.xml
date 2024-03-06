@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
+
     <application
         android:name=".MyApp"
         android:allowBackup="true"
@@ -16,7 +17,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DoodlingDoods"
-        tools:targetApi="31">
+        tools:targetApi="31"
+
+        android:networkSecurityConfig="@xml/network_security_config"
+        >
+
         <activity
             android:name=".activities.MainActivity"
             android:exported="true"

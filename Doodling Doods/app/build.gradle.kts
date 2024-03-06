@@ -101,6 +101,7 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.50")
     kapt("com.google.dagger:hilt-android-compiler:2.48.1")
     kapt("androidx.hilt:hilt-compiler:1.1.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
     // Ktor
     val ktor_version = "2.3.8"
@@ -111,5 +112,19 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 
+    //data store
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    val roomVersion = "2.6.1"
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+    annotationProcessor("androidx.room:room-compiler:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
+
+    //Lottie Animation
+    implementation ("com.airbnb.android:lottie-compose:6.3.0")
+
+    //color-picker
+    implementation("com.github.skydoves:colorpicker-compose:1.0.7")
 
 }

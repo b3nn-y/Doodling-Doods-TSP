@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object KtorServerApi {
     val api:KtorServer by lazy {
         Retrofit.Builder()
-            .baseUrl("https://774d-122-15-156-180.ngrok-free.app/")
+            .baseUrl("http://10.52.0.122:8080")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(KtorServer::class.java)

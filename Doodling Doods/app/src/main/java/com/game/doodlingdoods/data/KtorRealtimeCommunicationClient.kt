@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.mapNotNull
 
-class KtorRealtimeCommunicationClient(
+class  KtorRealtimeCommunicationClient(
     private val client: HttpClient
 ): RealtimeCommunicationClient {
 
