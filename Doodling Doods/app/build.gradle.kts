@@ -112,5 +112,21 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 
+    //data store
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    val roomVersion = "2.6.1"
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+    annotationProcessor("androidx.room:room-compiler:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
+
+    //Lottie Animation
+    implementation ("com.airbnb.android:lottie-compose:6.3.0")
+
+    //color-picker
+    implementation("com.github.skydoves:colorpicker-compose:1.0.7")
+
+    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
 
 }

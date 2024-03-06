@@ -2,18 +2,18 @@ package com.game.doodlingdoods.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
@@ -26,6 +26,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,6 +39,8 @@ import androidx.navigation.NavHostController
 import com.example.playerManager.Player
 import com.example.roomManager.Room
 import com.game.doodlingdoods.R
+import com.game.doodlingdoods.screens.utils.UserCard
+import com.game.doodlingdoods.ui.theme.ov_soge_bold
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
 import com.google.gson.Gson
@@ -43,7 +48,10 @@ import com.google.gson.Gson
 //This screen is shown after creating a room, where the leader sets the game settings, Here we will show the number of questions, theme, max players etc.
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun LobbyAdminScreen(navController: NavHostController, playerDetailsViewModel: PlayerDetailsViewModel) {
+fun LobbyAdminScreen(
+    navController: NavHostController,
+    playerDetailsViewModel: PlayerDetailsViewModel
+) {
     val serverViewModel = hiltViewModel<ServerCommunicationViewModel>()
     val state by serverViewModel.state.collectAsState()
     val isConnecting by serverViewModel.isConnecting.collectAsState()
@@ -54,8 +62,10 @@ fun LobbyAdminScreen(navController: NavHostController, playerDetailsViewModel: P
 
     serverViewModel.evaluateServerMessage(state)
 
-    var roomChanges = Room("", "", ArrayList<Player>(), 0, 0,
-        Player("", "", "", ""), false, 0, "", false, Player("", "", "", ""), 3, "")
+    var roomChanges = Room(
+        "", "", ArrayList<Player>(), 0, 0,
+        Player("", "", "", ""), false, 0, "", false, Player("", "", "", ""), 3, ""
+    )
 
     var roomUpdates by remember {
         mutableStateOf(roomChanges)
@@ -63,33 +73,61 @@ fun LobbyAdminScreen(navController: NavHostController, playerDetailsViewModel: P
 
     try {
         var tempData = serverViewModel.evaluateServerMessage(state)
-        if (tempData != null){
+        if (tempData != null) {
             roomChanges = tempData
         }
-    }
-    catch (e:Exception){
+    } catch (e: Exception) {
 
     }
-    println("Rooom Updated $roomUpdates")
+    println("Room Updated $roomUpdates")
 
     Scaffold {
+
+        Image(
+            painter = painterResource(id = R.drawable.background),
+            contentDescription = "bg image",
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.fillMaxSize()
+        )
+
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+
             TopBar()
 
             val myList = serverViewModel.playersList
 
-            LazyColumn {
-                items(myList) { playerName ->
-                    PlayerCard(playerName = playerName)
+            Card(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .padding(8.dp)
+                    .align(Alignment.Start),
+                colors = CardDefaults.cardColors(Color.White),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 20.dp
+                )
+            ) {
+                Text(
+                    text = "Players joined 2/10",
+                    fontSize = 14.sp,
+                    fontFamily = ov_soge_bold,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .align(Alignment.CenterHorizontally),
+                    color = Color.Black
+                )
+                LazyColumn {
+                    items(myList) { playerName ->
+                        UserCard(playerName = playerName)
+                    }
                 }
             }
 
-
-            Bottombar(navController=navController ,serverViewModel)
+            BottomBar(navController = navController, serverViewModel)
         }
 
     }
@@ -102,87 +140,132 @@ private fun TopBar(
     modifier: Modifier = Modifier
 
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+
     Card(
         modifier
             .fillMaxWidth()
-            .height(50.dp),
+            .padding(8.dp)
+            .padding(8.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 10.dp
+        ),
+        shape = RoundedCornerShape(20),
+        colors = CardDefaults.cardColors(
+            Color.White
         )
     ) {
 
         Text(
-            text = "Room id",
+            text = "testBot's Room",
+            fontFamily = ov_soge_bold,
             fontSize = 20.sp,
+            color = Color.Black,
             modifier = modifier
                 .align(Alignment.CenterHorizontally)
+                .padding(10.dp)
         )
+
+        Text(
+            text = "Room Id : TestRoom1",
+            fontFamily = ov_soge_bold,
+            fontSize = 16.sp,
+            color = Color.Blue,
+            modifier = modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(4.dp)
+        )
+
+        Text(
+            text = "password : ben",
+            fontFamily = ov_soge_bold,
+            fontSize = 16.sp,
+            color = Color.Blue,
+            modifier = modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(4.dp)
+        )
+
+        Row(
+            modifier = Modifier
+                .padding(8.dp)
+                .align(Alignment.CenterHorizontally)
+        ) {
+
+            Image(
+                painter = painterResource(id = R.drawable.copy),
+                contentDescription = "copy image",
+                modifier = Modifier
+                    .height(40.dp)
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) {
+                        //Copy
+                    }
+            )
+
+            Image(
+                painter = painterResource(id = R.drawable.share),
+                contentDescription = "share image",
+                modifier = Modifier
+                    .height(40.dp)
+                    .padding(start = 40.dp)
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) {
+                        //Share
+                    }
+            )
+        }
 
     }
 }
 
+
 @Composable
-private fun Bottombar(
+private fun BottomBar(
     navController: NavController,
     serverCommunicationViewModel: ServerCommunicationViewModel,
     modifier: Modifier = Modifier
 ) {
-    Button(
-        onClick = {
-            serverCommunicationViewModel.room.gameStarted = true
-            serverCommunicationViewModel.sendRoomUpdate()
-            navController.navigate("GameScreen")},
-        modifier = modifier.padding(16.dp)
-    ) {
-        Text(text = "Start")
-    }
-}
 
-@Composable
-private fun PlayerCard(
-    modifier: Modifier = Modifier,
-    playerName: String
-) {
+    val interactionSource = remember { MutableInteractionSource() }
 
-    Card(
-        modifier
+    Image(painter = painterResource(id = R.drawable.startgame),
+        contentDescription = "Game Settings",
+        modifier = Modifier
+            .padding(8.dp, bottom = 20.dp)
             .height(100.dp)
-            .fillMaxWidth()
-            .padding(16.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 10.dp
-        ),
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = modifier.fillMaxSize()
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.profile_),
-                contentDescription = "Profile",
-                modifier
-                    .size(60.dp)
-                    .weight(0.2f)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null
+            ) {
+                serverCommunicationViewModel.room.gameStarted = true
+                serverCommunicationViewModel.sendRoomUpdate()
+                navController.navigate("GameScreen")
+            }
+    )
 
-            )
-            Text(
-                text = playerName,
-                fontSize = 25.sp,
-                modifier = modifier
-                    .weight(0.8f)
-                    .align(Alignment.CenterVertically)
-                    .padding(8.dp)
-
-            )
-
-        }
-    }
-
+//    Button(
+//        onClick = {
+//            serverCommunicationViewModel.room.gameStarted = true
+//            serverCommunicationViewModel.sendRoomUpdate()
+//            navController.navigate("GameScreen")
+//        },
+//        modifier = modifier.padding(16.dp)
+//    ) {
+//        Text(text = "Start")
+//    }
 }
+
+
 
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewGameSettingsScreen() {
+    LobbyJoinerScreen(navController = NavController(LocalContext.current), playerDetailsViewModel = PlayerDetailsViewModel())
+//    BottomBar(navController = NavController(LocalContext.current), serverCommunicationViewModel = ServerCommunicationViewModel())
 //    GameSettingsScreen(navController)
 }

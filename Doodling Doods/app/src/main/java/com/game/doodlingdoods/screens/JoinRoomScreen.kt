@@ -1,47 +1,49 @@
 package com.game.doodlingdoods.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import com.game.doodlingdoods.GameApi.KtorServerApi
-import com.game.doodlingdoods.filesForServerCommunication.QueryRoom
+import androidx.navigation.NavController
+import com.game.doodlingdoods.R
+import com.game.doodlingdoods.screens.utils.CustomPasswordField
+import com.game.doodlingdoods.screens.utils.CustomTextField
+import com.game.doodlingdoods.ui.theme.signInFontFamily
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 //This screen is shown if the join game is selected, here the user enters the game id and its passcode.
 
 @Composable
-fun JoinRoomScreen(navController: NavHostController, playerDetailsViewModel: PlayerDetailsViewModel) {
+fun JoinRoomScreen(navController: NavController, playerDetailsViewModel: PlayerDetailsViewModel) {
     playerDetailsViewModel.roomAvailability.value = ""
     JoinRoom(navController, playerDetailsViewModel = playerDetailsViewModel)
 }
 
 @Composable
 private fun JoinRoom(
-    navController: NavHostController,
+    navController: NavController,
     modifier: Modifier = Modifier,
     playerDetailsViewModel: PlayerDetailsViewModel
 ) {
@@ -58,74 +60,106 @@ private fun JoinRoom(
 
     var roomAvailabilityState by playerDetailsViewModel.roomAvailability
     val currentRoomAvailability = roomAvailabilityState
+    val interactionSource = remember { MutableInteractionSource() }
 
-    when (currentRoomAvailability){
+    when (currentRoomAvailability) {
         "" -> {}
-        "no room" -> {Toast.makeText(LocalContext.current, "No Room Found with name $roomId", Toast.LENGTH_SHORT).show()
-            roomAvailabilityState = ""}
-        "wrong pass" -> {Toast.makeText(LocalContext.current, "Incorrect pass for $roomId", Toast.LENGTH_SHORT).show()
-            roomAvailabilityState = ""}
-        "verified" -> {Toast.makeText(LocalContext.current, "Verified $roomId", Toast.LENGTH_SHORT).show()
+        "no room" -> {
+            Toast.makeText(
+                LocalContext.current,
+                "No Room Found with name $roomId",
+                Toast.LENGTH_SHORT
+            ).show()
             roomAvailabilityState = ""
-            navController.navigate("LobbyJoinerScreen")}
+        }
+
+        "wrong pass" -> {
+            Toast.makeText(LocalContext.current, "Incorrect pass for $roomId", Toast.LENGTH_SHORT)
+                .show()
+            roomAvailabilityState = ""
+        }
+
+        "verified" -> {
+            Toast.makeText(LocalContext.current, "Verified $roomId", Toast.LENGTH_SHORT).show()
+            roomAvailabilityState = ""
+            navController.navigate("LobbyJoinerScreen")
+        }
     }
 
     Box(
         modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.background),
+            contentDescription = "bg image",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds
+        )
+
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
 
             ) {
-            OutlinedTextField(
-                value = roomId,
+
+            Text(
+                text = "Room id",
+                color = Color.White,
+                fontSize = 20.sp,
+                fontFamily = signInFontFamily,
+                modifier = Modifier
+                    .padding(start = 30.dp, 8.dp)
+                    .align(Alignment.Start)
+            )
+
+            CustomTextField(
+                text = roomId,
                 onValueChange = { roomId = it },
-                label = {
-                    Text(
-                        text = "Room Id",
-                        fontSize = 20.sp
-                    )
-                },
-                modifier = modifier
+                modifier = Modifier
                     .padding(4.dp)
-                    .padding(
-                        8.dp
-                    )
+                    .padding(8.dp)
+                    .background(Color.Transparent),
+                backgroundColor = Color.White,
+                placeholder = "Room Name"
             )
-            OutlinedTextField(
-                value = password,
+
+            Text(
+                text = "Password",
+                color = Color.White,
+                fontSize = 20.sp,
+                fontFamily = signInFontFamily,
+                modifier = Modifier
+                    .padding(start = 30.dp, 8.dp)
+                    .align(Alignment.Start)
+            )
+
+
+            CustomPasswordField(
+                text = password,
                 onValueChange = { password = it },
-                label = {
-                    Text(
-                        text = "Password",
-                        fontSize = 20.sp
-                    )
-                },
-                modifier = modifier
+                modifier = Modifier
                     .padding(4.dp)
-                    .padding(
-                        8.dp
-                    ),
-
-                //for hide password
-
-//                visualTransformation =  PasswordVisualTransformation(),
-//                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    .padding(8.dp)
+                    .background(Color.Transparent),
+                backgroundColor = Color.White,
+                placeholder = "Password"
             )
 
-            Button(
-                onClick = {
-                    playerDetailsViewModel.roomName = roomId
-                    playerDetailsViewModel.roomPass = password
+            Image(painter = painterResource(id = R.drawable.join_room_button),
+                contentDescription = "Join Room Button",
+                modifier = Modifier
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) {
+                        playerDetailsViewModel.roomName = roomId
+                        playerDetailsViewModel.roomPass = password
 
-                    playerDetailsViewModel.checkRoomAvailability()
+                        playerDetailsViewModel.checkRoomAvailability()
 //                    navController.navigate("LobbyJoinerScreen")
-                }
-            ) {
-                Text(text = "Join")
-            }
+                    }
+            )
         }
     }
 
@@ -134,5 +168,5 @@ private fun JoinRoom(
 @Preview(showSystemUi = true)
 @Composable
 fun PrevJoinRoom() {
-//    JoinRoomScreen(navController)
+    JoinRoomScreen(NavController(LocalContext.current), PlayerDetailsViewModel())
 }

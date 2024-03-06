@@ -1,35 +1,40 @@
 package com.game.doodlingdoods.screens
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.Card
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.game.doodlingdoods.R
+import com.game.doodlingdoods.ui.theme.DarkBlue
+import com.game.doodlingdoods.ui.theme.dayLight
+import com.game.doodlingdoods.ui.theme.ov_soge_bold
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 
 //This screen shows the option to either create a temp username and join a game, or to sign up or login with a email account to store their data
@@ -44,6 +49,14 @@ fun AccountSetup(
         modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+
+        Image(
+            painter = painterResource(id = R.drawable.background),
+            contentDescription = "bg image",
+            contentScale = ContentScale.FillBounds,
+            modifier = modifier.fillMaxSize()
+        )
+
         Column(
             Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.SpaceBetween,
@@ -53,13 +66,10 @@ fun AccountSetup(
                 modifier.weight(1f),
                 contentAlignment = Alignment.Center
             ) {
-                GuestButton(navController = navController, playerDetailsViewModel = playerDetailsViewModel)
-            }
-            Box(
-                modifier.weight(1f),
-                contentAlignment = Alignment.Center
-            ) {
-                OptionsHandler(navController=navController)
+                GuestScreen(
+                    navController = navController,
+                    playerDetailsViewModel = playerDetailsViewModel
+                )
             }
         }
     }
@@ -68,10 +78,16 @@ fun AccountSetup(
 
 //for creating guest account
 @Composable
-fun GuestButton(modifier: Modifier = Modifier, navController: NavController, playerDetailsViewModel: PlayerDetailsViewModel) {
-    var guestName by rememberSaveable {
+private fun GuestScreen(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    playerDetailsViewModel: PlayerDetailsViewModel
+) {
+
+    val guestName by rememberSaveable {
         mutableStateOf("")
     }
+    val interactionSource = remember { MutableInteractionSource() }
     Box(
         modifier.fillMaxWidth()
 
@@ -80,148 +96,98 @@ fun GuestButton(modifier: Modifier = Modifier, navController: NavController, pla
             modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
-        ) {
+        )
+        {
+
+            val doodle by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.painting_animation))
+
+            LottieAnimation(
+                composition = doodle,
+                iterations = LottieConstants.IterateForever,
+                modifier = Modifier.height(350.dp)
+            )
+
             Text(
-                text = "Play as Guest User",
+                text = "Welcome\nto",
+                fontSize = 30.sp,
+                fontFamily = dayLight,
+                color = DarkBlue,
+                textAlign = TextAlign.Center
+            )
+
+            Text(
+                text = "Doodling Doods",
+                fontSize = 40.sp,
+                fontFamily = dayLight,
+                color = Color.White,
+                modifier = Modifier.padding(8.dp),
+                textAlign = TextAlign.Center
+            )
+
+            Text(
+                text = "To have a flawless experience",
                 fontSize = 20.sp,
-                modifier = Modifier.padding(8.dp)
+                fontFamily = ov_soge_bold,
+                color = DarkBlue,
+                modifier = Modifier.padding(8.dp),
+                textAlign = TextAlign.Center
             )
 
 
-            OutlinedTextField(
-                value = guestName,
-                onValueChange = { guestName = it },
-                modifier
-                    .padding(horizontal = 35.dp)
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                label = { Text(text = "Name") },
-                singleLine = true
+            Image(painter = painterResource(id = R.drawable.login_button),
+                contentDescription = "Login Button", modifier = Modifier
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) {
+                        navController.navigate("LoginScreen")
+                    }
+                    .height(70.dp))
 
+            Image(painter = painterResource(id = R.drawable.sign_up_button),
+                contentDescription = "Sign Up", modifier = Modifier
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) {
+                        navController.navigate("SignUpScreen")
+                    }
+                    .height(70.dp))
 
-            )
-
-
-            Card(
-                modifier
-                    .width(200.dp)
-                    .padding(20.dp)
-
-            ) {
-                Text(
-                    text = "Play",
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(8.dp)
-                        .clickable {
-                            playerDetailsViewModel.playerName = guestName
-                            navController.navigate("RoomsEntry")
-                        }
-                )
-            }
-
-
-        }
-    }
-
-}
-
-// this function handles weather to launch login screen or sign up
-@Composable
-fun OptionsHandler(
-    navController: NavController,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier
-            .fillMaxSize()
-            .wrapContentSize(),
-        contentAlignment = Alignment.Center,
-
-        ) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            LoginButton(
-                LoginButtonClick = {
-                    navController.navigate("LoginScreen")
-                }
-            )
             Text(
-                text = "Or",
-                modifier.padding(8.dp),
-                fontSize = 20.sp
+                text = "or",
+                fontSize = 20.sp,
+                fontFamily = ov_soge_bold,
+                color = DarkBlue,
+                textAlign = TextAlign.Center
             )
-            SignUpButton(
-                SignUpButtonClick = {
-                    navController.navigate("SignUpScreen")
-                }
+
+            Image(painter = painterResource(id = R.drawable.guest_play),
+                contentDescription = "Guest Play",
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
+                    .clickable(
+                        interactionSource = interactionSource,
+                        indication = null
+                    ) {
+                        playerDetailsViewModel.playerName = guestName
+                        navController.navigate("GuestAccountScreen")
+                    }
+                    .height(70.dp)
             )
+
         }
-    }
-}
-
-@Composable
-fun LoginButton(
-    modifier: Modifier = Modifier,
-    LoginButtonClick: () -> Unit
-) {
-    Card(
-        modifier
-            .fillMaxWidth()
-            .padding(horizontal = 48.dp, vertical = 8.dp)
-            .clickable {
-                LoginButtonClick()
-            },
-
-        ) {
-        Text(
-            text = "Login",
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(8.dp)
-        )
-    }
-}
-
-@Composable
-fun SignUpButton(
-    modifier: Modifier = Modifier,
-    SignUpButtonClick: () -> Unit
-) {
-    Card(
-        modifier
-            .fillMaxWidth()
-            .padding(horizontal = 48.dp, vertical = 8.dp)
-            .clickable {
-                SignUpButtonClick()
-            },
-
-        ) {
-        Text(
-            text = "Sign Up",
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(8.dp)
-        )
     }
 }
 
 @Preview(showSystemUi = true)
 @Composable
 fun Prev() {
-//    LoginButton(LoginButtonClick = {})
-//    SignUpButton(SignUpButtonClick = {})
-//    GuestButton()
-//    AccountSetup()
-//    OptionsHandler()
+    GuestScreen(
+        navController = NavController(LocalContext.current),
+        playerDetailsViewModel = PlayerDetailsViewModel()
+    )
+    AccountSetup(navController = NavController(LocalContext.current), PlayerDetailsViewModel())
 }
 
 
