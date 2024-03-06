@@ -36,8 +36,9 @@ class LoginScreenViewModel : ViewModel() {
     fun userInputFilter(mailId: String, password: String): Boolean {
         val emailRegex = Regex("[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\\.[a-zA-Z]{2,}")
         val passwordRegex =
-            Regex("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=\\S+\$).{8,}\$")
-
+            Regex("^(?=\\S{8,}\$).*\$")
+        Log.i("Regex",password.matches(passwordRegex).toString())
+        Log.i("Regex",mailId.matches(emailRegex).toString())
 
         return mailId.matches(emailRegex) && password.matches(passwordRegex)
 

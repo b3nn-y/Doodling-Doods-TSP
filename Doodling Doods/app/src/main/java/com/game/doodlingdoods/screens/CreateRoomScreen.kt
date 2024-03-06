@@ -10,14 +10,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,9 +27,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,9 +34,10 @@ import androidx.navigation.NavController
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.internetConnection.ConnectivityObserver
 import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
+import com.game.doodlingdoods.screens.utils.CustomPasswordField
+import com.game.doodlingdoods.screens.utils.CustomTextField
 import com.game.doodlingdoods.ui.theme.signInFontFamily
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
-
 //THis is the screen where the user creates the room, with a passcode. (THis should also have the room related settings.)
 @Composable
 fun CreateRoomScreen(
@@ -54,6 +47,7 @@ fun CreateRoomScreen(
     playerDetailsViewModel.roomAvailability.value = ""
     val connectivityObserver: ConnectivityObserver =
         NetworkConnectivityObserver(LocalContext.current)
+
     CreateRoom(navController,
         playerDetailsViewModel,
         connectivityObserver=connectivityObserver
@@ -136,14 +130,16 @@ private fun CreateRoom(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedTextField(
+            CustomTextField(
                 text = roomId,
                 onValueChange = {roomId = it},
                 modifier = Modifier
                     .padding(4.dp)
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White)
+                backgroundColor = Color.White,
+                placeholder = "Room Name"
+            )
 
             Text(
                 text = "Password",
@@ -155,14 +151,15 @@ private fun CreateRoom(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedPasswordField(
+            CustomPasswordField(
                 text = password,
                 onValueChange = {password = it},
                 modifier = Modifier
                     .padding(4.dp)
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Password"
             )
 
 
@@ -215,61 +212,3 @@ private fun userInputFilter(room_id: String, password: String): Boolean {
 
 }
 
-@Composable
-private fun CustomOutlinedTextField(
-    text: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.White
-) {
-    Surface(
-        shadowElevation = 20.dp,
-        shape = RoundedCornerShape(50),
-        modifier = modifier.fillMaxWidth(0.75f),
-        color = backgroundColor
-    ) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            OutlinedTextField(
-                shape = RoundedCornerShape(50),
-                value = text,
-                onValueChange = onValueChange,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                textStyle = TextStyle.Default.copy(fontSize = 20.sp),
-                singleLine = true,
-            )
-        }
-    }
-}
-
-@Composable
-private fun CustomOutlinedPasswordField(
-    text: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.White
-) {
-    Surface(
-        shadowElevation = 20.dp,
-        shape = RoundedCornerShape(50),
-        modifier = modifier.fillMaxWidth(0.75f),
-        color = backgroundColor
-    ) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            OutlinedTextField(
-                shape = RoundedCornerShape(50),
-                value = text,
-                onValueChange = onValueChange,
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                textStyle = TextStyle.Default.copy(fontSize = 20.sp),
-            )
-        }
-    }
-}

@@ -42,7 +42,7 @@ fun ChatBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        CustomOutlinedTextField(
+        CustomTextField(
             text = message,
             onValueChange = { message = it },
             modifier = Modifier
@@ -68,7 +68,7 @@ fun ChatBar(
 }
 
 @Composable
-private fun CustomOutlinedTextField(
+private fun CustomTextField(
     text: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,

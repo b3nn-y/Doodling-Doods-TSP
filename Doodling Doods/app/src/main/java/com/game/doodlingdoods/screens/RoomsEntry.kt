@@ -54,9 +54,9 @@ fun RoomsEntryScreen(
 
     JoinGames(
         createRoomButtonClick = {
-            if (currentUserName != null) {
+//            if (currentUserName != null) {
                 playerDetailsViewModel.playerName = currentUserName
-            }
+//            }
 
             playerDetailsViewModel.joinType = "create"
             navController.navigate("CreateRoom")
@@ -177,10 +177,7 @@ private fun JoinGames(
 
                 }
 
-                if (networkStatus.toString() == "UnAvailable" || networkStatus.toString() == "Lost") {
-                    CircularProgressIndicator(modifier = Modifier.width(50.dp))
 
-                }
 
             }
         }

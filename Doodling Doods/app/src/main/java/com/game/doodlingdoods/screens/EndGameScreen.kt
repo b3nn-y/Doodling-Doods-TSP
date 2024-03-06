@@ -64,7 +64,6 @@ private fun GameOver(modifier: Modifier = Modifier) {
         ) {
             Card(
                 modifier
-
                     .fillMaxHeight(0.7f),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 10.dp
@@ -73,6 +72,7 @@ private fun GameOver(modifier: Modifier = Modifier) {
             ) {
                 Body()
             }
+
         }
     }
 
@@ -124,7 +124,7 @@ private fun Body(
         modifier = modifier
 
             .fillMaxSize()
-            .background(Color.White)
+            .background(Color.Transparent)
     ) {
         items(playerNames) { player ->
             UserCard(playerName = player) // re used from utils

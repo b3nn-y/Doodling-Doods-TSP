@@ -6,7 +6,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.game.doodlingdoods.R
-import com.game.doodlingdoods.screens.utils.CustomOutlinedTextFields
+import com.game.doodlingdoods.screens.utils.CustomTextField
 import com.game.doodlingdoods.ui.theme.dayLight
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 
@@ -76,9 +75,10 @@ private fun GuestScreen(modifier: Modifier = Modifier, navController: NavControl
                 modifier = Modifier.padding(20.dp)
             )
 
-            CustomOutlinedTextFields(
+            CustomTextField(
                 text = guestName,
                 onValueChange = { guestName = it },
+                placeholder = "Name"
 
 
 //                value = guestName,
@@ -92,7 +92,7 @@ private fun GuestScreen(modifier: Modifier = Modifier, navController: NavControl
 
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+
 
             Image(painter = painterResource(id = R.drawable.guest_play), contentDescription = "Guest Play Button",
                 modifier = Modifier

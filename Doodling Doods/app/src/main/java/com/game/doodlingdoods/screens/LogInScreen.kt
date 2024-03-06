@@ -1,22 +1,19 @@
 package com.game.doodlingdoods.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,10 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,6 +42,8 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.internetConnection.ConnectivityObserver
 import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
+import com.game.doodlingdoods.screens.utils.CustomPasswordField
+import com.game.doodlingdoods.screens.utils.CustomTextField
 import com.game.doodlingdoods.ui.theme.signInFontFamily
 import com.game.doodlingdoods.viewmodels.LoginScreenViewModel
 import com.game.doodlingdoods.viewmodels.MainActivityViewModel
@@ -80,6 +76,8 @@ private fun LoginForms(
     connectivityObserver: ConnectivityObserver,
     mainActivityViewModel:MainActivityViewModel
 ) {
+    val context = LocalContext.current
+
     var mailId by rememberSaveable {
         mutableStateOf("")
     }
@@ -144,13 +142,14 @@ private fun LoginForms(
                     .padding(start = 56.dp,8.dp)
                     .align(Alignment.Start)
             )
-            CustomOutlinedTextField(
+            CustomTextField(
                 text = mailId,
                 onValueChange = { mailId = it },
                 modifier = Modifier
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "E-mail"
             )
 
             Text(text = "Password",
@@ -161,13 +160,14 @@ private fun LoginForms(
                     .padding(start = 56.dp,8.dp)
                     .align(Alignment.Start))
             //password text field
-            CustomOutlinedPasswordField(
+            CustomPasswordField(
                 text = password,
                 onValueChange = { password = it },
                 modifier = Modifier
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Password"
             )
             Image(painter = painterResource(id = R.drawable.login_button),
                 contentDescription = "Sign In button",
@@ -178,6 +178,11 @@ private fun LoginForms(
                             if (viewmodel.userInputFilter(mailId = mailId, password = password)) {
                                 viewmodel.signInWithCredentials(mailId, password)
 
+                            }else{
+                                Toast.makeText(
+                                    context,"Check Your  email and password contains 8 characters",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     }
@@ -186,7 +191,10 @@ private fun LoginForms(
             if (networkStatus.toString() == "Unavailable"
                 || networkStatus.toString() == "Lost") {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(50.dp)
+                    modifier = Modifier
+                        .size(70.dp)
+                        .padding(0.dp)
+                        .padding(10.dp)
                 )
             }
 
@@ -206,64 +214,3 @@ fun PrevLoginScreen() {
     )
 }
 
-@Composable
-private fun CustomOutlinedTextField(
-    text: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.White
-) {
-    Surface(
-        shadowElevation = 20.dp,
-        shape = RoundedCornerShape(50),
-        modifier = modifier.fillMaxWidth(0.75f),
-        color = backgroundColor
-    ) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            OutlinedTextField(
-                shape = RoundedCornerShape(50),
-                value = text,
-                onValueChange = onValueChange,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                textStyle = TextStyle.Default.copy(fontSize = 23.sp),
-                singleLine = true,
-
-
-                )
-        }
-    }
-}
-
-@Composable
-private fun CustomOutlinedPasswordField(
-    text: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.White
-) {
-    Surface(
-        shadowElevation = 20.dp,
-        shape = RoundedCornerShape(50),
-        modifier = modifier.fillMaxWidth(0.75f),
-        color = backgroundColor
-    ) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            OutlinedTextField(
-                shape = RoundedCornerShape(50),
-                value = text,
-                onValueChange = onValueChange,
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                textStyle = TextStyle.Default.copy(fontSize = 23.sp),
-
-                )
-        }
-    }
-}

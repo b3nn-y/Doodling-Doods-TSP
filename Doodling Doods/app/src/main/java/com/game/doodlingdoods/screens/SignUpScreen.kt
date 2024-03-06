@@ -2,23 +2,18 @@ package com.game.doodlingdoods.screens
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,9 +28,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,9 +36,12 @@ import androidx.navigation.NavHostController
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.internetConnection.ConnectivityObserver
 import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
+import com.game.doodlingdoods.screens.utils.CustomPasswordField
+import com.game.doodlingdoods.screens.utils.CustomTextField
 import com.game.doodlingdoods.ui.theme.signInFontFamily
 import com.game.doodlingdoods.viewmodels.MainActivityViewModel
 import com.game.doodlingdoods.viewmodels.SignUpScreenViewModel
+
 
 //This screen is shown if the user wants to sign up.
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -123,6 +118,7 @@ private fun SignUpForms(
         modifier.fillMaxSize()
 
     ) {
+        val context = LocalContext.current
         Image(
             painter = painterResource(id = R.drawable.background),
             contentDescription = "bg image",
@@ -135,6 +131,7 @@ private fun SignUpForms(
             verticalArrangement = Arrangement.Center
         ) {
 
+
             //name text field
             Text(
                 text = "Name",
@@ -146,13 +143,16 @@ private fun SignUpForms(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedTextField(
+
+
+            CustomTextField(
                 text = userName,
                 onValueChange = { userName = it },
                 modifier = Modifier
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "UserName"
             )
 
             //email text field
@@ -166,13 +166,14 @@ private fun SignUpForms(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedTextField(
+            CustomTextField(
                 text = mailId,
                 onValueChange = { mailId = it },
                 modifier = Modifier
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Mail Id"
             )
 
             //password text field
@@ -186,16 +187,17 @@ private fun SignUpForms(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedPasswordField(
+            CustomPasswordField(
                 text = password,
                 onValueChange = { password = it },
                 modifier = Modifier
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Password"
             )
 
-            Spacer(modifier = Modifier.height(40.dp))
+
 
             Image(
                 painter =
@@ -203,10 +205,9 @@ private fun SignUpForms(
                 contentDescription = "Sign Up Button",
                 modifier = Modifier
                     .size(200.dp)
-
                     .padding(0.dp)
                     .wrapContentHeight()
-                    .clickable{
+                    .clickable {
                         if (networkStatus.toString() == "Available") {
                             // creating account on Server
                             if (viewModel.userInputFilter(
@@ -219,6 +220,14 @@ private fun SignUpForms(
                                 viewModel.signUpWithCredentials(userName, mailId, password)
 
                             } else {
+                                Toast
+                                    .makeText(
+                                        context,
+                                        "Check Your name or email and password contains 8 characters",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                    .show()
+
                                 Log.i("signup", "failed")
 
                             }
@@ -235,7 +244,10 @@ private fun SignUpForms(
                 || networkStatus.toString() == "Lost"
             ) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(50.dp)
+                    modifier = Modifier
+                        .size(60.dp)
+                        .padding(8.dp),
+
                 )
             }
 
@@ -250,64 +262,3 @@ fun PrevSignupScreen() {
     SignUpScreen(navController, MainActivityViewModel(LocalContext.current))
 }
 
-@Composable
-private fun CustomOutlinedTextField(
-    text: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.White
-) {
-    Surface(
-        shadowElevation = 20.dp,
-        shape = RoundedCornerShape(50),
-        modifier = modifier.fillMaxWidth(0.75f),
-        color = backgroundColor
-    ) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            OutlinedTextField(
-                shape = RoundedCornerShape(50),
-                value = text,
-                onValueChange = onValueChange,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                textStyle = TextStyle.Default.copy(fontSize = 23.sp),
-                singleLine = true,
-
-
-            )
-        }
-    }
-}
-
-@Composable
-private fun CustomOutlinedPasswordField(
-    text: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.White
-) {
-    Surface(
-        shadowElevation = 20.dp,
-        shape = RoundedCornerShape(50),
-        modifier = modifier.fillMaxWidth(0.75f),
-        color = backgroundColor
-    ) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            OutlinedTextField(
-                shape = RoundedCornerShape(50),
-                value = text,
-                onValueChange = onValueChange,
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                textStyle = TextStyle.Default.copy(fontSize = 23.sp),
-
-            )
-        }
-    }
-}
