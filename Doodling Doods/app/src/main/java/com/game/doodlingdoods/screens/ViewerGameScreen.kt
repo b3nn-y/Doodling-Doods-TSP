@@ -1,6 +1,7 @@
 package com.game.doodlingdoods.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,16 +14,23 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
+
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
@@ -41,21 +49,51 @@ import com.game.doodlingdoods.ui.theme.GameBlue
 import com.game.doodlingdoods.ui.theme.ov_soge_bold
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
+import java.time.format.TextStyle
+import androidx.compose.ui.text.*
+import com.game.doodlingdoods.screens.utils.ViewersPopUp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 
 // this is the ongoing game screen, where the live drawing is shown, along with hints, chat, players and their scores, timer etc.
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
-fun ViewerGameScreen(navController: NavController, playerDetailsViewModel: PlayerDetailsViewModel) {
+fun ViewerGameScreen(
+    navController: NavController,
+    playerDetailsViewModel: PlayerDetailsViewModel
+) {
     val serverViewModel = playerDetailsViewModel.serverCommunicationViewModel
-    val state by serverViewModel.state.collectAsState()
 
-    serverViewModel.evaluateServerMessage(state)
-    if (serverViewModel.currentPlayer == playerDetailsViewModel.playerName) {
+    val state by serverViewModel!!.state.collectAsState()
+
+    val roomTime by serverViewModel!!.roomTime.collectAsState()
+
+    val currentPlayer by serverViewModel!!.currentPlayer.collectAsState()
+    serverViewModel!!.evaluateServerMessage(state)
+
+    val roundsPlayed by serverViewModel.roundsPlayed.collectAsState()
+    Log.i("Rounds", roundsPlayed.toString())
+
+    var isPopedUp by rememberSaveable {
+        mutableStateOf(true)
+    }
+
+    if (serverViewModel.room.gameOver) {
+        navController.navigate("LeaderBoardScreen")
+    }
+
+    if (currentPlayer == playerDetailsViewModel.playerName) {
         navController.navigate("DrawingScreen")
     }
     Scaffold(
         //re used our existing chat bar in drawing screen
-        bottomBar = { ChatBar() }
+
+        bottomBar = {
+            if (!isPopedUp) {
+                ChatBar(serverViewModel, playerDetailsViewModel.playerName)
+            }
+        }
     ) {
         Box(
             modifier = Modifier
@@ -75,13 +113,14 @@ fun ViewerGameScreen(navController: NavController, playerDetailsViewModel: Playe
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Game Mode",
+                        text = serverViewModel.room.gameMode,
                         fontFamily = ov_soge_bold,
                         fontSize = 30.sp,
-                        modifier = Modifier.weight(0.8f),
+                        modifier = Modifier
+                            .weight(0.8f),
 
                         textAlign = TextAlign.Center,
-                        color = GameBlue
+                        color = Color.White
 
                     )
                     Image(
@@ -96,14 +135,26 @@ fun ViewerGameScreen(navController: NavController, playerDetailsViewModel: Playe
                         )
                 }
                 Text(
-                    text = "${playerDetailsViewModel.currentPlayer}'s turn",
+                    text = "$currentPlayer's turn",
                     modifier = Modifier.padding(8.dp),
                     fontFamily = ov_soge_bold,
                     fontSize = 30.sp,
-
-
                     textAlign = TextAlign.Center,
                     color = GameBlue
+
+                )
+                Text(
+                    text = roomTime,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(
+                        color = Color.Black,
+                        fontSize = 20.sp
+                    )
 
                 )
 
@@ -119,30 +170,48 @@ fun ViewerGameScreen(navController: NavController, playerDetailsViewModel: Playe
 
 
 
-                Text(
-                    text = playerDetailsViewModel.guessWord,
-                    fontFamily = ov_soge_bold,
-                    fontSize = 35.sp,
-                    fontWeight = FontWeight.Bold,
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 32.dp, bottom = 8.dp),
-                    textAlign = TextAlign.Center,
-                    color = Color.White,
-                )
-                
-                Text(
-                    text = "10:00",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .padding(4.dp)
                         .fillMaxWidth(),
-                    textAlign = TextAlign.Center,
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = serverViewModel.createMaskedWord(serverViewModel.currentWord.value),
 
-                )
+                        fontFamily = ov_soge_bold,
+                        fontSize = 35.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .padding(top = 32.dp, bottom = 8.dp, start = 15.dp, end = 15.dp),
+                        textAlign = TextAlign.Center,
+                        color = Color.White,
+                    )
+                }
 
 
+            }
+            if (isPopedUp){
+                // for loading other users scores
+                while (playerDetailsViewModel.serverCommunicationViewModel?.playersList?.size != playerDetailsViewModel.serverCommunicationViewModel?.playerScoreHashMap?.size) {
+                    playerDetailsViewModel.serverCommunicationViewModel?.playersList!!.forEach {
+                        if (!playerDetailsViewModel.serverCommunicationViewModel!!.playerScoreHashMap.containsKey(
+                                it.name
+                            )
+                        ) {
+                            playerDetailsViewModel.serverCommunicationViewModel!!.playerScoreHashMap.put(
+                                it.name,
+                                0
+                            )
+                        }
+                    }
+                }
+
+                ViewersPopUp(serverViewModel.playerScoreHashMap)
+
+                LaunchedEffect(Unit){
+                    delay(5000)
+                    isPopedUp = false
+                }
             }
         }
 
@@ -161,7 +230,7 @@ private fun ViewerCanvas(
 //    var lines = serverCommunicationViewModel.drawingCords
     val lines = serverCommunicationViewModel.drawingCords
 
-    println(lines + "\nI got some lines ${lines.size}")
+//    println(lines + "\nI got some lines ${lines.size}")
     Column(
 
         verticalArrangement = Arrangement.Center,
@@ -194,9 +263,9 @@ private fun ViewerCanvas(
 
 }
 
-
-@Preview(showSystemUi = true)
-@Composable
-fun PreviewGameScreen() {
-    ViewerGameScreen(NavController(LocalContext.current), PlayerDetailsViewModel())
-}
+//
+//@Preview(showSystemUi = true)
+//@Composable
+//fun PreviewGameScreen() {
+//    ViewerGameScreen(NavController(LocalContext.current), PlayerDetailsViewModel())
+//}

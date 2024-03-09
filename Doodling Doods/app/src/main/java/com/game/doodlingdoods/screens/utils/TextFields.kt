@@ -6,6 +6,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,11 +17,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun CustomOutlinedTextFields(
+fun CustomTextField(
     text: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.White
+    backgroundColor: Color = Color.White,
+    placeholder: String
 ) {
     Surface(
         shadowElevation = 20.dp,
@@ -37,19 +39,33 @@ fun CustomOutlinedTextFields(
                 onValueChange = onValueChange,
                 modifier = Modifier
                     .fillMaxWidth(),
-                textStyle = TextStyle.Default.copy(fontSize = 20.sp),
+                textStyle = TextStyle.Default.copy(
+                    fontSize = 23.sp,
+                    color = Color.Black
+                ),
                 singleLine = true,
+
+
+                placeholder = {
+                    Text(
+                        text = placeholder,
+                        color = Color.Gray
+                    )
+                }
+
+
             )
         }
     }
 }
 
 @Composable
-fun CustomOutlinedPasswordFields(
+fun CustomPasswordField(
     text: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.White
+    backgroundColor: Color = Color.White,
+    placeholder: String
 ) {
     Surface(
         shadowElevation = 20.dp,
@@ -68,7 +84,17 @@ fun CustomOutlinedPasswordFields(
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                textStyle = TextStyle.Default.copy(fontSize = 20.sp),
+                textStyle = TextStyle.Default.copy(
+                    fontSize = 23.sp,
+                    color = Color.Black
+                ),
+                placeholder = {
+                    Text(
+                        text = placeholder,
+                        color = Color.Gray
+                    )
+                }
+
             )
         }
     }

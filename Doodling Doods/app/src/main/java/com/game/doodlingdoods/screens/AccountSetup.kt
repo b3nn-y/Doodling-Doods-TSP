@@ -6,10 +6,12 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -104,7 +106,8 @@ private fun GuestScreen(
             LottieAnimation(
                 composition = doodle,
                 iterations = LottieConstants.IterateForever,
-                modifier = Modifier.height(350.dp)
+                modifier = Modifier
+                    .size(200.dp)
             )
 
             Text(
@@ -142,7 +145,8 @@ private fun GuestScreen(
                     ) {
                         navController.navigate("LoginScreen")
                     }
-                    .height(70.dp))
+                    .fillMaxWidth(0.5f)
+                    )
 
             Image(painter = painterResource(id = R.drawable.sign_up_button),
                 contentDescription = "Sign Up", modifier = Modifier
@@ -152,7 +156,8 @@ private fun GuestScreen(
                     ) {
                         navController.navigate("SignUpScreen")
                     }
-                    .height(70.dp))
+                    .fillMaxWidth(0.5f)
+            )
 
             Text(
                 text = "or",
@@ -173,7 +178,7 @@ private fun GuestScreen(
                         playerDetailsViewModel.playerName = guestName
                         navController.navigate("GuestAccountScreen")
                     }
-                    .height(70.dp)
+                    .fillMaxWidth(0.5f)
             )
 
         }
@@ -183,11 +188,8 @@ private fun GuestScreen(
 @Preview(showSystemUi = true)
 @Composable
 fun Prev() {
-    GuestScreen(
-        navController = NavController(LocalContext.current),
-        playerDetailsViewModel = PlayerDetailsViewModel()
-    )
-    AccountSetup(navController = NavController(LocalContext.current), PlayerDetailsViewModel())
+
+    AccountSetup(navController = NavController(LocalContext.current), PlayerDetailsViewModel)
 }
 
 

@@ -48,6 +48,8 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.internetConnection.ConnectivityObserver
 import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
+import com.game.doodlingdoods.screens.utils.CustomPasswordField
+import com.game.doodlingdoods.screens.utils.CustomTextField
 import com.game.doodlingdoods.ui.theme.signInFontFamily
 import com.game.doodlingdoods.viewmodels.LoginScreenViewModel
 import com.game.doodlingdoods.viewmodels.MainActivityViewModel
@@ -126,17 +128,18 @@ private fun LoginForms(
 
             Column(modifier = Modifier.padding(20.dp),
                 verticalArrangement = Arrangement.Center) {
-                Text(text = "Log In",
-                    fontFamily = signInFontFamily,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    fontSize = 40.sp)
+//                Text(text = "Log In",
+//                    fontFamily = signInFontFamily,
+//                    fontWeight = FontWeight.Bold,
+//                    color = Color.White,
+//                    fontSize = 40.sp
+//                )
 
 
             }
 
             //email text field
-            Text(text = "User Id",
+            Text(text = "Email",
                 color = Color.White,
                 fontFamily = signInFontFamily,
                 fontSize = 20.sp,
@@ -144,13 +147,14 @@ private fun LoginForms(
                     .padding(start = 56.dp,8.dp)
                     .align(Alignment.Start)
             )
-            CustomOutlinedTextField(
+            CustomTextField(
                 text = mailId,
                 onValueChange = { mailId = it },
                 modifier = Modifier
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Email"
             )
 
             Text(text = "Password",
@@ -161,17 +165,19 @@ private fun LoginForms(
                     .padding(start = 56.dp,8.dp)
                     .align(Alignment.Start))
             //password text field
-            CustomOutlinedPasswordField(
+            CustomPasswordField(
                 text = password,
                 onValueChange = { password = it },
                 modifier = Modifier
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Password"
             )
             Image(painter = painterResource(id = R.drawable.login_button),
                 contentDescription = "Sign In button",
                 modifier = Modifier
+                    .fillMaxWidth(0.5f)
                     .clickable {
 
                         if (networkStatus.toString() == "Available") {
@@ -206,64 +212,3 @@ fun PrevLoginScreen() {
     )
 }
 
-@Composable
-private fun CustomOutlinedTextField(
-    text: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.White
-) {
-    Surface(
-        shadowElevation = 20.dp,
-        shape = RoundedCornerShape(50),
-        modifier = modifier.fillMaxWidth(0.75f),
-        color = backgroundColor
-    ) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            OutlinedTextField(
-                shape = RoundedCornerShape(50),
-                value = text,
-                onValueChange = onValueChange,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                textStyle = TextStyle.Default.copy(fontSize = 23.sp),
-                singleLine = true,
-
-
-                )
-        }
-    }
-}
-
-@Composable
-private fun CustomOutlinedPasswordField(
-    text: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.White
-) {
-    Surface(
-        shadowElevation = 20.dp,
-        shape = RoundedCornerShape(50),
-        modifier = modifier.fillMaxWidth(0.75f),
-        color = backgroundColor
-    ) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            OutlinedTextField(
-                shape = RoundedCornerShape(50),
-                value = text,
-                onValueChange = onValueChange,
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                textStyle = TextStyle.Default.copy(fontSize = 23.sp),
-
-                )
-        }
-    }
-}

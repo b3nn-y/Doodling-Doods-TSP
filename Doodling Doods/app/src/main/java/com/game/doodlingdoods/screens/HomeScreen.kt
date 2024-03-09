@@ -123,6 +123,7 @@ fun Titlebar(modifier: Modifier = Modifier) {
             painter = painterResource(id = R.drawable.app_logo),
             contentDescription = "logo",
             modifier = Modifier
+                .fillMaxWidth(0.7f)
                 .offset(y = translationY.dp)
                 .scale(scale)
         )
@@ -170,6 +171,7 @@ fun PlayOption(
             painter = painterResource(id = R.drawable.play_button),
             contentDescription = "Play!",
             modifier = Modifier
+                .fillMaxWidth(0.4f)
                 .padding(4.dp)
                 .scale(scale)
         )

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -44,19 +45,13 @@ fun RoomsEntryScreen(
     navController: NavController,
     playerDetailsViewModel: PlayerDetailsViewModel
 ) {
-    val mainActivityViewModel = MainActivityViewModel(LocalContext.current)
-    val currentUserName = mainActivityViewModel.getCurrentUserName().toString()
-//    val currentUserName =
-//        mainActivityViewModel.getCurrentUserName() // for getting user name if already signed up
 
     val connectivityObserver: ConnectivityObserver =
         NetworkConnectivityObserver(LocalContext.current)
 
     JoinGames(
         createRoomButtonClick = {
-            if (currentUserName != null) {
-                playerDetailsViewModel.playerName = currentUserName
-            }
+
 
             playerDetailsViewModel.joinType = "create"
             navController.navigate("CreateRoom")
@@ -100,19 +95,19 @@ private fun JoinGames(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Image(painter = painterResource(id = R.drawable.editpencil),
-                contentDescription = "edit pencil",
-                modifier = Modifier
-                    .padding(start = 150.dp, top = 150.dp)
-                    .zIndex(10f)
-                    .align(Alignment.TopCenter)
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = null
-                    ) {
-                        //Edit Profile actions
-                    }
-            )
+//            Image(painter = painterResource(id = R.drawable.editpencil),
+//                contentDescription = "edit pencil",
+//                modifier = Modifier
+//                    .padding(start = 150.dp, top = 150.dp)
+//                    .zIndex(10f)
+//                    .align(Alignment.TopCenter)
+//                    .clickable(
+//                        interactionSource = interactionSource,
+//                        indication = null
+//                    ) {
+//                        //Edit Profile actions
+//                    }
+//            )
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -124,9 +119,11 @@ private fun JoinGames(
                 ) {
 
                     Image(
-                        painter = painterResource(id = R.drawable.profile),
+                        painter = painterResource(id = R.drawable.avatar1),
                         contentDescription = "profile",
-                        modifier = Modifier.padding(top = 16.dp)
+                        modifier = Modifier
+                            .fillMaxHeight(0.2f)
+                            .padding(top = 16.dp)
                     )
                 }
                 Spacer(modifier = Modifier.height(50.dp))
@@ -139,7 +136,7 @@ private fun JoinGames(
                     Image(painter = painterResource(id = R.drawable.join_room_button),
                         contentDescription = "join_room_button",
                         modifier = Modifier
-                            .height(100.dp)
+                            .fillMaxWidth(0.5f)
                             .clickable(
                                 interactionSource = interactionSource,
                                 indication = null
@@ -152,7 +149,7 @@ private fun JoinGames(
                 Image(painter = painterResource(id = R.drawable.create_room_button),
                     contentDescription = "create_room_button",
                     modifier = Modifier
-                        .height(100.dp)
+                        .fillMaxWidth(0.5f)
 
                         .clickable(
                             interactionSource = interactionSource,
@@ -169,7 +166,7 @@ private fun JoinGames(
                         .clickable {
                             //public room entry actions
                         }
-                        .height(100.dp)
+                        .fillMaxWidth(0.5f)
                 )
 
                 if (networkStatus.toString() == "UnAvailable" || networkStatus.toString() == "Lost") {
@@ -187,14 +184,14 @@ private fun JoinGames(
     }
 }
 
-
-@Preview
-@Composable
-fun PrevOptions() {
-    val context = LocalContext
-    val navController = NavController(LocalContext.current)
-    RoomsEntryScreen(
-        navController = navController,
-        playerDetailsViewModel = PlayerDetailsViewModel()
-    )
-}
+//
+//@Preview
+//@Composable
+//fun PrevOptions() {
+//    val context = LocalContext
+//    val navController = NavController(LocalContext.current)
+//    RoomsEntryScreen(
+//        navController = navController,
+//        playerDetailsViewModel = PlayerDetailsViewModel()
+//    )
+//}

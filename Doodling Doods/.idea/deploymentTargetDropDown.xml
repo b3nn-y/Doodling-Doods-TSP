@@ -2,8 +2,21 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="Prev">
-        <State />
+      <entry key="PreviewDrawingScreen">
+        <State>
+          <runningDeviceTargetSelectedWithDropDown>
+            <Target>
+              <type value="RUNNING_DEVICE_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="$USER_HOME$/.android/avd/Pixel_7_Pro_API_34.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-03-07T07:12:12.728791Z" />
+        </State>
       </entry>
       <entry key="app">
         <State>
@@ -18,7 +31,7 @@
               </deviceKey>
             </Target>
           </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-03-02T06:29:54.306518Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-03-07T16:51:06.119990Z" />
         </State>
       </entry>
     </value>

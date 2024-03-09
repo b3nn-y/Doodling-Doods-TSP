@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,9 +29,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.game.doodlingdoods.R
-import com.game.doodlingdoods.screens.utils.CustomOutlinedPasswordFields
-import com.game.doodlingdoods.screens.utils.CustomOutlinedTextFields
+
+import com.game.doodlingdoods.screens.utils.CustomPasswordField
+import com.game.doodlingdoods.screens.utils.CustomTextField
 import com.game.doodlingdoods.ui.theme.signInFontFamily
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 
@@ -61,9 +68,11 @@ private fun JoinRoom(
     var roomAvailabilityState by playerDetailsViewModel.roomAvailability
     val currentRoomAvailability = roomAvailabilityState
     val interactionSource = remember { MutableInteractionSource() }
+    val lottie by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.login_man_pencil))
+
 
     when (currentRoomAvailability) {
-        "" -> {}
+
         "no room" -> {
             Toast.makeText(
                 LocalContext.current,
@@ -82,6 +91,7 @@ private fun JoinRoom(
         "verified" -> {
             Toast.makeText(LocalContext.current, "Verified $roomId", Toast.LENGTH_SHORT).show()
             roomAvailabilityState = ""
+            println(playerDetailsViewModel.playerName)
             navController.navigate("LobbyJoinerScreen")
         }
     }
@@ -103,8 +113,10 @@ private fun JoinRoom(
 
             ) {
 
+            LottieAnimation(composition = lottie, iterations = LottieConstants.IterateForever, modifier = Modifier.size(250.dp))
+
             Text(
-                text = "Room id",
+                text = "Room name",
                 color = Color.White,
                 fontSize = 20.sp,
                 fontFamily = signInFontFamily,
@@ -113,14 +125,15 @@ private fun JoinRoom(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedTextFields(
+            CustomTextField(
                 text = roomId,
                 onValueChange = { roomId = it },
                 modifier = Modifier
                     .padding(4.dp)
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Room name"
             )
 
             Text(
@@ -133,19 +146,21 @@ private fun JoinRoom(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedPasswordFields(
+            CustomPasswordField(
                 text = password,
                 onValueChange = { password = it },
                 modifier = Modifier
                     .padding(4.dp)
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Password"
             )
 
             Image(painter = painterResource(id = R.drawable.join_room_button),
                 contentDescription = "Join Room Button",
                 modifier = Modifier
+                    .fillMaxWidth(0.5f)
                     .clickable(
                         interactionSource = interactionSource,
                         indication = null
@@ -154,7 +169,7 @@ private fun JoinRoom(
                         playerDetailsViewModel.roomPass = password
 
                         playerDetailsViewModel.checkRoomAvailability()
-//                    navController.navigate("LobbyJoinerScreen")
+
                     }
             )
         }
@@ -165,5 +180,5 @@ private fun JoinRoom(
 @Preview(showSystemUi = true)
 @Composable
 fun PrevJoinRoom() {
-    JoinRoomScreen(NavController(LocalContext.current), PlayerDetailsViewModel())
+    JoinRoomScreen(NavController(LocalContext.current), PlayerDetailsViewModel)
 }

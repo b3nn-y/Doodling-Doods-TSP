@@ -3,14 +3,18 @@ package com.game.doodlingdoods.screens
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -76,7 +80,8 @@ fun LobbyJoinerScreen(
         false,
         Player("", "", "", ""),
         3,
-        ""
+        "",
+        wordList = arrayListOf(), guessedPlayers = arrayListOf(), messages = arrayListOf()
     )
 
     val roomUpdates by remember {
@@ -101,7 +106,15 @@ fun LobbyJoinerScreen(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        topBar = {
+
+            TopBar(
+                playerDetailsViewModel = playerDetailsViewModel,
+                serverViewModel = serverViewModel,
+
+            )
+        },
+
     ) {
         Image(
             painter = painterResource(id = R.drawable.background),
@@ -111,25 +124,31 @@ fun LobbyJoinerScreen(
         )
 
         Column(
-            horizontalAlignment =
-            Alignment.CenterHorizontally
+            modifier = Modifier
+
+                .fillMaxSize()
+                .wrapContentSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
 
-            TopBar()
 
             Card(
                 modifier = Modifier
+
                     .padding(8.dp)
                     .padding(8.dp)
+                    .fillMaxHeight(0.6f)
                     .align(Alignment.Start),
                 colors = CardDefaults.cardColors(Color.White),
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 20.dp
-                )
+                ),
+
             )
             {
                 Text(
-                    text = "Players 2/10",
+                    text = "Players ${serverViewModel.playersList.size}/10",
                     fontSize = 14.sp,
                     fontFamily = ov_soge_bold,
                     modifier = Modifier
@@ -140,8 +159,8 @@ fun LobbyJoinerScreen(
                 val myList = serverViewModel.playersList
 
                 LazyColumn{
-                    items(myList) { playerName ->
-                        PlayerCard(playerName = playerName)
+                    items(myList) { player ->
+                        PlayerCard(playerName = player.name, admin = player.admin)
                     }
                 }
             }
@@ -179,13 +198,17 @@ private fun RoomsHandler(
 @Composable
 private fun TopBar(
 
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    playerDetailsViewModel: PlayerDetailsViewModel,
+    serverViewModel: ServerCommunicationViewModel
 
 ) {
+    val roomCreatedBy by serverViewModel.roomCreatedBy.collectAsState()
     val interactionSource = remember { MutableInteractionSource() }
 
     Card(
         modifier
+
             .fillMaxWidth()
             .padding(8.dp)
             .padding(8.dp),
@@ -198,34 +221,34 @@ private fun TopBar(
         )
     ) {
 
-        Text(
-            text = "testBot's Room",
-            fontFamily = ov_soge_bold,
-            fontSize = 20.sp,
-            color = Color.Black,
-            modifier = modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(10.dp)
-        )
+//        Text(
+//            text = "${roomCreatedBy}'s Room",
+//            fontFamily = ov_soge_bold,
+//            fontSize = 20.sp,
+//            color = Color.Black,
+//            modifier = modifier
+//                .align(Alignment.CenterHorizontally)
+//                .padding(10.dp)
+//        )
 
         Text(
-            text = "Room Id : TestRoom1",
+            text = "Room Id : ${playerDetailsViewModel.roomName}",
             fontFamily = ov_soge_bold,
             fontSize = 16.sp,
             color = Color.Blue,
             modifier = modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(4.dp)
+                .padding(top = 20.dp, bottom = 4.dp)
         )
 
         Text(
-            text = "password : ben",
+            text = "password : ${playerDetailsViewModel.roomPass}",
             fontFamily = ov_soge_bold,
             fontSize = 16.sp,
             color = Color.Blue,
             modifier = modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(4.dp)
+
         )
 
         Row(
@@ -269,18 +292,19 @@ private fun TopBar(
 @Composable
 private fun PlayerCard(
     modifier: Modifier = Modifier,
-    playerName: String
+    playerName: String,
+    admin:Boolean
 ) {
-    UserCard(playerName)
+    UserCard(playerName,admin)
 }
-
-@Preview(showSystemUi = true)
-@Composable
-fun PreviewJoinerLobby() {
-
-//    TopBar()
-    LobbyJoinerScreen(
-        navController = NavController(LocalContext.current),
-        PlayerDetailsViewModel()
-    )
-}
+//
+//@Preview(showSystemUi = true)
+//@Composable
+//fun PreviewJoinerLobby() {
+//
+////    TopBar()
+//    LobbyJoinerScreen(
+//        navController = NavController(LocalContext.current),
+//        PlayerDetailsViewModel()
+//    )
+//}

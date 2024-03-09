@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -39,18 +40,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.internetConnection.ConnectivityObserver
 import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
+import com.game.doodlingdoods.screens.utils.CustomPasswordField
+import com.game.doodlingdoods.screens.utils.CustomTextField
 import com.game.doodlingdoods.ui.theme.signInFontFamily
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 
 //THis is the screen where the user creates the room, with a passcode. (THis should also have the room related settings.)
 @Composable
 fun CreateRoomScreen(
-    navController: NavController,
-    playerDetailsViewModel: PlayerDetailsViewModel
+    navController: NavController
 ) {
+    val playerDetailsViewModel= PlayerDetailsViewModel
+
     playerDetailsViewModel.roomAvailability.value = ""
     val connectivityObserver: ConnectivityObserver =
         NetworkConnectivityObserver(LocalContext.current)
@@ -82,12 +90,14 @@ private fun CreateRoom(
 
     var roomAvailabilityState by playerDetailsViewModel.roomAvailability
     val currentRoomAvailability = roomAvailabilityState
+    val lottie by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.login_man_pencil))
 
     when (currentRoomAvailability) {
-        "" -> {}
+
         "no room" -> {
             roomAvailabilityState = ""
             playerDetailsViewModel.admin = true
+            println(playerDetailsViewModel.playerName)
             navController.navigate("LobbyAdminScreen")
         }
 
@@ -126,8 +136,10 @@ private fun CreateRoom(
 
             ) {
 
+            LottieAnimation(composition = lottie, iterations = LottieConstants.IterateForever, modifier = Modifier.size(250.dp))
+
             Text(
-                text = "Room id",
+                text = "Room name",
                 color = Color.White,
                 fontSize = 20.sp,
                 fontFamily = signInFontFamily,
@@ -136,14 +148,17 @@ private fun CreateRoom(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedTextField(
+            CustomTextField(
                 text = roomId,
                 onValueChange = {roomId = it},
                 modifier = Modifier
                     .padding(4.dp)
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White)
+                backgroundColor = Color.White,
+                placeholder = "Room name"
+            )
+
 
             Text(
                 text = "Password",
@@ -155,14 +170,15 @@ private fun CreateRoom(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedPasswordField(
+            CustomPasswordField(
                 text = password,
                 onValueChange = {password = it},
                 modifier = Modifier
                     .padding(4.dp)
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Password"
             )
 
 
@@ -177,6 +193,7 @@ private fun CreateRoom(
                 painter = painterResource(id = R.drawable.create_room_button),
                 contentDescription = "create room button",
                 modifier = Modifier
+                    .fillMaxWidth(0.5f)
                     .clickable {
 
                         if ( userInputFilter(roomId,password)) {
@@ -200,11 +217,11 @@ private fun CreateRoom(
     }
 }
 
-
+//
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewCreateRoom() {
-    CreateRoomScreen(navController = NavController(LocalContext.current),PlayerDetailsViewModel())
+    CreateRoomScreen(navController = NavController(LocalContext.current))
 }
 
 private fun userInputFilter(room_id: String, password: String): Boolean {
@@ -215,61 +232,5 @@ private fun userInputFilter(room_id: String, password: String): Boolean {
 
 }
 
-@Composable
-private fun CustomOutlinedTextField(
-    text: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.White
-) {
-    Surface(
-        shadowElevation = 20.dp,
-        shape = RoundedCornerShape(50),
-        modifier = modifier.fillMaxWidth(0.75f),
-        color = backgroundColor
-    ) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            OutlinedTextField(
-                shape = RoundedCornerShape(50),
-                value = text,
-                onValueChange = onValueChange,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                textStyle = TextStyle.Default.copy(fontSize = 20.sp),
-                singleLine = true,
-            )
-        }
-    }
-}
 
-@Composable
-private fun CustomOutlinedPasswordField(
-    text: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.White
-) {
-    Surface(
-        shadowElevation = 20.dp,
-        shape = RoundedCornerShape(50),
-        modifier = modifier.fillMaxWidth(0.75f),
-        color = backgroundColor
-    ) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            OutlinedTextField(
-                shape = RoundedCornerShape(50),
-                value = text,
-                onValueChange = onValueChange,
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                textStyle = TextStyle.Default.copy(fontSize = 20.sp),
-            )
-        }
-    }
-}
+

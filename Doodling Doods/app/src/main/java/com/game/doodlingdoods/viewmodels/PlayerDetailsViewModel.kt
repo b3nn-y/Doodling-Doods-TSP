@@ -7,10 +7,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.playerManager.Player
 import com.game.doodlingdoods.GameApi.KtorServerApi
 import com.game.doodlingdoods.filesForServerCommunication.RoomAvailability
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
-class PlayerDetailsViewModel: ViewModel() {
+object PlayerDetailsViewModel {
     var playerName = ""
     var joinType = ""
     var roomName = ""
@@ -22,14 +24,14 @@ class PlayerDetailsViewModel: ViewModel() {
     val guessWord = "Y_u_ W_r_"
     val randomWord = "Your word" //for drawer screen
 
-    lateinit var serverCommunicationViewModel: ServerCommunicationViewModel
+    var serverCommunicationViewModel: ServerCommunicationViewModel? = null
 
     fun initializeServerViewModel(communicationViewModel: ServerCommunicationViewModel){
         serverCommunicationViewModel = communicationViewModel
     }
 
     fun checkRoomAvailability(){
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
 
             val response = pushPost(roomName)
 

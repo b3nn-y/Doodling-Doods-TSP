@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import com.example.playerManager.Player
 import com.game.doodlingdoods.drawingEssentials.Line
+import com.game.doodlingdoods.filesForServerCommunication.ChatMessages
 
 data class Room(
     var name:String,
@@ -19,5 +20,12 @@ data class Room(
     var currentPlayer: Player,
     var rounds: Int = 3,
     var currentWordToGuess:String,
-    var gameStarted:Boolean = false
+    var gameStarted:Boolean = false,
+    var gameMode:String = "Guess The Word",
+    var wordList: ArrayList<String>,
+    var guessedPlayers: ArrayList<String>,
+    var timer: Int = 0,
+    var messages: ArrayList<ChatMessages>,
+    var numberOfRoundsOver:Int=0,
+    var gameOver:Boolean = false
 )

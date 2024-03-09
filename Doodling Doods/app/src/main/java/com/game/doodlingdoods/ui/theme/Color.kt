@@ -17,4 +17,5 @@ val Yellow = Color(0xFFd8ff00)
 val Green = Color(0xFF03f73c)
 val Black = Color(0xFF000000)
 val DarkGreen = Color(0xFF006400)
+val GameLightBlue = Color(0xFF09AFFF)
 

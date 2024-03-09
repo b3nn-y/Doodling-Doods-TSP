@@ -7,10 +7,13 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -57,6 +60,7 @@ fun LobbyAdminScreen(
     val isConnecting by serverViewModel.isConnecting.collectAsState()
     val showConnectionError by serverViewModel.showConnectionError.collectAsState()
 
+
     playerDetailsViewModel.initializeServerViewModel(serverViewModel)
     serverViewModel.sendMessage(Gson().toJson(playerDetailsViewModel.getPlayerData()))
 
@@ -64,8 +68,10 @@ fun LobbyAdminScreen(
 
     var roomChanges = Room(
         "", "", ArrayList<Player>(), 0, 0,
-        Player("", "", "", ""), false, 0, "", false, Player("", "", "", ""), 3, ""
+        Player("", "", "", ""), false, 0, "", false, Player("", "", "", ""), 3, "", wordList = arrayListOf(), guessedPlayers = arrayListOf(), messages = arrayListOf()
     )
+
+
 
     var roomUpdates by remember {
         mutableStateOf(roomChanges)
@@ -81,7 +87,10 @@ fun LobbyAdminScreen(
     }
     println("Room Updated $roomUpdates")
 
-    Scaffold {
+    Scaffold(
+        topBar = {TopBar(playerDetailsViewModel = playerDetailsViewModel)},
+        bottomBar = {BottomBar(navController = navController, serverViewModel)}
+    ) {
 
         Image(
             painter = painterResource(id = R.drawable.background),
@@ -91,20 +100,23 @@ fun LobbyAdminScreen(
         )
 
         Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxSize()
+                .wrapContentSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
 
-
-            TopBar()
 
             val myList = serverViewModel.playersList
 
             Card(
                 modifier = Modifier
+
                     .padding(8.dp)
                     .padding(8.dp)
+                    .fillMaxHeight(0.6f)
                     .align(Alignment.Start),
                 colors = CardDefaults.cardColors(Color.White),
                 elevation = CardDefaults.cardElevation(
@@ -112,7 +124,7 @@ fun LobbyAdminScreen(
                 )
             ) {
                 Text(
-                    text = "Players joined 2/10",
+                    text = "Players joined ${serverViewModel.playersList.size}/10",
                     fontSize = 14.sp,
                     fontFamily = ov_soge_bold,
                     modifier = Modifier
@@ -121,13 +133,13 @@ fun LobbyAdminScreen(
                     color = Color.Black
                 )
                 LazyColumn {
-                    items(myList) { playerName ->
-                        UserCard(playerName = playerName)
+                    items(myList) { player->
+                        UserCard(playerName = player.name, admin = player.admin)
                     }
                 }
             }
 
-            BottomBar(navController = navController, serverViewModel)
+
         }
 
     }
@@ -137,7 +149,8 @@ fun LobbyAdminScreen(
 @Composable
 private fun TopBar(
 
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    playerDetailsViewModel: PlayerDetailsViewModel
 
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -156,34 +169,34 @@ private fun TopBar(
         )
     ) {
 
-        Text(
-            text = "testBot's Room",
-            fontFamily = ov_soge_bold,
-            fontSize = 20.sp,
-            color = Color.Black,
-            modifier = modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(10.dp)
-        )
+//        Text(
+//            text = "${playerDetailsViewModel.playerName}'s Room",
+//            fontFamily = ov_soge_bold,
+//            fontSize = 20.sp,
+//            color = Color.Black,
+//            modifier = modifier
+//                .align(Alignment.CenterHorizontally)
+//                .padding(10.dp)
+//        )
 
         Text(
-            text = "Room Id : TestRoom1",
+            text = "Room name :${playerDetailsViewModel.roomName}",
             fontFamily = ov_soge_bold,
             fontSize = 16.sp,
             color = Color.Blue,
             modifier = modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(4.dp)
+                .padding(top = 20.dp, bottom = 4.dp)
         )
 
         Text(
-            text = "password : ben",
+            text = "password : ${playerDetailsViewModel.roomPass}",
             fontFamily = ov_soge_bold,
             fontSize = 16.sp,
             color = Color.Blue,
             modifier = modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(4.dp)
+
         )
 
         Row(
@@ -233,20 +246,26 @@ private fun BottomBar(
 
     val interactionSource = remember { MutableInteractionSource() }
 
-    Image(painter = painterResource(id = R.drawable.startgame),
-        contentDescription = "Game Settings",
-        modifier = Modifier
-            .padding(8.dp, bottom = 20.dp)
-            .height(100.dp)
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null
-            ) {
-                serverCommunicationViewModel.room.gameStarted = true
-                serverCommunicationViewModel.sendRoomUpdate()
-                navController.navigate("GameScreen")
-            }
-    )
+    Column(
+        modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(painter = painterResource(id = R.drawable.startgame),
+            contentDescription = "Game Settings",
+            modifier = Modifier
+                .padding(8.dp, bottom = 20.dp)
+                .fillMaxWidth(0.5f)
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null
+                ) {
+                    serverCommunicationViewModel.room.gameStarted = true
+                    serverCommunicationViewModel.sendRoomUpdate()
+                    navController.navigate("GameScreen")
+                }
+        )
+    }
 
 //    Button(
 //        onClick = {
@@ -262,10 +281,10 @@ private fun BottomBar(
 
 
 
-@Preview(showSystemUi = true)
-@Composable
-fun PreviewGameSettingsScreen() {
-    LobbyJoinerScreen(navController = NavController(LocalContext.current), playerDetailsViewModel = PlayerDetailsViewModel())
-//    BottomBar(navController = NavController(LocalContext.current), serverCommunicationViewModel = ServerCommunicationViewModel())
-//    GameSettingsScreen(navController)
-}
+//@Preview(showSystemUi = true)
+//@Composable
+//fun PreviewGameSettingsScreen() {
+//    LobbyJoinerScreen(navController = NavController(LocalContext.current), playerDetailsViewModel = PlayerDetailsViewModel)
+////    BottomBar(navController = NavController(LocalContext.current), serverCommunicationViewModel = ServerCommunicationViewModel())
+////    GameSettingsScreen(navController)
+//}
