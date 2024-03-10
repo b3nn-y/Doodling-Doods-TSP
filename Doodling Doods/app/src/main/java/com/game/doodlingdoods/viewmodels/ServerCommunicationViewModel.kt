@@ -338,6 +338,7 @@ class ServerCommunicationViewModel @Inject constructor(
     }
 
     fun sendChat(chatMessages: ChatMessages){
+        println(Gson().toJson(Chat(chatMessages)))
         sendMessage(Gson().toJson(Chat(chatMessages)))
     }
 

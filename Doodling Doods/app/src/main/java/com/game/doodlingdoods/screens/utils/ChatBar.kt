@@ -26,7 +26,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -35,10 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -85,7 +81,7 @@ fun ChatBar(
         ) {
             LazyColumn() {
                 items(chatList.asReversed()) {
-                    MessageItem(message = it, visible = it.visible)
+                    MessageItem(message = it, visible = it.visible, player.playerName)
                 }
             }
         }
@@ -142,7 +138,7 @@ fun ChatBar(
                             else -> {
                                 CoroutineScope(Dispatchers.IO).launch {
                                     val chat = (ChatMessages(player.playerName,player.roomName, "$player${serverViewModel.msgId++}",message,"black", false))
-
+                                    serverViewModel.sendChat(chat)
                                     message = ""
                                 }
                             }
@@ -209,15 +205,15 @@ private fun CustomOutlinedTextField(
     }
 }
 @Composable
-fun MessageItem(message: ChatMessages, visible: Boolean) {
+fun MessageItem(message: ChatMessages, visible: Boolean, playerName: String) {
     val alpha by animateFloatAsState(
         targetValue = if (visible) 1f else 0f,
-        animationSpec = if (visible) tween(durationMillis = 700) else tween(durationMillis = 800),
+        animationSpec = if (visible) tween(durationMillis = 400) else tween(durationMillis = 800),
         label = "" // Adjust duration as needed
     )
     val scale by animateFloatAsState(
         targetValue = if (visible) 1f else 0f,
-        animationSpec = if (visible) tween(durationMillis = 300) else tween(durationMillis = 2000),
+        animationSpec = if (visible) tween(durationMillis = 200) else tween(durationMillis = 2000),
         label = "" // Adjust duration as needed
     )
 
@@ -226,23 +222,24 @@ fun MessageItem(message: ChatMessages, visible: Boolean) {
         modifier = Modifier
             .alpha(alpha)
             .scale(scale)
-            .padding(8.dp)
+            .padding(vertical = 8.dp, horizontal = 32.dp)
     ) {
-        MessageCard(name = message.player, msg = message.msg, color = message.msgColor)
+        MessageCard(name = if (message.player == playerName) "You" else message.player, msg = message.msg, color = message.msgColor, backgroundColor = if (message.player == playerName) Color.White else ChatBlue)
     }
 }
 
 
 @Composable
-fun MessageCard(name: String, msg: String, color: String) {
+fun MessageCard(name: String, msg: String, color: String, backgroundColor: Color) {
     Row (modifier = Modifier
-        .background(shape = CircleShape, color = ChatBlue)
-        .padding(vertical = 16.dp, horizontal = 10.dp)
+        .background(shape = CircleShape, color = backgroundColor)
+        .padding(vertical = 8.dp, horizontal = 5.dp)
+        .fillMaxWidth(7f)
 
     ){
         Box(
             modifier = Modifier
-                .padding(start = 15.dp,end = 9.dp)
+                .padding(start = 7.5.dp,end = 4.5.dp)
 
 
         ) {
@@ -250,8 +247,8 @@ fun MessageCard(name: String, msg: String, color: String) {
                 painter = painterResource(id = R.drawable.profile),
                 contentDescription = "Profile",
                 modifier = Modifier
-                    .height(50.dp)
-                    .width(50.dp)
+                    .height(30.dp)
+                    .width(30.dp)
                     .align(Alignment.Center)
                     .clip(shape = CircleShape)
                     .border(2.dp, Color.White, CircleShape)
@@ -267,13 +264,13 @@ fun MessageCard(name: String, msg: String, color: String) {
                 Text(text = name,
                     textAlign = TextAlign.Left,
                     fontFamily = ov_soge_bold,
-                    fontSize = 20.sp,
+                    fontSize = 15.sp,
                     color = ChatPerson
                 )
                 Text(text = msg,
                     textAlign = TextAlign.Left,
                     fontFamily = ov_soge_bold,
-                    fontSize = 16.sp,
+                    fontSize = 10.sp,
                     color = if (color == "black") Chat else DarkGreen
                 )
             }
@@ -284,5 +281,5 @@ fun MessageCard(name: String, msg: String, color: String) {
 @Preview
 @Composable
 fun Msg(){
-    MessageCard(name = "Ben", msg = "Hye whats up lets hook up a", "black")
+    MessageCard(name = "Ben", msg = "Hye whats up lets hook up a", "black", Chat)
 }
