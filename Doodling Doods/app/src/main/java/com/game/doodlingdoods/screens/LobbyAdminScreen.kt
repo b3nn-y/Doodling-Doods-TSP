@@ -68,7 +68,7 @@ fun LobbyAdminScreen(
 
     var roomChanges = Room(
         "", "", ArrayList<Player>(), 0, 0,
-        Player("", "", "", ""), false, 0, "", false, Player("", "", "", ""), 3, "", wordList = arrayListOf(), guessedPlayers = arrayListOf(), messages = arrayListOf()
+        Player("", "", "", ""), false, 0, "", false, Player("", "", "", ""), 3, "", wordList = arrayListOf(), guessedPlayers = arrayListOf(), iosCords = arrayListOf(),messages = arrayListOf()
     )
 
 

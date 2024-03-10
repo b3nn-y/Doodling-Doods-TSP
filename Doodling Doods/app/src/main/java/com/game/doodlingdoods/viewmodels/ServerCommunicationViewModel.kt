@@ -10,12 +10,16 @@ import com.example.roomManager.Room
 import com.game.doodlingdoods.data.RealtimeCommunicationClient
 import com.game.doodlingdoods.drawingEssentials.Line
 import com.game.doodlingdoods.drawingEssentials.LinesStorage
+import com.game.doodlingdoods.filesForServerCommunication.Chat
 import com.game.doodlingdoods.filesForServerCommunication.ChatMessages
+import com.game.doodlingdoods.filesForServerCommunication.PlayerChats
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -73,6 +77,15 @@ class ServerCommunicationViewModel @Inject constructor(
 
     var score = 5
 
+    private val _increasingNumber = MutableStateFlow(0)
+    val increasingNumber: StateFlow<Int> = _increasingNumber
+
+
+    var _chatListArr = MutableStateFlow(ArrayList<ChatMessages>())
+    val chatListArr: StateFlow<ArrayList<ChatMessages>> get() = _chatListArr
+    val addedMessages = HashMap<String, Int>()
+
+
     val isConnectedWithServer: StateFlow<Boolean>
         get() = _isConnectedWithServer.asStateFlow()
 
@@ -89,6 +102,7 @@ class ServerCommunicationViewModel @Inject constructor(
 //        get() = _viewerPopup.asStateFlow()
 //
 
+    //For cords
 
     val state = client
         .getStateStream(path = "/connect")
@@ -107,6 +121,30 @@ class ServerCommunicationViewModel @Inject constructor(
 
     private val _showConnectionError = MutableStateFlow(false)
     val showConnectionError = _showConnectionError.asStateFlow()
+
+
+    //for chat
+
+//    val state2 = client
+//        .getStateStream(path = "/chat")
+//        .onStart { _isConnecting2.value = true }
+//        .onEach {
+//            _isConnecting2.value = false
+//        }
+//        .catch { t ->
+//            _isConnecting2.value = false
+//            _showConnectionError2.value = t is ConnectException
+//        }
+//        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), String())
+//
+//    private val _isConnecting2 = MutableStateFlow(false)
+//    val isConnecting2 = _isConnecting2.asStateFlow()
+//
+//    private val _showConnectionError2 = MutableStateFlow(false)
+//    val showConnectionError2 = _showConnectionError2.asStateFlow()
+
+
+
 
     fun sendMessage(messageEvent: String) {
         viewModelScope.launch {
@@ -133,6 +171,19 @@ class ServerCommunicationViewModel @Inject constructor(
 
         Log.i("chosenWord",userChosenWord.toString())
         println(data)
+
+        try {
+            val chatData = Gson().fromJson(data, PlayerChats::class.java)
+            if (chatData.chats != null && chatData.score!=null){
+                addMsg(chatData.chats)
+                return null
+            }
+
+        }
+        catch (e:Exception){
+            println(e.message)
+        }
+
         try {
             val roomData = Gson().fromJson(data, Room::class.java)
             if (roomData.name == null || roomData.pass == null || roomData.players != null || roomData.createdBy != null) {
@@ -246,7 +297,48 @@ class ServerCommunicationViewModel @Inject constructor(
         return temp
     }
 
+    fun addMsg(chatData: ArrayList<ChatMessages>) {
+        for (chat in chatData){
+            if (!(addedMessages.containsKey(chat.msgID))){
+                addedMessages[chat.msgID] = _chatListArr.value.size
+                chatModerator(chat)
+            }
+        }
 
+    }
 
+    fun chatModerator(chatMessages: ChatMessages): Job {
+        return viewModelScope.launch {
+            val updatedList = ArrayList(_chatListArr.value)
+            updatedList.add(chatMessages)
+            _chatListArr.value = updatedList
+            _increasingNumber.value = _increasingNumber.value.plus(1)
+            delay(20)
+            val updatedList2 = ArrayList(_chatListArr.value)
+            updatedList2[addedMessages[chatMessages.msgID]!!].visible = true
+            _chatListArr.value = updatedList2
+//            println(updatedList2)
+            _increasingNumber.value = _increasingNumber.value.plus(1)
+            var chatTimer = 5
+            while (chatTimer >= 0) {
+                delay(1000)
+                chatTimer--
+            }
+
+            val updatedList3 = ArrayList(_chatListArr.value)
+            updatedList3[addedMessages[chatMessages.msgID]!!].visible = false
+            _chatListArr.value = updatedList3
+            _increasingNumber.value = _increasingNumber.value.plus(1)
+            delay(2000)
+            val updatedList4 = ArrayList(_chatListArr.value)
+            updatedList4[addedMessages[chatMessages.msgID]!!].lifeCycle = false
+            _chatListArr.value = updatedList4
+            _increasingNumber.value = _increasingNumber.value.plus(1)
+        }
+    }
+
+    fun sendChat(chatMessages: ChatMessages){
+        sendMessage(Gson().toJson(Chat(chatMessages)))
+    }
 
 }

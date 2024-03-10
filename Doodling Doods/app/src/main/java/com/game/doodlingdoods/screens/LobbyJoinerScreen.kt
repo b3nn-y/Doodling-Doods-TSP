@@ -81,7 +81,7 @@ fun LobbyJoinerScreen(
         Player("", "", "", ""),
         3,
         "",
-        wordList = arrayListOf(), guessedPlayers = arrayListOf(), messages = arrayListOf()
+        wordList = arrayListOf(), guessedPlayers = arrayListOf(), messages = arrayListOf(), iosCords = arrayListOf()
     )
 
     val roomUpdates by remember {

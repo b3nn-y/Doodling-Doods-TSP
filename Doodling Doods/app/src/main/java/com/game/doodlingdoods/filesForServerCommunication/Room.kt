@@ -27,5 +27,23 @@ data class Room(
     var timer: Int = 0,
     var messages: ArrayList<ChatMessages>,
     var numberOfRoundsOver:Int=0,
-    var gameOver:Boolean = false
+    var gameOver:Boolean = false,
+    var iosCords: ArrayList<IosCords>
+)
+
+
+data class IosCords(
+    var points: ArrayList<Point>,
+    var color: RGB,
+    var lineWidth: Double
+)
+data class Point(
+    var x: Double,
+    var y: Double
+)
+
+data class RGB(
+    var red: Double,
+    var green: Double,
+    var blue: Double
 )

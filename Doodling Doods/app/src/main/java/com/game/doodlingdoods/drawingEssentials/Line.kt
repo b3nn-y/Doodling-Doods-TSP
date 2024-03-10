@@ -10,7 +10,7 @@ data class Line(
     val end: Offset,
     val color: Color = Color.Black,
     val strokeWidth: Dp = 8.dp,
-    )
+)
 
 data class LinesStorage(
     val lines: MutableList<Line>

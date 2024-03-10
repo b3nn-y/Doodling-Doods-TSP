@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
@@ -24,7 +23,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,11 +33,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -49,12 +45,9 @@ import com.game.doodlingdoods.ui.theme.GameBlue
 import com.game.doodlingdoods.ui.theme.ov_soge_bold
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
-import java.time.format.TextStyle
 import androidx.compose.ui.text.*
 import com.game.doodlingdoods.screens.utils.ViewersPopUp
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
 
 // this is the ongoing game screen, where the live drawing is shown, along with hints, chat, players and their scores, timer etc.
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
@@ -91,7 +84,7 @@ fun ViewerGameScreen(
 
         bottomBar = {
             if (!isPopedUp) {
-                ChatBar(serverViewModel, playerDetailsViewModel.playerName)
+                ChatBar(serverViewModel, playerDetailsViewModel)
             }
         }
     ) {
@@ -229,6 +222,7 @@ private fun ViewerCanvas(
 
 //    var lines = serverCommunicationViewModel.drawingCords
     val lines = serverCommunicationViewModel.drawingCords
+    val width = ((LocalConfiguration.current.screenWidthDp) - 20).dp
 
 //    println(lines + "\nI got some lines ${lines.size}")
     Column(
@@ -248,8 +242,8 @@ private fun ViewerCanvas(
             lines.forEach { line ->
                 drawLine(
                     color = line.color,
-                    start = line.start,
-                    end = line.end,
+                    start = line.start.convertFromRatio(width.value),
+                    end = line.end.convertFromRatio(width.value),
                     strokeWidth = line.strokeWidth.toPx(),
                     cap = StrokeCap.Round
                 )
@@ -269,3 +263,4 @@ private fun ViewerCanvas(
 //fun PreviewGameScreen() {
 //    ViewerGameScreen(NavController(LocalContext.current), PlayerDetailsViewModel())
 //}
+
