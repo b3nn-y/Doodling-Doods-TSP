@@ -59,7 +59,8 @@ import com.game.doodlingdoods.viewmodels.SignUpScreenViewModel
 @Composable
 fun SignUpScreen(
     navController: NavHostController,
-    mainActivityViewModel: MainActivityViewModel
+    mainActivityViewModel: MainActivityViewModel,
+
 
 ) {
 

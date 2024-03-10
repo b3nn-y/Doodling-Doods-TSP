@@ -20,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,14 +54,17 @@ import com.game.doodlingdoods.screens.utils.CustomTextField
 import com.game.doodlingdoods.ui.theme.signInFontFamily
 import com.game.doodlingdoods.viewmodels.LoginScreenViewModel
 import com.game.doodlingdoods.viewmodels.MainActivityViewModel
+import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
+import kotlinx.coroutines.delay
 
 //This screen is shown if the user wants to log in with their previous account
 @Composable
 fun LoginScreen(
     navController: NavController,
-    mainActivityViewModel: MainActivityViewModel
+    mainActivityViewModel: MainActivityViewModel,
+    playerDetailVieModel: PlayerDetailsViewModel
 ) {
-    val viewmodel = viewModel(LoginScreenViewModel::class.java)
+    val viewmodel = viewModel<LoginScreenViewModel>()
 
     val connectivityObserver: ConnectivityObserver =
         NetworkConnectivityObserver(LocalContext.current)
@@ -68,7 +72,8 @@ fun LoginScreen(
         navController = navController,
         viewmodel = viewmodel,
         connectivityObserver = connectivityObserver,
-        mainActivityViewModel = mainActivityViewModel
+        mainActivityViewModel = mainActivityViewModel,
+        playerDetailVieModel = playerDetailVieModel
 
     )
 
@@ -80,7 +85,8 @@ private fun LoginForms(
     navController: NavController,
     viewmodel: LoginScreenViewModel,
     connectivityObserver: ConnectivityObserver,
-    mainActivityViewModel:MainActivityViewModel
+    mainActivityViewModel: MainActivityViewModel,
+    playerDetailVieModel: PlayerDetailsViewModel
 ) {
     var mailId by rememberSaveable {
         mutableStateOf("")
@@ -93,28 +99,39 @@ private fun LoginForms(
     val isSignInSuccess by viewmodel.isSignInSuccess.collectAsState()
 
     if (isSignInSuccess) {
+// assigning the user name
 
-        mainActivityViewModel.makeAsLoggedUser("nameFromServer", mailId)
+        viewmodel.getUserInfo(mailId = mailId)
+//        Log.i("Player**", viewmodel.playerName + viewmodel.playerMailId)
 
-        navController.navigate("RoomsEntry")
+
+        LaunchedEffect(Unit){
+            delay(1000)
+            mainActivityViewModel.makeAsLoggedUser(viewmodel.playerName.toString(), mailId)
+            playerDetailVieModel.playerName = viewmodel.playerName.toString()
+
+            navController.navigate("RoomsEntry")
+        }
+
     }
-
 
 
     val networkStatus by connectivityObserver.observe().collectAsState(
         initial = ConnectivityObserver.Status.Unavailable
     )
-    Log.i("Network",networkStatus.toString())
+    Log.i("Network", networkStatus.toString())
 
     Surface(
 
         modifier.fillMaxSize()
 
     ) {
-        Image(painter = painterResource(id = R.drawable.background),
-            contentDescription ="bg image",
+        Image(
+            painter = painterResource(id = R.drawable.background),
+            contentDescription = "bg image",
             modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds)
+            contentScale = ContentScale.FillBounds
+        )
 
         Column(
             modifier.fillMaxWidth(),
@@ -124,10 +141,16 @@ private fun LoginForms(
             val doodle by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.doodle2))
             val interactionSource = remember { MutableInteractionSource() }
 
-            LottieAnimation(composition = doodle, iterations = LottieConstants.IterateForever ,modifier = Modifier.size(250.dp))
+            LottieAnimation(
+                composition = doodle,
+                iterations = LottieConstants.IterateForever,
+                modifier = Modifier.size(250.dp)
+            )
 
-            Column(modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.Center) {
+            Column(
+                modifier = Modifier.padding(20.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
 //                Text(text = "Log In",
 //                    fontFamily = signInFontFamily,
 //                    fontWeight = FontWeight.Bold,
@@ -139,12 +162,13 @@ private fun LoginForms(
             }
 
             //email text field
-            Text(text = "Email",
+            Text(
+                text = "Email",
                 color = Color.White,
                 fontFamily = signInFontFamily,
                 fontSize = 20.sp,
                 modifier = Modifier
-                    .padding(start = 56.dp,8.dp)
+                    .padding(start = 56.dp, 8.dp)
                     .align(Alignment.Start)
             )
             CustomTextField(
@@ -157,13 +181,15 @@ private fun LoginForms(
                 placeholder = "Email"
             )
 
-            Text(text = "Password",
+            Text(
+                text = "Password",
                 color = Color.White,
                 fontSize = 20.sp,
                 fontFamily = signInFontFamily,
                 modifier = Modifier
-                    .padding(start = 56.dp,8.dp)
-                    .align(Alignment.Start))
+                    .padding(start = 56.dp, 8.dp)
+                    .align(Alignment.Start)
+            )
             //password text field
             CustomPasswordField(
                 text = password,
@@ -190,7 +216,8 @@ private fun LoginForms(
                     .height(100.dp)
             )
             if (networkStatus.toString() == "Unavailable"
-                || networkStatus.toString() == "Lost") {
+                || networkStatus.toString() == "Lost"
+            ) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(50.dp)
                 )
@@ -208,7 +235,8 @@ fun PrevLoginScreen() {
         navController = NavController(LocalContext.current),
         mainActivityViewModel = MainActivityViewModel(LocalContext.current),
         viewmodel = LoginScreenViewModel(),
-        connectivityObserver = NetworkConnectivityObserver(LocalContext.current)
+        connectivityObserver = NetworkConnectivityObserver(LocalContext.current),
+        playerDetailVieModel = PlayerDetailsViewModel
     )
 }
 

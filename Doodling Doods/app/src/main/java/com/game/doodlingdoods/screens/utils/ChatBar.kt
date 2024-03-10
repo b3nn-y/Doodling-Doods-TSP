@@ -81,11 +81,13 @@ fun ChatBar(
         ) {
             LazyColumn() {
                 items(chatList.asReversed()) {
-                    MessageItem(message = it, visible = it.visible, player.playerName)
+                    if (it.lifeCycle){
+                        MessageItem(message = it, visible = it.visible, player.playerName)
+                    }
                 }
             }
         }
-            Row(
+        Row(
             modifier = modifier
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -104,7 +106,7 @@ fun ChatBar(
                     "contentDescription",
                     tint = Color.Black
 
-                    )
+                )
             }
 
             CustomOutlinedTextField(
@@ -129,10 +131,13 @@ fun ChatBar(
                                 message = ""
                             }
                             (serverViewModel.currentWord.value.lowercase().trim() == message.lowercase().trim()) -> {
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    val chat = (ChatMessages(player.playerName, player.roomName,"$player${serverViewModel.msgId++}","guessed it","green",false))
-                                    serverViewModel.sendChat(chat)
-                                    message = ""
+                                if (!serverViewModel.guessedWords.containsKey(message.lowercase().trim())){
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        val chat = (ChatMessages(player.playerName, player.roomName,"$player${serverViewModel.msgId++}","guessed it","green",false))
+                                        serverViewModel.sendChat(chat)
+                                        serverViewModel.guessedWords[message.lowercase().trim()] = "Guessed"
+                                        message = ""
+                                    }
                                 }
                             }
                             else -> {
@@ -200,7 +205,7 @@ private fun CustomOutlinedTextField(
                     )
                 }
 
-                )
+            )
         }
     }
 }

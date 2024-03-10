@@ -19,6 +19,7 @@ import androidx.navigation.createGraph
 import com.game.doodlingdoods.factory.MainActivityViewModelFactory
 import com.game.doodlingdoods.screens.AccountSetup
 import com.game.doodlingdoods.screens.CreateRoomScreen
+import com.game.doodlingdoods.screens.DashBoardScreen
 import com.game.doodlingdoods.screens.DrawingScreen
 import com.game.doodlingdoods.screens.EndGameScreen
 import com.game.doodlingdoods.screens.GuestAccountScreen
@@ -62,7 +63,7 @@ class MainActivity : ComponentActivity() {
                     navController.createGraph(startDestination = "HomeScreen") {
                         composable("HomeScreen") {
                             if (mainActivityViewModel.convertEntityToData()){
-                                RoomsEntryScreen(navController = navController, playerDetailsViewModel)
+                                RoomsEntryScreen(navController = navController, playerDetailsViewModel,mainActivityViewModel)
                             }else{
                                 HomeScreen(navController = navController)
 
@@ -76,7 +77,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("LoginScreen") {
-                            LoginScreen(navController = navController,mainActivityViewModel)
+                            LoginScreen(navController = navController,mainActivityViewModel,playerDetailsViewModel)
                         }
 
                         composable("SignUpScreen") {
@@ -84,7 +85,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("RoomsEntry") {
-                            RoomsEntryScreen(navController = navController, playerDetailsViewModel)
+                            RoomsEntryScreen(navController = navController, playerDetailsViewModel,mainActivityViewModel)
                         }
 
                         composable("JoinRoom") {
@@ -114,6 +115,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("LeaderBoardScreen"){
                             LeaderBoardScreen(navController=navController,playerDetailsViewModel)
+                        }
+                        composable("DashBoardScreen"){
+                            DashBoardScreen(navController = navController)
                         }
 
                     }

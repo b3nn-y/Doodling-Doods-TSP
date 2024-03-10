@@ -37,6 +37,8 @@ class ServerCommunicationViewModel @Inject constructor(
     private val client: RealtimeCommunicationClient
 ) : ViewModel() {
     var msgId = 0
+
+    var guessedWords = HashMap<String, String>()
 //    var chatMessages = ArrayList<ChatMessages>()
 
     private val _chatMessages = MutableStateFlow(ArrayList<ChatMessages>())
@@ -77,15 +79,6 @@ class ServerCommunicationViewModel @Inject constructor(
 
     var score = 5
 
-    private val _increasingNumber = MutableStateFlow(0)
-    val increasingNumber: StateFlow<Int> = _increasingNumber
-
-
-    var _chatListArr = MutableStateFlow(ArrayList<ChatMessages>())
-    val chatListArr: StateFlow<ArrayList<ChatMessages>> get() = _chatListArr
-    val addedMessages = HashMap<String, Int>()
-
-
     val isConnectedWithServer: StateFlow<Boolean>
         get() = _isConnectedWithServer.asStateFlow()
 
@@ -102,7 +95,14 @@ class ServerCommunicationViewModel @Inject constructor(
 //        get() = _viewerPopup.asStateFlow()
 //
 
-    //For cords
+    private val _increasingNumber = MutableStateFlow(0)
+    val increasingNumber: StateFlow<Int> = _increasingNumber
+
+
+    var _chatListArr = MutableStateFlow(ArrayList<ChatMessages>())
+    val chatListArr: StateFlow<ArrayList<ChatMessages>> get() = _chatListArr
+    val addedMessages = HashMap<String, Int>()
+
 
     val state = client
         .getStateStream(path = "/connect")
@@ -121,30 +121,6 @@ class ServerCommunicationViewModel @Inject constructor(
 
     private val _showConnectionError = MutableStateFlow(false)
     val showConnectionError = _showConnectionError.asStateFlow()
-
-
-    //for chat
-
-//    val state2 = client
-//        .getStateStream(path = "/chat")
-//        .onStart { _isConnecting2.value = true }
-//        .onEach {
-//            _isConnecting2.value = false
-//        }
-//        .catch { t ->
-//            _isConnecting2.value = false
-//            _showConnectionError2.value = t is ConnectException
-//        }
-//        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), String())
-//
-//    private val _isConnecting2 = MutableStateFlow(false)
-//    val isConnecting2 = _isConnecting2.asStateFlow()
-//
-//    private val _showConnectionError2 = MutableStateFlow(false)
-//    val showConnectionError2 = _showConnectionError2.asStateFlow()
-
-
-
 
     fun sendMessage(messageEvent: String) {
         viewModelScope.launch {
@@ -171,7 +147,6 @@ class ServerCommunicationViewModel @Inject constructor(
 
         Log.i("chosenWord",userChosenWord.toString())
         println(data)
-
         try {
             val chatData = Gson().fromJson(data, PlayerChats::class.java)
             if (chatData.chats != null && chatData.score!=null){
@@ -183,7 +158,6 @@ class ServerCommunicationViewModel @Inject constructor(
         catch (e:Exception){
             println(e.message)
         }
-
         try {
             val roomData = Gson().fromJson(data, Room::class.java)
             if (roomData.name == null || roomData.pass == null || roomData.players != null || roomData.createdBy != null) {
@@ -297,6 +271,7 @@ class ServerCommunicationViewModel @Inject constructor(
         return temp
     }
 
+
     fun addMsg(chatData: ArrayList<ChatMessages>) {
         for (chat in chatData){
             if (!(addedMessages.containsKey(chat.msgID))){
@@ -341,5 +316,8 @@ class ServerCommunicationViewModel @Inject constructor(
         println(Gson().toJson(Chat(chatMessages)))
         sendMessage(Gson().toJson(Chat(chatMessages)))
     }
+
+
+
 
 }

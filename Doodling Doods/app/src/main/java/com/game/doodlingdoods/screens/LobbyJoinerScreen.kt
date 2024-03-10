@@ -68,20 +68,8 @@ fun LobbyJoinerScreen(
     if (!isConnected) RoomsHandler(serverViewModel, state, playerDetailsViewModel)
 
     var roomChanges = Room(
-        "",
-        "",
-        ArrayList<Player>(),
-        0,
-        0,
-        Player("", "", "", ""),
-        false,
-        0,
-        "",
-        false,
-        Player("", "", "", ""),
-        3,
-        "",
-        wordList = arrayListOf(), guessedPlayers = arrayListOf(), messages = arrayListOf(), iosCords = arrayListOf()
+        "", "", ArrayList<Player>(), 0, 0,
+        Player("", "", "", ""), false, 0, "", false, Player("", "", "", ""), 3, "", wordList = arrayListOf(), guessedPlayers = arrayListOf(), iosCords = arrayListOf(),messages = arrayListOf()
     )
 
     val roomUpdates by remember {

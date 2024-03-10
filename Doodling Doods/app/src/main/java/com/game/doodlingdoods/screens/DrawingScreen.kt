@@ -39,7 +39,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.pointerInput
@@ -68,6 +67,9 @@ import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
 import com.github.skydoves.colorpicker.compose.ColorEnvelope
 import com.google.gson.Gson
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 
 @Composable
@@ -77,6 +79,8 @@ fun DrawingScreen(
     UserDrawingScreen(navController, playerDetailsViewModel)
 
 }
+
+
 @Composable
 fun UpdateChat(incNum: Int, serverViewModel: ServerCommunicationViewModel, playerDetailsViewModel: PlayerDetailsViewModel){
     ChatBar(serverViewModel, playerDetailsViewModel)
@@ -215,7 +219,6 @@ private fun DrawingLogicScreen(
 
 ) {
     val lines by remember { mutableStateOf(mutableStateListOf<Line>()) }
-    val width = ((LocalConfiguration.current.screenWidthDp) - 20).dp
     Column(
         modifier,
         verticalArrangement = Arrangement.Center,
@@ -232,8 +235,8 @@ private fun DrawingLogicScreen(
                         change.consume()
 
                         val line = Line(
-                            start = (change.position - dragAmount).convertByRatio(width.value),
-                            end = change.position.convertByRatio(width.value),
+                            start = change.position - dragAmount,
+                            end = change.position,
                         )
 
                         lines.add(line)
@@ -254,8 +257,8 @@ private fun DrawingLogicScreen(
             lines.forEach { line ->
                 drawLine(
                     color = line.color,
-                    start = line.start.convertFromRatio(width.value),
-                    end = line.end.convertFromRatio(width.value),
+                    start = line.start,
+                    end = line.end,
                     strokeWidth = line.strokeWidth.toPx(),
                     cap = StrokeCap.Round
                 )
@@ -356,25 +359,4 @@ fun PreviewTest() {
     DrawingScreen(navController = NavController(LocalContext.current), playerDetailsViewModel = PlayerDetailsViewModel)
 //    ColorPicker()
 }
-
-fun Offset.convertByRatio(width: Float):Offset{
-    val tempOffset = this
-    val x = tempOffset.x/width
-    val y = tempOffset.y/width
-    val newOffset = Offset(x, y)
-    Log.i("convertByRatiotemp", tempOffset.toString())
-    Log.i("convertByRatio", newOffset.toString())
-    return  newOffset
-}
-
-fun Offset.convertFromRatio(width: Float):Offset{
-    val tempOffset = this
-    val x = tempOffset.x * width
-    val y = tempOffset.y * width
-    val newOffset = Offset(x, y)
-    Log.i("convertFromRatiotemp", tempOffset.toString())
-    Log.i("convertFromRatio", newOffset.toString())
-    return  newOffset
-}
-
 
