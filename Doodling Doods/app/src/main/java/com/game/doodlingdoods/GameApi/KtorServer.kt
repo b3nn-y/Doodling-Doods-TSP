@@ -1,6 +1,8 @@
 package com.game.doodlingdoods.GameApi
 
 import com.game.doodlingdoods.filesForServerCommunication.RoomAvailability
+import com.game.doodlingdoods.roomDb.JsonUser
+import com.game.doodlingdoods.roomDb.LeaderBoardDataClass
 import com.game.doodlingdoods.users.AuthenticationDataClass
 import retrofit2.Response
 import retrofit2.http.Field
@@ -31,4 +33,18 @@ interface KtorServer {
         @Field("mail_id") mail_id: String,
         @Field("password") password:String
     ):Response<AuthenticationDataClass>
+
+    @FormUrlEncoded
+    @POST("/user")
+    suspend fun getUserInfo(
+        @Field("mail_id")mail_id: String,
+    ):Response<JsonUser>
+
+    @GET("/leaderboard")
+    suspend fun getLeaderBoard():Response<List<LeaderBoardDataClass>>
+
+
+
+
+
 }

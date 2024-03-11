@@ -17,4 +17,8 @@ val Yellow = Color(0xFFd8ff00)
 val Green = Color(0xFF03f73c)
 val Black = Color(0xFF000000)
 val DarkGreen = Color(0xFF006400)
+val GameLightBlue = Color(0xFF09AFFF)
+val ChatBlue = Color(0xFFA2E1FF)
 
+val Chat = Color(0xFF004085)
+val ChatPerson = Color(0xFF383838)

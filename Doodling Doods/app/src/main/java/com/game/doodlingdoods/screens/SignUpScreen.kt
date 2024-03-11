@@ -2,6 +2,8 @@ package com.game.doodlingdoods.screens
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,9 +43,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.internetConnection.ConnectivityObserver
 import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
+import com.game.doodlingdoods.screens.utils.CustomPasswordField
+import com.game.doodlingdoods.screens.utils.CustomTextField
 import com.game.doodlingdoods.ui.theme.signInFontFamily
 import com.game.doodlingdoods.viewmodels.MainActivityViewModel
 import com.game.doodlingdoods.viewmodels.SignUpScreenViewModel
@@ -53,7 +61,8 @@ import com.game.doodlingdoods.viewmodels.SignUpScreenViewModel
 @Composable
 fun SignUpScreen(
     navController: NavHostController,
-    mainActivityViewModel: MainActivityViewModel
+    mainActivityViewModel: MainActivityViewModel,
+
 
 ) {
 
@@ -97,6 +106,7 @@ private fun SignUpForms(
     )
 //    val interactionSource = remember { MutableInteractionSource() }
 
+    val lottie by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.login_man_pencil))
 
 
     Log.i("Network", networkStatus.toString())
@@ -110,6 +120,7 @@ private fun SignUpForms(
         navController.navigate("RoomsEntry")
 
     }
+    val context = LocalContext.current
 
 
 
@@ -129,12 +140,16 @@ private fun SignUpForms(
             contentScale = ContentScale.FillBounds,
             modifier = modifier.fillMaxSize()
         )
+
+
+
         Column(
             modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
 
+            LottieAnimation(composition = lottie, iterations = LottieConstants.IterateForever, modifier = Modifier.size(250.dp))
             //name text field
             Text(
                 text = "Name",
@@ -146,13 +161,14 @@ private fun SignUpForms(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedTextField(
+            CustomTextField(
                 text = userName,
                 onValueChange = { userName = it },
                 modifier = Modifier
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Name"
             )
 
             //email text field
@@ -166,13 +182,14 @@ private fun SignUpForms(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedTextField(
+            CustomTextField(
                 text = mailId,
                 onValueChange = { mailId = it },
                 modifier = Modifier
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Email"
             )
 
             //password text field
@@ -186,13 +203,14 @@ private fun SignUpForms(
                     .align(Alignment.Start)
             )
 
-            CustomOutlinedPasswordField(
+            CustomPasswordField(
                 text = password,
                 onValueChange = { password = it },
                 modifier = Modifier
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Password"
             )
 
             Spacer(modifier = Modifier.height(40.dp))
@@ -202,11 +220,11 @@ private fun SignUpForms(
                 painterResource(id = R.drawable.sign_up_button),
                 contentDescription = "Sign Up Button",
                 modifier = Modifier
-                    .size(200.dp)
+                    .fillMaxWidth(0.5f)
 
                     .padding(0.dp)
                     .wrapContentHeight()
-                    .clickable{
+                    .clickable {
                         if (networkStatus.toString() == "Available") {
                             // creating account on Server
                             if (viewModel.userInputFilter(
@@ -219,6 +237,12 @@ private fun SignUpForms(
                                 viewModel.signUpWithCredentials(userName, mailId, password)
 
                             } else {
+                                Toast.makeText(
+                                    context,
+                                    "Username or password invalid",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+
                                 Log.i("signup", "failed")
 
                             }

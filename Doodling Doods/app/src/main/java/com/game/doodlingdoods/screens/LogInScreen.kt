@@ -1,6 +1,7 @@
 package com.game.doodlingdoods.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,6 +21,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,17 +50,22 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.internetConnection.ConnectivityObserver
 import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
+import com.game.doodlingdoods.screens.utils.CustomPasswordField
+import com.game.doodlingdoods.screens.utils.CustomTextField
 import com.game.doodlingdoods.ui.theme.signInFontFamily
 import com.game.doodlingdoods.viewmodels.LoginScreenViewModel
 import com.game.doodlingdoods.viewmodels.MainActivityViewModel
+import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
+import kotlinx.coroutines.delay
 
 //This screen is shown if the user wants to log in with their previous account
 @Composable
 fun LoginScreen(
     navController: NavController,
-    mainActivityViewModel: MainActivityViewModel
+    mainActivityViewModel: MainActivityViewModel,
+    playerDetailVieModel: PlayerDetailsViewModel
 ) {
-    val viewmodel = viewModel(LoginScreenViewModel::class.java)
+    val viewmodel = viewModel<LoginScreenViewModel>()
 
     val connectivityObserver: ConnectivityObserver =
         NetworkConnectivityObserver(LocalContext.current)
@@ -66,7 +73,8 @@ fun LoginScreen(
         navController = navController,
         viewmodel = viewmodel,
         connectivityObserver = connectivityObserver,
-        mainActivityViewModel = mainActivityViewModel
+        mainActivityViewModel = mainActivityViewModel,
+        playerDetailVieModel = playerDetailVieModel
 
     )
 
@@ -78,7 +86,8 @@ private fun LoginForms(
     navController: NavController,
     viewmodel: LoginScreenViewModel,
     connectivityObserver: ConnectivityObserver,
-    mainActivityViewModel:MainActivityViewModel
+    mainActivityViewModel: MainActivityViewModel,
+    playerDetailVieModel: PlayerDetailsViewModel
 ) {
     var mailId by rememberSaveable {
         mutableStateOf("")
@@ -91,28 +100,40 @@ private fun LoginForms(
     val isSignInSuccess by viewmodel.isSignInSuccess.collectAsState()
 
     if (isSignInSuccess) {
+// assigning the user name
 
-        mainActivityViewModel.makeAsLoggedUser("nameFromServer", mailId)
+        viewmodel.getUserInfo(mailId = mailId)
+//        Log.i("Player**", viewmodel.playerName + viewmodel.playerMailId)
 
-        navController.navigate("RoomsEntry")
+
+        LaunchedEffect(Unit){
+            delay(1000)
+            mainActivityViewModel.makeAsLoggedUser(viewmodel.playerName.toString(), mailId)
+            playerDetailVieModel.playerName = viewmodel.playerName.toString()
+
+            navController.navigate("RoomsEntry")
+        }
+
     }
 
-
+    val context = LocalContext.current
 
     val networkStatus by connectivityObserver.observe().collectAsState(
         initial = ConnectivityObserver.Status.Unavailable
     )
-    Log.i("Network",networkStatus.toString())
+    Log.i("Network", networkStatus.toString())
 
     Surface(
 
         modifier.fillMaxSize()
 
     ) {
-        Image(painter = painterResource(id = R.drawable.background),
-            contentDescription ="bg image",
+        Image(
+            painter = painterResource(id = R.drawable.background),
+            contentDescription = "bg image",
             modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds)
+            contentScale = ContentScale.FillBounds
+        )
 
         Column(
             modifier.fillMaxWidth(),
@@ -122,61 +143,81 @@ private fun LoginForms(
             val doodle by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.doodle2))
             val interactionSource = remember { MutableInteractionSource() }
 
-            LottieAnimation(composition = doodle, iterations = LottieConstants.IterateForever ,modifier = Modifier.size(250.dp))
+            LottieAnimation(
+                composition = doodle,
+                iterations = LottieConstants.IterateForever,
+                modifier = Modifier.size(250.dp)
+            )
 
-            Column(modifier = Modifier.padding(20.dp),
-                verticalArrangement = Arrangement.Center) {
-                Text(text = "Log In",
-                    fontFamily = signInFontFamily,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    fontSize = 40.sp)
+            Column(
+                modifier = Modifier.padding(20.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+//                Text(text = "Log In",
+//                    fontFamily = signInFontFamily,
+//                    fontWeight = FontWeight.Bold,
+//                    color = Color.White,
+//                    fontSize = 40.sp
+//                )
 
 
             }
 
             //email text field
-            Text(text = "User Id",
+            Text(
+                text = "Email",
                 color = Color.White,
                 fontFamily = signInFontFamily,
                 fontSize = 20.sp,
                 modifier = Modifier
-                    .padding(start = 56.dp,8.dp)
+                    .padding(start = 56.dp, 8.dp)
                     .align(Alignment.Start)
             )
-            CustomOutlinedTextField(
+            CustomTextField(
                 text = mailId,
                 onValueChange = { mailId = it },
                 modifier = Modifier
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Email"
             )
 
-            Text(text = "Password",
+            Text(
+                text = "Password",
                 color = Color.White,
                 fontSize = 20.sp,
                 fontFamily = signInFontFamily,
                 modifier = Modifier
-                    .padding(start = 56.dp,8.dp)
-                    .align(Alignment.Start))
+                    .padding(start = 56.dp, 8.dp)
+                    .align(Alignment.Start)
+            )
             //password text field
-            CustomOutlinedPasswordField(
+            CustomPasswordField(
                 text = password,
                 onValueChange = { password = it },
                 modifier = Modifier
                     .padding(8.dp)
                     .background(Color.Transparent),
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                placeholder = "Password"
             )
             Image(painter = painterResource(id = R.drawable.login_button),
                 contentDescription = "Sign In button",
                 modifier = Modifier
+                    .fillMaxWidth(0.5f)
                     .clickable {
 
                         if (networkStatus.toString() == "Available") {
                             if (viewmodel.userInputFilter(mailId = mailId, password = password)) {
                                 viewmodel.signInWithCredentials(mailId, password)
+
+                            }else{
+                                Toast.makeText(
+                                    context,
+                                    "Username or password invalid",
+                                    Toast.LENGTH_SHORT
+                                ).show()
 
                             }
                         }
@@ -184,7 +225,8 @@ private fun LoginForms(
                     .height(100.dp)
             )
             if (networkStatus.toString() == "Unavailable"
-                || networkStatus.toString() == "Lost") {
+                || networkStatus.toString() == "Lost"
+            ) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(50.dp)
                 )
@@ -202,68 +244,8 @@ fun PrevLoginScreen() {
         navController = NavController(LocalContext.current),
         mainActivityViewModel = MainActivityViewModel(LocalContext.current),
         viewmodel = LoginScreenViewModel(),
-        connectivityObserver = NetworkConnectivityObserver(LocalContext.current)
+        connectivityObserver = NetworkConnectivityObserver(LocalContext.current),
+        playerDetailVieModel = PlayerDetailsViewModel
     )
 }
 
-@Composable
-private fun CustomOutlinedTextField(
-    text: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.White
-) {
-    Surface(
-        shadowElevation = 20.dp,
-        shape = RoundedCornerShape(50),
-        modifier = modifier.fillMaxWidth(0.75f),
-        color = backgroundColor
-    ) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            OutlinedTextField(
-                shape = RoundedCornerShape(50),
-                value = text,
-                onValueChange = onValueChange,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                textStyle = TextStyle.Default.copy(fontSize = 23.sp),
-                singleLine = true,
-
-
-                )
-        }
-    }
-}
-
-@Composable
-private fun CustomOutlinedPasswordField(
-    text: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.White
-) {
-    Surface(
-        shadowElevation = 20.dp,
-        shape = RoundedCornerShape(50),
-        modifier = modifier.fillMaxWidth(0.75f),
-        color = backgroundColor
-    ) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            OutlinedTextField(
-                shape = RoundedCornerShape(50),
-                value = text,
-                onValueChange = onValueChange,
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                textStyle = TextStyle.Default.copy(fontSize = 23.sp),
-
-                )
-        }
-    }
-}

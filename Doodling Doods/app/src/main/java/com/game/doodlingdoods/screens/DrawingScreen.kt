@@ -1,6 +1,7 @@
 package com.game.doodlingdoods.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,6 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -42,6 +44,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -53,9 +56,8 @@ import com.game.doodlingdoods.R
 import com.game.doodlingdoods.drawingEssentials.Line
 import com.game.doodlingdoods.drawingEssentials.LinesStorage
 import com.game.doodlingdoods.screens.utils.ChatBar
-import com.game.doodlingdoods.screens.utils.ColorPicker
+import com.game.doodlingdoods.screens.utils.OptionsPopUp
 import com.game.doodlingdoods.ui.theme.Black
-import com.game.doodlingdoods.ui.theme.GameBlue
 import com.game.doodlingdoods.ui.theme.Green
 import com.game.doodlingdoods.ui.theme.Red
 import com.game.doodlingdoods.ui.theme.Yellow
@@ -64,6 +66,10 @@ import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
 import com.github.skydoves.colorpicker.compose.ColorEnvelope
 import com.google.gson.Gson
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 
 @Composable
@@ -71,98 +77,148 @@ fun DrawingScreen(
     navController: NavController, playerDetailsViewModel: PlayerDetailsViewModel
 ) {
     UserDrawingScreen(navController, playerDetailsViewModel)
+
 }
 
-@SuppressLint("MutableCollectionMutableState", "UnusedMaterial3ScaffoldPaddingParameter")
+
+@Composable
+fun UpdateChat(incNum: Int, serverViewModel: ServerCommunicationViewModel, playerDetailsViewModel: PlayerDetailsViewModel){
+    ChatBar(serverViewModel, playerDetailsViewModel)
+}
+
+@SuppressLint("MutableCollectionMutableState", "UnusedMaterial3ScaffoldPaddingParameter",
+    "StateFlowValueCalledInComposition"
+)
 @Composable
 fun UserDrawingScreen(
-    navController: NavController, playerDetailsViewModel: PlayerDetailsViewModel
+    navController: NavController,
+    playerDetailsViewModel: PlayerDetailsViewModel
 ) {
-    val serverViewModel = playerDetailsViewModel.serverCommunicationViewModel
+    val serverViewModel = playerDetailsViewModel.serverCommunicationViewModel!!
     val state by serverViewModel.state.collectAsState()
+    val roomTime by serverViewModel.roomTime.collectAsState()
+    val currentWord by serverViewModel.currentWord.collectAsState()
+    val currentPlayer by serverViewModel.currentPlayer.collectAsState()
+    val roundsPlayed by serverViewModel.roundsPlayed.collectAsState()
+    val increasingNumber by serverViewModel.increasingNumber.collectAsState()
 
+    var isPopedUp by rememberSaveable {
+        mutableStateOf(true)
+    }
+    var isWordChosen by serverViewModel.isWordChosen
 
     serverViewModel.evaluateServerMessage(state)
-    if (serverViewModel.currentPlayer != playerDetailsViewModel.playerName) {
+
+    if (serverViewModel.room.gameOver) {
+        navController.navigate("LeaderBoardScreen")
+    }
+
+    if (currentPlayer != playerDetailsViewModel.playerName) {
         navController.navigate("GameScreen")
     }
+
     Scaffold(
-        bottomBar = { ChatBar() }
+        bottomBar = {
+            if (isWordChosen){
+                UpdateChat(incNum = increasingNumber, serverViewModel = serverViewModel, playerDetailsViewModel = playerDetailsViewModel)
+            }
+
+        }
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .paint(
-                    painterResource(R.drawable.background), contentScale = ContentScale.FillBounds
+                    painterResource(R.drawable.background_gradient_blue),
+                    contentScale = ContentScale.FillBounds
                 )
         ) {
             Column {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(horizontal = 8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Game Mode",
+                        text = serverViewModel.room.gameMode,
                         fontFamily = ov_soge_bold,
-                        fontSize = 30.sp,
-                        modifier = Modifier.weight(0.8f),
-
+                        fontSize = 20.sp,
                         textAlign = TextAlign.Center,
-                        color = GameBlue
-
+                        color = Color.White
                     )
                     Image(
                         painter = painterResource(id = R.drawable.people),
                         contentDescription = "profile",
                         modifier = Modifier
-                            .size(100.dp)
-
-                            .weight(0.2f),
-                        alignment = Alignment.Center,
-
-                        )
-                }
-
-                Card(
-                    modifier = Modifier.padding(15.dp), elevation = CardDefaults.cardElevation(
-                        defaultElevation = 20.dp
+//                            .clickable {
+//                                isPopedUp = !isPopedUp
+//                            }
+                            .size(60.dp),
+                        alignment = Alignment.Center
                     )
-                ) {
-                    DrawingLogicScreen(serverViewModel)
                 }
-
-                ColorBars()
 
                 Text(
-                    text = playerDetailsViewModel.randomWord,
+                    text = roomTime,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    color = Color.Black
+                )
+                Text(
+                    text = currentWord,
                     fontFamily = ov_soge_bold,
                     fontSize = 35.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 32.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
-                    color = Color.White,
+                    color = Color.White
+                )
 
+                Card(
+                    modifier = Modifier.padding(15.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 20.dp)
+                ) {
+                    DrawingLogicScreen(serverViewModel, playerDetailsViewModel = playerDetailsViewModel)
+                }
 
-                    )
+                ColorBars()
+            }
 
+            if (!isWordChosen) {
+                OptionsPopUp(serverViewModel.drawingOptions,serverViewModel)
+
+                LaunchedEffect(Unit){
+                    delay(5000)
+
+                    if (!isWordChosen){
+                        serverViewModel.sendWord(serverViewModel.room.wordList.random())
+                        serverViewModel.isWordChosen.value = true
+                    }
+//                    if (serverViewModel.userChosenWord == null){
+//                        serverViewModel.room.currentWordToGuess = serverViewModel.room.wordList.random()
+//                        serverViewModel.sendRoomUpdate()
+//                        serverViewModel.isWordChosen.value = true
+//                    }
+                    Log.i("Words22",serverViewModel.room.currentWordToGuess)
+                    isPopedUp=false
+                }
 
             }
         }
     }
-
-
 }
+
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 private fun DrawingLogicScreen(
-    serverViewModel: ServerCommunicationViewModel, modifier: Modifier = Modifier.fillMaxWidth()
+    serverViewModel: ServerCommunicationViewModel,playerDetailsViewModel: PlayerDetailsViewModel, modifier: Modifier = Modifier.fillMaxWidth()
 
 ) {
     val lines by remember { mutableStateOf(mutableStateListOf<Line>()) }
@@ -189,6 +245,13 @@ private fun DrawingLogicScreen(
                         lines.add(line)
                         println(lines)
                         serverViewModel.room.cords = Gson().toJson(LinesStorage(lines))
+                        playerDetailsViewModel.serverCommunicationViewModel!!.room.players.forEach {
+                            if (it.name == playerDetailsViewModel.playerName) {
+                                it.score =
+                                    playerDetailsViewModel.serverCommunicationViewModel!!.score
+                                playerDetailsViewModel.serverCommunicationViewModel!!.sendRoomUpdate()
+                            }
+                        }
                         serverViewModel.sendRoomUpdate()
 
                     }
@@ -217,7 +280,7 @@ private fun ColorBars(
 
 
 ) {
-    val colorList = listOf( Black,Red, Yellow, Green,)
+    val colorList = listOf(Black, Red, Yellow, Green)
 
     Row(
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
@@ -227,7 +290,7 @@ private fun ColorBars(
 
             ) {
             items(items = colorList) { item ->
-               RoundBox(color = item)
+                RoundBox(color = item)
             }
         }
 
@@ -255,6 +318,7 @@ fun RoundBox(color: Color) {
             .border(4.dp, Color.Black, shape = CircleShape)
     )
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
@@ -278,10 +342,10 @@ fun RoundBoxIcon() {
 //                ColorPicker()
 
             }
-    ){
+    ) {
         Image(
             painter = painterResource(id = R.drawable.rainbow_icon),
-            contentDescription ="color picker",
+            contentDescription = "color picker",
             modifier = Modifier
                 .size(40.dp)
 
@@ -292,25 +356,10 @@ fun RoundBoxIcon() {
 }
 
 
-
-
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewTest() {
-    ColorPicker()
+    DrawingScreen(navController = NavController(LocalContext.current), playerDetailsViewModel = PlayerDetailsViewModel)
+//    ColorPicker()
 }
-@Preview(
-    showSystemUi = true,
-    showBackground = true,
-)
-@Composable
-fun PreviewDrawingScreen() {
-//    DrawingScreen(
-//        navController = NavController(LocalContext.current),
-//        playerDetailsViewModel = PlayerDetailsViewModel()
-//    )
 
-//    DrawingLogicScreen(serverViewModel = PlayerDetailsViewModel().serverCommunicationViewModel)
-//    ColorBars()
-//     ChatBar()
-}

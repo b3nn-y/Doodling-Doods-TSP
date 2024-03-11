@@ -16,53 +16,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.ui.theme.DarkGreen
 import com.game.doodlingdoods.ui.theme.ov_soge_bold
 
-//@Composable
-//fun LobbyPlayerDetails(playerData: PlayerLobbyData) {
-//
-//    val playerDataList = arrayListOf(
-//        PlayerLobbyData("Vijay", 27, true, R.drawable.avatar1),
-//        PlayerLobbyData("Ben", 89, false, R.drawable.avatar1),
-//        PlayerLobbyData("Bala", 69, false, R.drawable.avatar1),
-//        PlayerLobbyData("is", 35, false, R.drawable.avatar1),
-//        PlayerLobbyData("Gay", 74, false, R.drawable.avatar1),
-//        PlayerLobbyData("Raghu", 99, false, R.drawable.avatar1),
-//        PlayerLobbyData("Jose", 76, false, R.drawable.avatar1),
-//        PlayerLobbyData("Nira", 65, false, R.drawable.avatar1),
-//        PlayerLobbyData("Chan", 23, false, R.drawable.avatar1),
-//        PlayerLobbyData("Mark", 90, false, R.drawable.avatar1),
-//    )
-//    PlayerCards(playerDataList)
-//
-//}
-//
-//
-//@Composable
-//private fun PlayerCards(playerDataList: ArrayList<PlayerLobbyData>) {
-//    LazyColumn{
-//        items(playerDataList){ player->
-//            UserCard(playerData = player)
-//        }
-//    }
-//}
+
 @Composable
-fun UserCard(playerName:String) {
+fun UserCard(playerName:String,admin:Boolean,score:Int=0) {
     Card(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth(),
-        shape = RoundedCornerShape(50),
+        shape = RoundedCornerShape(15),
         colors = CardDefaults.cardColors(
             Color.White
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 10.dp,
-            pressedElevation = 10.dp
+
         )
     ) {
         Row(
@@ -84,7 +59,7 @@ fun UserCard(playerName:String) {
 
             Column(
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
+                horizontalAlignment = Alignment.Start,
 
                 modifier = Modifier
                     .padding(start = 8.dp)
@@ -97,22 +72,23 @@ fun UserCard(playerName:String) {
                     modifier = Modifier
                         .padding(top = 8.dp),
                     fontFamily = ov_soge_bold,
-                    fontSize = 24.sp
+                    fontSize = 24.sp,
+                    style = TextStyle(color = Color.Black)
                 )
 
                 Text(
-                    text = if (true) {
+                    text = if (admin) {
                         "Admin"
                     } else {
                         "Player"
                     },
-                    color = if (true) {
+                    color = if (admin) {
                         DarkGreen
                     } else {
                         Color.Black
                     },
                     modifier = Modifier
-                        .padding(10.dp),
+                        .padding(top = 8.dp),
                     fontFamily = ov_soge_bold,
                     fontSize = 16.sp
                 )
@@ -135,12 +111,13 @@ fun UserCard(playerName:String) {
                 )
 
                 Text(
-                    text = "0",
+                    text = score.toString(),
                     fontSize = 20.sp,
                     fontFamily = ov_soge_bold,
                     modifier = Modifier
                         .padding(end = 10.dp)
-                        .align(Alignment.End)
+                        .align(Alignment.End),
+                    style = TextStyle(color = Color.Black)
                 )
             }
 
@@ -149,11 +126,11 @@ fun UserCard(playerName:String) {
     }
 }
 
-//@Preview(showSystemUi = true)
-//@Composable
-//fun Preview(){
-//    LobbyPlayerDetails(playerData = PlayerLobbyData("Vijay", 27, true, R.drawable.avatar1) )
-//}
+@Preview(showSystemUi = true)
+@Composable
+fun Preview(){
+   UserCard(playerName = "Raghu", admin =false )
+}
 
 
 data class PlayerLobbyData(

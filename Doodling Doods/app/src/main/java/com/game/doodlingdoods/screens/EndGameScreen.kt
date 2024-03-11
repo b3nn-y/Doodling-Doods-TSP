@@ -1,8 +1,10 @@
 package com.game.doodlingdoods.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,30 +24,56 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.screens.utils.UserCard
 import com.game.doodlingdoods.ui.theme.ov_soge_bold
+import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
+import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
 
 //This screen is shown as soon as a game is over and shows the top scores of the current players and their stats.
 @Composable
-fun EndGameScreen() {
+fun EndGameScreen(
+    navController: NavController,
+    playerDetailsViewModel: PlayerDetailsViewModel
 
+) {
+    playerDetailsViewModel.serverCommunicationViewModel?.room?.players?.forEach {
+        if (it.name == playerDetailsViewModel.playerName){
+            it.score = playerDetailsViewModel.serverCommunicationViewModel?.score!!
+            playerDetailsViewModel.serverCommunicationViewModel?.sendRoomUpdate()
+        }
+    }
 
-    GameOver()
+    GameOver(
+        playerViewModel = playerDetailsViewModel,
+        navController = navController
+    )
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-private fun GameOver(modifier: Modifier = Modifier) {
+private fun GameOver(
+    modifier: Modifier = Modifier,
+    playerViewModel: PlayerDetailsViewModel,
+    navController: NavController
+) {
+
+
 
     Scaffold(
         topBar = { TopBar() },
-        bottomBar = { BottomBar()}
+        bottomBar = { BottomBar(
+            playerDetailsViewModel = playerViewModel,
+            navController = navController
+        )}
     ) {
         Image(
             painter = painterResource(id = R.drawable.background),
@@ -71,10 +99,22 @@ private fun GameOver(modifier: Modifier = Modifier) {
                 ),
                 shape = RoundedCornerShape(30.dp)
             ) {
-                Body()
+                while (playerViewModel.serverCommunicationViewModel?.playersList?.size != playerViewModel.serverCommunicationViewModel?.playerScoreHashMap?.size){
+                    playerViewModel.serverCommunicationViewModel?.playersList!!.forEach {
+                        if (!playerViewModel.serverCommunicationViewModel!!.playerScoreHashMap.containsKey(it.name)){
+                            playerViewModel.serverCommunicationViewModel!!.playerScoreHashMap.put(it.name, 0)
+                        }
+                    }
+                }
+                playerViewModel.serverCommunicationViewModel?.let { it1 -> Body(serverViewModel = it1,
+                    playerScoreDesc = playerViewModel.serverCommunicationViewModel!!.playerScoreHashMap,
+                   )
+                }
             }
         }
     }
+
+//    playerViewModel.serverCommunicationViewModel?.closeCommunication()
 
 
 }
@@ -91,7 +131,7 @@ private fun TopBar(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Game Over",
+            text = "Turn Over",
             fontSize = 40.sp,
             fontFamily = ov_soge_bold,
             color = Color.White,
@@ -114,38 +154,58 @@ private fun TopBar(
 
 @Composable
 private fun Body(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    playerScoreDesc: Map<String, Int>, // Add parameter for player scores
+    serverViewModel: ServerCommunicationViewModel
 ) {
 
-    val playerNames = listOf("player1", "player2", "player3", "player4", "player5","player1", "player2", "player3", "player4", "player5")
     LazyColumn(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-
             .fillMaxSize()
             .background(Color.White)
     ) {
-        items(playerNames) { player ->
-            UserCard(playerName = player) // re used from utils
+        Log.i("Hashmaplazy",playerScoreDesc.toString())
+        items(playerScoreDesc.keys.toMutableList()){
+            UserCard(playerName = it, admin = false, score = playerScoreDesc[it]?: 0 )
         }
     }
-
 }
+
 
 @Composable
 private fun BottomBar (
-    modifier: Modifier=Modifier
+    modifier: Modifier=Modifier,
+    playerDetailsViewModel: PlayerDetailsViewModel,
+    navController: NavController
 ) {
-    Image(
-        painter = painterResource(id = R.drawable.return_to_lobby),
-        contentDescription ="Return to lobby",
-        modifier.fillMaxWidth()
-    )
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.return_to_lobby),
+            contentDescription ="Return to lobby",
+            modifier
+                .fillMaxWidth(0.5f)
+                .clickable {
+                    navController.navigate("RoomsEntry")
+//                if (playerDetailsViewModel.admin){
+//                    playerDetailsViewModel.serverCommunicationViewModel = null
+//                    navController.navigate("LobbyAdminScreen")
+//                }else{
+//                    playerDetailsViewModel.serverCommunicationViewModel = null
+//                    navController.navigate("LobbyJoinerScreen")
+//                }
+                }
+        )
+    }
 }
 
 @Preview(showSystemUi = true)
 @Composable
 fun PrevEndGame() {
-    EndGameScreen()
+    EndGameScreen(navController= NavController(LocalContext.current), PlayerDetailsViewModel)
 }
