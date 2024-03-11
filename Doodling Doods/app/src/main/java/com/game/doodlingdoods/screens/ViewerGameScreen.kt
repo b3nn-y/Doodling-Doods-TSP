@@ -79,12 +79,15 @@ fun ViewerGameScreen(
     var isPopedUp by rememberSaveable {
         mutableStateOf(true)
     }
+    var isWordChosen by serverViewModel.isWordChosen
 
     if (serverViewModel.room.gameOver) {
         navController.navigate("LeaderBoardScreen")
     }
+    serverViewModel.userChosenWord = null
 
     if (currentPlayer == playerDetailsViewModel.playerName) {
+
         navController.navigate("DrawingScreen")
     }
 
@@ -93,7 +96,7 @@ fun ViewerGameScreen(
         //re used our existing chat bar in drawing screen
 
         bottomBar = {
-            if (!isPopedUp) {
+            if (isWordChosen) {
                 UpdateChat(incNum = increasingNumber, serverViewModel = serverViewModel, playerDetailsViewModel = playerDetailsViewModel)
             }
         }
@@ -193,7 +196,7 @@ fun ViewerGameScreen(
 
 
             }
-            if (isPopedUp){
+            if (!isWordChosen){
                 // for loading other users scores
                 while (playerDetailsViewModel.serverCommunicationViewModel?.playersList?.size != playerDetailsViewModel.serverCommunicationViewModel?.playerScoreHashMap?.size) {
                     playerDetailsViewModel.serverCommunicationViewModel?.playersList!!.forEach {

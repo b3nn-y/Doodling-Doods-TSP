@@ -2,6 +2,8 @@ package com.game.doodlingdoods.screens
 
 import android.annotation.SuppressLint
 import android.util.Log
+import android.widget.Toast
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -118,6 +120,7 @@ private fun SignUpForms(
         navController.navigate("RoomsEntry")
 
     }
+    val context = LocalContext.current
 
 
 
@@ -234,6 +237,12 @@ private fun SignUpForms(
                                 viewModel.signUpWithCredentials(userName, mailId, password)
 
                             } else {
+                                Toast.makeText(
+                                    context,
+                                    "Username or password invalid",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+
                                 Log.i("signup", "failed")
 
                             }

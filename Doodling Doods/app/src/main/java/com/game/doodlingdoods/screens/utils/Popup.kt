@@ -133,6 +133,7 @@ fun OptionsPopUp(
                             modifier = Modifier
                                 .clickable {
                                     serverCommunicationViewModel.userChosenWord = words[0]
+                                    serverCommunicationViewModel.sendWord(words[0])
                                 },
                             elevation = CardDefaults.cardElevation(
                                 defaultElevation = 10.dp,
@@ -153,6 +154,7 @@ fun OptionsPopUp(
                             modifier = Modifier
                                 .clickable {
                                     serverCommunicationViewModel.userChosenWord = words[1]
+                                    serverCommunicationViewModel.sendWord(words[1])
                                 },
                             elevation = CardDefaults.cardElevation(
                                 defaultElevation = 10.dp,
@@ -176,6 +178,7 @@ fun OptionsPopUp(
                             .padding(top = 30.dp)
                             .clickable {
                                 serverCommunicationViewModel.userChosenWord = words[2]
+                                serverCommunicationViewModel.sendWord(words[2])
                             },
                         elevation = CardDefaults.cardElevation(
                             defaultElevation = 10.dp,

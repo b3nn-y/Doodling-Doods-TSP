@@ -105,6 +105,7 @@ fun UserDrawingScreen(
     var isPopedUp by rememberSaveable {
         mutableStateOf(true)
     }
+    var isWordChosen by serverViewModel.isWordChosen
 
     serverViewModel.evaluateServerMessage(state)
 
@@ -118,7 +119,7 @@ fun UserDrawingScreen(
 
     Scaffold(
         bottomBar = {
-            if (!isPopedUp){
+            if (isWordChosen){
                 UpdateChat(incNum = increasingNumber, serverViewModel = serverViewModel, playerDetailsViewModel = playerDetailsViewModel)
             }
 
@@ -189,20 +190,22 @@ fun UserDrawingScreen(
                 ColorBars()
             }
 
-            if (isPopedUp) {
+            if (!isWordChosen) {
                 OptionsPopUp(serverViewModel.drawingOptions,serverViewModel)
 
                 LaunchedEffect(Unit){
                     delay(5000)
-                    if (serverViewModel.userChosenWord == null){
-                        serverViewModel.room.currentWordToGuess = serverViewModel.room.wordList.random()
-                    }else{
-                        serverViewModel.room.currentWordToGuess= serverViewModel.userChosenWord!!
+
+                    if (!isWordChosen){
+                        serverViewModel.sendWord(serverViewModel.room.wordList.random())
+                        serverViewModel.isWordChosen.value = true
                     }
-
+//                    if (serverViewModel.userChosenWord == null){
+//                        serverViewModel.room.currentWordToGuess = serverViewModel.room.wordList.random()
+//                        serverViewModel.sendRoomUpdate()
+//                        serverViewModel.isWordChosen.value = true
+//                    }
                     Log.i("Words22",serverViewModel.room.currentWordToGuess)
-                    serverViewModel.sendRoomUpdate()
-
                     isPopedUp=false
                 }
 

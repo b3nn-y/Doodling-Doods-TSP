@@ -1,7 +1,9 @@
 package com.game.doodlingdoods.viewmodels
 
 import android.util.Log
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -86,9 +88,10 @@ class ServerCommunicationViewModel @Inject constructor(
 
     val playerScoreHashMap = hashMapOf<String, Int>().withDefault { 0 }
 
+    var isWordChosen = mutableStateOf(false)
 
     lateinit var drawingOptions: ArrayList<String>
-    var userChosenWord:String? = null
+    var userChosenWord: String? = null
 
 //    var _viewerPopup =MutableStateFlow(false)
 //    val isPopedUp:StateFlow<Boolean>
@@ -104,17 +107,13 @@ class ServerCommunicationViewModel @Inject constructor(
     val addedMessages = HashMap<String, Int>()
 
 
-    val state = client
-        .getStateStream(path = "/connect")
-        .onStart { _isConnecting.value = true }
-        .onEach {
-            _isConnecting.value = false
-        }
-        .catch { t ->
-            _isConnecting.value = false
-            _showConnectionError.value = t is ConnectException
-        }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), String())
+    val state =
+        client.getStateStream(path = "/connect").onStart { _isConnecting.value = true }.onEach {
+                _isConnecting.value = false
+            }.catch { t ->
+                _isConnecting.value = false
+                _showConnectionError.value = t is ConnectException
+            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), String())
 
     private val _isConnecting = MutableStateFlow(false)
     val isConnecting = _isConnecting.asStateFlow()
@@ -145,17 +144,34 @@ class ServerCommunicationViewModel @Inject constructor(
 
     fun evaluateServerMessage(data: String): Room? {
 
-        Log.i("chosenWord",userChosenWord.toString())
+        Log.i("chosenWord", userChosenWord.toString())
         println(data)
         try {
             val chatData = Gson().fromJson(data, PlayerChats::class.java)
-            if (chatData.chats != null && chatData.score!=null){
+            if (chatData.chats != null && chatData.score != null) {
                 addMsg(chatData.chats)
+                Log.i("ScoreFromServer", chatData.score.toString())
+                playerScoreHashMap.clear()
+                chatData.chats.forEach {
+                    val currentPlayerScore = playerScoreHashMap.getOrPut(it.player) { 0 }
+                    if (it.msgColor == "green") {
+                        val updatedScore = currentPlayerScore + 5
+                        playerScoreHashMap[it.player] = updatedScore
+//                        Log.i("hashmap", playerScoreHashMap.toString())
+                    } else {
+//                        val currentPlayerScore = playerScoreHashMap.getOrPut(it.player) { 0 }
+                        val updatedScore = currentPlayerScore
+                        playerScoreHashMap[it.player] = updatedScore
+
+                    }
+                    Log.i("hashmap", playerScoreHashMap.toString())
+
+                }
+
                 return null
             }
 
-        }
-        catch (e:Exception){
+        } catch (e: Exception) {
             println(e.message)
         }
         try {
@@ -180,24 +196,8 @@ class ServerCommunicationViewModel @Inject constructor(
 
                 // for popup options
                 drawingOptions = room.wordList
+                isWordChosen.value = roomData.isWordChosen
 
-
-                playerScoreHashMap.clear()
-                room.messages.forEach {
-                    val currentPlayerScore = playerScoreHashMap.getOrPut(it.player) { 0 }
-                    if (it.msgColor == "green") {
-                        val updatedScore = currentPlayerScore + 5
-                        playerScoreHashMap[it.player] = updatedScore
-//                        Log.i("hashmap", playerScoreHashMap.toString())
-                    } else {
-//                        val currentPlayerScore = playerScoreHashMap.getOrPut(it.player) { 0 }
-                        val updatedScore = currentPlayerScore
-                        playerScoreHashMap[it.player] = updatedScore
-
-                    }
-                    Log.i("hashmap", playerScoreHashMap.toString())
-
-                }
 
                 Log.i("Room", "Updated")
 
@@ -218,8 +218,7 @@ class ServerCommunicationViewModel @Inject constructor(
                             drawingCords.clear()
                         } else {
                             drawingCords = (Gson().fromJson(
-                                roomData.cords,
-                                LinesStorage::class.java
+                                roomData.cords, LinesStorage::class.java
                             ).lines).toMutableStateList()
                         }
                         Log.i("Lines", drawingCords.size.toString())
@@ -248,6 +247,7 @@ class ServerCommunicationViewModel @Inject constructor(
 
     fun sendWord(word: String) {
         room.currentWordToGuess = word
+        room.isWordChosen = true
         sendRoomUpdate()
     }
 
@@ -273,8 +273,8 @@ class ServerCommunicationViewModel @Inject constructor(
 
 
     fun addMsg(chatData: ArrayList<ChatMessages>) {
-        for (chat in chatData){
-            if (!(addedMessages.containsKey(chat.msgID))){
+        for (chat in chatData) {
+            if (!(addedMessages.containsKey(chat.msgID))) {
                 addedMessages[chat.msgID] = _chatListArr.value.size
                 chatModerator(chat)
             }
@@ -312,12 +312,10 @@ class ServerCommunicationViewModel @Inject constructor(
         }
     }
 
-    fun sendChat(chatMessages: ChatMessages){
+    fun sendChat(chatMessages: ChatMessages) {
         println(Gson().toJson(Chat(chatMessages)))
         sendMessage(Gson().toJson(Chat(chatMessages)))
     }
-
-
 
 
 }

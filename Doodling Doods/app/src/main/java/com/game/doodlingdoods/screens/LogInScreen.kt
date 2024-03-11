@@ -1,6 +1,7 @@
 package com.game.doodlingdoods.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -115,6 +116,7 @@ private fun LoginForms(
 
     }
 
+    val context = LocalContext.current
 
     val networkStatus by connectivityObserver.observe().collectAsState(
         initial = ConnectivityObserver.Status.Unavailable
@@ -209,6 +211,13 @@ private fun LoginForms(
                         if (networkStatus.toString() == "Available") {
                             if (viewmodel.userInputFilter(mailId = mailId, password = password)) {
                                 viewmodel.signInWithCredentials(mailId, password)
+
+                            }else{
+                                Toast.makeText(
+                                    context,
+                                    "Username or password invalid",
+                                    Toast.LENGTH_SHORT
+                                ).show()
 
                             }
                         }
