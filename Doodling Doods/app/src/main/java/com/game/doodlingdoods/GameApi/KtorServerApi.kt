@@ -4,9 +4,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object KtorServerApi {
+    val serverIp ="10.52.0.90"
+
     val api:KtorServer by lazy {
         Retrofit.Builder()
-            .baseUrl("http://10.52.0.122:8080")
+            .baseUrl("http://${serverIp}:8080")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(KtorServer::class.java)

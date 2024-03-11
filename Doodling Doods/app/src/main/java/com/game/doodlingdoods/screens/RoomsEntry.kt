@@ -24,10 +24,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -35,15 +37,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.internetConnection.ConnectivityObserver
 import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
-import com.game.doodlingdoods.ui.theme.DarkBlue
 import com.game.doodlingdoods.ui.theme.GameBlue
 import com.game.doodlingdoods.viewmodels.MainActivityViewModel
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
+import com.game.doodlingdoods.viewmodels.RoomsEntryViewModel
 
 //This screen shows the options to join a existing room or create a new room for others to join.
 
@@ -55,12 +57,13 @@ fun RoomsEntryScreen(
     mainActivityViewModel: MainActivityViewModel,
 ) {
 
-//    Log.i("UsernameRooms",mainActivityViewModel.getCurrentUserName().toString())
-//    Log.i("UsernameRooms",playerDetailsViewModel.playerName)
+    val roomsEntryViewModel = viewModel<RoomsEntryViewModel>()
+
+    Log.i("Server", roomsEntryViewModel.pingServer().toString())
 
     // it's checking whether the user name comes from db or guest
-    if (mainActivityViewModel.getCurrentUserName()!=null){
-        playerDetailsViewModel.playerName =mainActivityViewModel.getCurrentUserName().toString()
+    if (mainActivityViewModel.getCurrentUserName() != null) {
+        playerDetailsViewModel.playerName = mainActivityViewModel.getCurrentUserName().toString()
     }
 
 
@@ -71,9 +74,12 @@ fun RoomsEntryScreen(
 
     JoinGames(
         createRoomButtonClick = {
+
             playerDetailsViewModel.joinType = "create"
             navController.navigate("CreateRoom")
             println("create room btn")
+
+
         },
 
         joinRoomButtonClick = {
@@ -82,12 +88,14 @@ fun RoomsEntryScreen(
             println("Join room btn")
         },
 
-        dashBoardButton = {
+        leaderBoardButton = {
             navController.navigate("DashBoardScreen")
         },
 
         connectivityObserver = connectivityObserver,
-        playerName = playerDetailsViewModel.playerName
+        playerName = playerDetailsViewModel.playerName,
+        roomsEntryViewModel = roomsEntryViewModel
+
     )
 
 }
@@ -97,9 +105,10 @@ private fun JoinGames(
     modifier: Modifier = Modifier,
     createRoomButtonClick: () -> Unit,
     joinRoomButtonClick: () -> Unit,
-    dashBoardButton: () -> Unit,
+    leaderBoardButton: () -> Unit,
     connectivityObserver: ConnectivityObserver,
     playerName: String,
+    roomsEntryViewModel: RoomsEntryViewModel,
 ) {
     val networkStatus by connectivityObserver.observe().collectAsState(
         initial = ConnectivityObserver.Status.Unavailable
@@ -108,6 +117,7 @@ private fun JoinGames(
     Log.i("network", networkStatus.toString())
 
     val context = LocalContext.current
+    var counter by rememberSaveable { mutableIntStateOf(0) }
 
     Surface(
         modifier.fillMaxSize(),
@@ -136,7 +146,7 @@ private fun JoinGames(
                         .padding(8.dp)
                         .size(45.dp)
                         .clickable {
-                            dashBoardButton()
+                            leaderBoardButton()
                         }
                 )
             }
@@ -166,10 +176,30 @@ private fun JoinGames(
                         modifier = Modifier
                             .size(50.dp)
                             .padding(8.dp)
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = null
+                            ) {
+                                counter = if (counter == 0) 9 else counter - 1
+                            }
                     )
 
+                    val profilePic = when (counter) {
+                        0 -> R.drawable.avatar_dp_7
+                        1 -> R.drawable.avatar_dp_1
+                        2 -> R.drawable.avatar_dp_6
+                        3 -> R.drawable.avatar_dp_3
+                        4 -> R.drawable.avatar_dp_2
+                        5 -> R.drawable.avatar_dp_9
+                        6 -> R.drawable.avatar_dp_5
+                        7 -> R.drawable.avatar_dp_4
+                        8 -> R.drawable.avatar_dp_8
+                        9 -> R.drawable.avatar_dp_10
+                        else -> R.drawable.profile
+                    }
+
                     Image(
-                        painter = painterResource(id = R.drawable.avatar1),
+                        painter = painterResource(id = profilePic),
                         contentDescription = "profile",
                         modifier = Modifier
                             .fillMaxHeight(0.2f)
@@ -181,6 +211,12 @@ private fun JoinGames(
                         modifier = Modifier
                             .size(50.dp)
                             .padding(8.dp)
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = null
+                            ) {
+                                counter = (counter + 1) % 10
+                            }
                     )
                 }
                 Spacer(modifier = Modifier.height(50.dp))
@@ -198,7 +234,13 @@ private fun JoinGames(
                                 interactionSource = interactionSource,
                                 indication = null
                             ) {
-                                if (networkStatus.toString() == "Available") joinRoomButtonClick()
+                                if (networkStatus.toString() == "Available" && roomsEntryViewModel.pingServer()) {
+
+                                    joinRoomButtonClick()
+                                } else {
+                                    Toast.makeText(context, "You are not connected with server", Toast.LENGTH_SHORT)
+                                        .show()
+                                }
                             }
                     )
                 }
@@ -212,7 +254,12 @@ private fun JoinGames(
                             interactionSource = interactionSource,
                             indication = null
                         ) {
-                            if (networkStatus.toString() == "Available") createRoomButtonClick()
+                            if (networkStatus.toString() == "Available" && roomsEntryViewModel.pingServer()){
+                                createRoomButtonClick()
+                            } else{
+                                Toast.makeText(context, "You are not connected with server", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
                         }
 
                 )
@@ -244,7 +291,9 @@ private fun JoinGames(
 }
 
 
-@Preview
+
+
+@Preview(showSystemUi = true)
 @Composable
 fun PrevOptions() {
     val context = LocalContext
@@ -259,8 +308,9 @@ fun PrevOptions() {
     JoinGames(
         createRoomButtonClick = { /*TODO*/ },
         joinRoomButtonClick = { /*TODO*/ },
-        dashBoardButton = {},
+        leaderBoardButton = {},
         connectivityObserver = connectivityObserver,
-        playerName = "Raghuram"
+        playerName = "Player name",
+        roomsEntryViewModel = RoomsEntryViewModel()
     )
 }

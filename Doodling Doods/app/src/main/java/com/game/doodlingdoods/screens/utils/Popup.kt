@@ -204,14 +204,15 @@ fun OptionsPopUp(
 @Composable
 fun ViewersPopUp(
     playerScore: Map<String, Int>,
+    roundCount:String,
     modifier: Modifier = Modifier
         .fillMaxSize(),
 ) {
-    val map = hashMapOf<String, Int>()
-
-    map.put("Raghu", 999)
-    map.put("Ram", 99)
-    ScoreCard(playerScoreDesc = playerScore)
+//    val map = hashMapOf<String, Int>()
+//
+//    map.put("Raghu", 999)
+//    map.put("Ram", 99)
+    ScoreCard(playerScoreDesc = playerScore, roundCount = roundCount)
 
 
 }
@@ -220,7 +221,9 @@ fun ViewersPopUp(
 private fun ScoreCard(
     modifier: Modifier = Modifier,
     playerScoreDesc: Map<String, Int>,
+    roundCount: String,
 ) {
+
 
     val progressValue = 0f
     val infiniteTransition = rememberInfiniteTransition(label = "")
@@ -229,7 +232,9 @@ private fun ScoreCard(
         targetValue = progressValue,
         animationSpec = infiniteRepeatable(animation = tween(5000)), label = ""
     )
-
+    val playerScores =  playerScoreDesc.toList()
+        .sortedByDescending { it.second }
+        .toMap()
     Image(
         painter = painterResource(id = R.drawable.background_gradient_blue),
         contentDescription = "Background Image",
@@ -280,7 +285,7 @@ private fun ScoreCard(
 
             ) {
                 Text(
-                    text = "Rounds: 2/5",
+                    text = "Rounds: ${roundCount}/5",
                     fontSize = 20.sp,
                     modifier = Modifier
                         .padding(8.dp),
@@ -306,7 +311,7 @@ private fun ScoreCard(
                         .fillMaxSize()
                         .clip(RoundedCornerShape(16.dp)),
                 ) {
-                    items(playerScoreDesc.keys.toMutableList()) { player ->
+                    items(playerScores.keys.toMutableList()) { player ->
                         com.game.doodlingdoods.screens.UserCard(
                             playerName = player,
                             score = playerScoreDesc[player] ?: 0
@@ -328,6 +333,6 @@ fun PreviewPopup() {
     val map = hashMapOf<String,Int>()
     map.put("Raghu",99)
     map.put("master",999)
-    ViewersPopUp(map)
+    ViewersPopUp(map, roundCount = "4")
 
 }

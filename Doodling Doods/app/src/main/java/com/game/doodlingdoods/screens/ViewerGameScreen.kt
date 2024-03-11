@@ -212,7 +212,7 @@ fun ViewerGameScreen(
                     }
                 }
 
-                ViewersPopUp(serverViewModel.playerScoreHashMap)
+                ViewersPopUp(serverViewModel.playerScoreHashMap, roundCount = serverViewModel.room.numberOfRoundsOver.toString())
 
                 LaunchedEffect(Unit){
                     delay(5000)

@@ -93,21 +93,21 @@ fun ChatBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            IconButton(modifier = Modifier
-                .weight(0.2f)
-                .size(50.dp)
-
-                .fillMaxSize(),
-                onClick = {
-
-                }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.chat),
-                    "contentDescription",
-                    tint = Color.Black
-
-                )
-            }
+//            IconButton(modifier = Modifier
+//                .weight(0.2f)
+//                .size(50.dp)
+//
+//                .fillMaxSize(),
+//                onClick = {
+//
+//                }) {
+//                Icon(
+//                    painter = painterResource(id = R.drawable.chat),
+//                    "contentDescription",
+//                    tint = Color.Black
+//
+//                )
+//            }
 
             CustomOutlinedTextField(
                 text = message,

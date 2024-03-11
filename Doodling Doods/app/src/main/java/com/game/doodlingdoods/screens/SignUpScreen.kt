@@ -225,16 +225,17 @@ private fun SignUpForms(
                     .padding(0.dp)
                     .wrapContentHeight()
                     .clickable {
+
                         if (networkStatus.toString() == "Available") {
                             // creating account on Server
                             if (viewModel.userInputFilter(
-                                    userName = userName,
+                                    userName = userName.take(8),
                                     mailId = mailId,
                                     password = password
                                 )
                             ) {
 
-                                viewModel.signUpWithCredentials(userName, mailId, password)
+                                viewModel.signUpWithCredentials(userName.take(8), mailId, password)
 
                             } else {
                                 Toast.makeText(

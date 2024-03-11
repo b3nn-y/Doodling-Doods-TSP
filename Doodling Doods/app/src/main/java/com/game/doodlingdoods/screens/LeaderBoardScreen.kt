@@ -3,6 +3,7 @@ package com.game.doodlingdoods.screens
 
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -100,6 +101,37 @@ private fun LeaderBoard(
 
         val serverViewModel = playerViewModel.serverCommunicationViewModel
 
+        val playerScoreHashMap = serverViewModel?.playerScoreHashMap?.toList()
+            ?.sortedByDescending { it.second }
+            ?.toMap()
+
+        var firstThreeMap = HashMap<String, Int>() //top 3 players
+        var restMap = HashMap<String, Int>() //rest of the players
+
+        var count = 0
+        if (playerScoreHashMap != null) {
+
+            for ((key, value) in playerScoreHashMap) {
+                if (count < 3 ) {
+                    firstThreeMap[key] = value
+
+                } else {
+                    restMap[key] = value
+                }
+                count++
+            }
+        }
+
+
+        Log.i("Hashmap321","${firstThreeMap}** ${restMap}")
+
+        firstThreeMap = firstThreeMap.toList()
+            .sortedByDescending { it.second }
+            .toMap() as HashMap<String, Int>
+        restMap = restMap.toList()
+            ?.sortedByDescending { it.second }
+            ?.toMap() as HashMap<String, Int>
+
         Image(
             painter = painterResource(id = R.drawable.background_gradient_blue),
             contentDescription = "Background Image",
@@ -162,7 +194,9 @@ private fun LeaderBoard(
                         )
 
                         Text(
-                            text = "Player 3",
+                            text = if(firstThreeMap.size<=3 && firstThreeMap.size >2 ) {
+                                firstThreeMap.keys.elementAt(2)
+                            } else "",
                             color = Color.Black,
                             fontSize = 16.sp,
                             fontFamily = ov_soge_bold,
@@ -184,7 +218,9 @@ private fun LeaderBoard(
                                     .align(Alignment.Bottom)
                             )
                             Text(
-                                text = "522",
+                                text = if(firstThreeMap.size<=3 && firstThreeMap.size >2) {
+                                    firstThreeMap.values.elementAt(2).toString()
+                                } else "" ,
                                 color = Color.Black,
                                 fontSize = 16.sp,
                                 fontFamily = ov_soge_bold,
@@ -218,7 +254,7 @@ private fun LeaderBoard(
                             )
 
                         Text(
-                            text = "Player 1",
+                            text = if (firstThreeMap.size>=0) firstThreeMap.keys.elementAt(0) else "",
                             color = Color.Black,
                             fontSize = 16.sp,
                             fontFamily = ov_soge_bold,
@@ -240,7 +276,7 @@ private fun LeaderBoard(
                                     .align(Alignment.Bottom)
                             )
                             Text(
-                                text = "696",
+                                text = if (firstThreeMap.size>=0) firstThreeMap.values.elementAt(0).toString() else "" ,
                                 color = Color.Black,
                                 fontSize = 16.sp,
                                 fontFamily = ov_soge_bold,
@@ -273,7 +309,8 @@ private fun LeaderBoard(
                         )
 
                         Text(
-                            text = "Player 2",
+                            // check this part
+                            text = if (firstThreeMap.size>=1 ) firstThreeMap.keys.elementAt(1) else "",
                             color = Color.Black,
                             fontSize = 16.sp,
                             fontFamily = ov_soge_bold,
@@ -295,7 +332,7 @@ private fun LeaderBoard(
                                     .align(Alignment.Bottom)
                             )
                             Text(
-                                text = "578",
+                                text = if (firstThreeMap.size>=1) firstThreeMap.values.elementAt(1).toString() else "",
                                 color = Color.Black,
                                 fontSize = 16.sp,
                                 fontFamily = ov_soge_bold,
@@ -310,10 +347,13 @@ private fun LeaderBoard(
             }
             Spacer(modifier.height(30.dp))
 
-            playerViewModel.serverCommunicationViewModel?.let { it1 ->
-                Body(
-                    playerScoreDesc = playerViewModel.serverCommunicationViewModel!!.playerScoreHashMap,
-                )
+            if (restMap.isNotEmpty() ){ // check for losers
+
+                playerScoreHashMap.let { it1 ->
+                    Body(
+                        playerScoreDesc = playerViewModel.serverCommunicationViewModel!!.playerScoreHashMap,
+                    )
+                }
             }
 
         }
@@ -491,8 +531,8 @@ private fun BottomBar() {
 @Composable
 fun PreviewUserCard() {
     Column {
-        UserCard(playerName = "Raghu", score =999 )
-        UserCard(playerName = "Ram", score =999 )
+        UserCard(playerName = "Raghu", score = 999)
+        UserCard(playerName = "Ram", score = 999)
     }
 }
 

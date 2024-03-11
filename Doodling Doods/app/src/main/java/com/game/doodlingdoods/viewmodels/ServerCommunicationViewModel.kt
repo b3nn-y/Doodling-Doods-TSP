@@ -163,8 +163,9 @@ class ServerCommunicationViewModel @Inject constructor(
                         val updatedScore = currentPlayerScore
                         playerScoreHashMap[it.player] = updatedScore
 
+
                     }
-                    Log.i("hashmap", playerScoreHashMap.toString())
+                    Log.i("hashmap123", playerScoreHashMap.toString())
 
                 }
 

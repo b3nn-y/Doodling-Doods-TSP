@@ -178,7 +178,7 @@ fun PlayOption(
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 fun PreviewNavbar() {
     HomeScreen(navController = NavController(LocalContext.current))
