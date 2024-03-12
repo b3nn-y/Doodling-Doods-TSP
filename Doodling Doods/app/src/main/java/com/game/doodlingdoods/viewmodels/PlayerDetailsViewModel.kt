@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.MediaPlayer
 import android.provider.MediaStore.Audio.Media
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,9 @@ import com.game.doodlingdoods.R
 import com.game.doodlingdoods.filesForServerCommunication.RoomAvailability
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
@@ -33,6 +37,13 @@ object PlayerDetailsViewModel {
     val randomWord = "Your word" //for drawer screen
 
     var serverCommunicationViewModel: ServerCommunicationViewModel? = null
+
+    var _isChatActive = MutableStateFlow(false)
+
+
+    val isChatActive:StateFlow<Boolean>
+        get() = _isChatActive.asStateFlow()
+
 
     fun initializeServerViewModel(communicationViewModel: ServerCommunicationViewModel){
         serverCommunicationViewModel = communicationViewModel

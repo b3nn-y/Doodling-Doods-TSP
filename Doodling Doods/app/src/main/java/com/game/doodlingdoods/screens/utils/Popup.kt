@@ -213,12 +213,16 @@ fun ViewersPopUp(
     playerScore: Map<String, Int>,
     roundCount: String,
     profiles: HashMap<String, Int>,
+    serverCommunicationViewModel: ServerCommunicationViewModel,
     modifier: Modifier = Modifier
         .fillMaxSize(),
 ) {
     Log.i("Hashmap55", playerScore.toString())
     Log.i("Hashmap66", profiles.toString())
-    ScoreCard(playerScoreDesc = playerScore, roundCount = roundCount, profiles = profiles)
+    ScoreCard(
+        playerScoreDesc = playerScore, roundCount = roundCount,
+        profiles = profiles, serverCommunicationViewModel = serverCommunicationViewModel
+    )
 
 
 }
@@ -229,6 +233,7 @@ private fun ScoreCard(
     playerScoreDesc: Map<String, Int>,
     profiles: HashMap<String, Int>,
     roundCount: String,
+    serverCommunicationViewModel: ServerCommunicationViewModel
 ) {
 
 
@@ -242,6 +247,8 @@ private fun ScoreCard(
     val playerScores = playerScoreDesc.toList()
         .sortedByDescending { it.second }
         .toMap()
+
+    val currentPlayer by serverCommunicationViewModel.currentPlayer.collectAsState()
     Image(
         painter = painterResource(id = R.drawable.background_gradient_blue),
         contentDescription = "Background Image",
@@ -292,8 +299,16 @@ private fun ScoreCard(
 
                 ) {
                 Text(
-                    text = "Rounds: ${roundCount}/5",
+                    text = "Rounds: ${roundCount}/3",
                     fontSize = 20.sp,
+                    modifier = Modifier
+                        .padding(8.dp),
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+
+                    text = "$currentPlayer is choosing" ,
+                    fontSize = 24.sp,
                     modifier = Modifier
                         .padding(8.dp),
                     fontWeight = FontWeight.Bold
@@ -336,14 +351,14 @@ private fun ScoreCard(
 
 @Composable
 fun HintPopup(
-    closeButton:()->Unit,
-    visible:Boolean,
+    closeButton: () -> Unit,
+    visible: Boolean,
     modifier: Modifier = Modifier,
 ) {
 
     var isVisible = visible
 
-    AnimatedVisibility(visible =isVisible ) {
+    AnimatedVisibility(visible = isVisible) {
         Image(
             painter = painterResource(id = R.drawable.background_gradient_blue),
             contentDescription = "Background Image",
@@ -404,7 +419,7 @@ fun HintPopup(
                                 .size(50.dp)
                                 .clickable {
                                     closeButton()
-                                    isVisible =false
+                                    isVisible = false
                                 }
                         )
 
@@ -462,8 +477,15 @@ fun PreviewPopup() {
     val map = hashMapOf<String, Int>()
     map.put("Raghu", 99)
     map.put("master", 999)
-//    ViewersPopUp(map, roundCount = "4", profiles = hashMapOf())
+    PlayerDetailsViewModel.serverCommunicationViewModel?.let {
+        ViewersPopUp(
+            map,
+            roundCount = "4",
+            profiles = hashMapOf(),
+            serverCommunicationViewModel = it
+        )
+    }
 
-    HintPopup(closeButton = {},visible = true)
+//    HintPopup(closeButton = {},visible = true)
 
 }

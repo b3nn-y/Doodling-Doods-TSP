@@ -30,6 +30,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -181,7 +182,7 @@ private fun JoinGames(
                     fontSize = 28.sp,
                     modifier = Modifier
                         .padding(bottom = 4.dp),
-                    color = GameBlue
+                    color = Color.White
                 )
                 Row(
                     modifier = Modifier

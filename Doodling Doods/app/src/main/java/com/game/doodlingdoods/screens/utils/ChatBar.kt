@@ -44,11 +44,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.filesForServerCommunication.ChatMessages
+import com.game.doodlingdoods.filesForServerCommunication.ProfilePics
 import com.game.doodlingdoods.ui.theme.Chat
 import com.game.doodlingdoods.ui.theme.ChatBlue
 import com.game.doodlingdoods.ui.theme.ChatPerson
 import com.game.doodlingdoods.ui.theme.DarkGreen
-import com.game.doodlingdoods.ui.theme.GameBlue
 import com.game.doodlingdoods.ui.theme.ov_soge_bold
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
@@ -83,12 +83,12 @@ fun ChatBar(
                 items(chatList.asReversed()) {
 
                     if (it.lifeCycle){
-                        MessageItem(message = it, visible = it.visible, player.playerName)
-                        if (!guessedPlayers.containsKey(it.player) && it.msgColor == "green"){
+                        MessageItem(message = it, visible = it.visible, player.playerName, serverViewModel.profilePics)
+                        if (!guessedPlayers.containsKey(it.player+serverViewModel.currentWord.value) && it.msgColor == "green"){
 
                             player.guessAudioPlayer()
 
-                            guessedPlayers[it.player] = true
+                            guessedPlayers[it.player+serverViewModel.currentWord.value] = true
                         }
                     }
                 }
@@ -174,7 +174,7 @@ fun ChatBar(
                     painter = painterResource(id = R.drawable.send_icon_),
                     "contentDescription",
 
-                )
+                    )
             }
         }
     }
@@ -217,7 +217,12 @@ private fun CustomOutlinedTextField(
     }
 }
 @Composable
-fun MessageItem(message: ChatMessages, visible: Boolean, playerName: String) {
+fun MessageItem(
+    message: ChatMessages,
+    visible: Boolean,
+    playerName: String,
+    profilePics: HashMap<String, Int>
+) {
     val alpha by animateFloatAsState(
         targetValue = if (visible) 1f else 0f,
         animationSpec = if (visible) tween(durationMillis = 400) else tween(durationMillis = 800),
@@ -236,13 +241,13 @@ fun MessageItem(message: ChatMessages, visible: Boolean, playerName: String) {
             .scale(scale)
             .padding(vertical = 8.dp, horizontal = 32.dp)
     ) {
-        MessageCard(name = if (message.player == playerName) "You" else message.player, msg = message.msg, color = message.msgColor, backgroundColor = if (message.player == playerName) Color.White else ChatBlue)
+        MessageCard(name =  message.player, msg = message.msg, color = message.msgColor, backgroundColor = if (message.player == playerName) Color.White else ChatBlue, profilePics )
     }
 }
 
 
 @Composable
-fun MessageCard(name: String, msg: String, color: String, backgroundColor: Color) {
+fun MessageCard(name: String, msg: String, color: String, backgroundColor: Color, profiles: HashMap<String, Int>) {
     Row (modifier = Modifier
         .background(shape = CircleShape, color = backgroundColor)
         .padding(vertical = 8.dp, horizontal = 5.dp)
@@ -256,7 +261,7 @@ fun MessageCard(name: String, msg: String, color: String, backgroundColor: Color
 
         ) {
             Image(
-                painter = painterResource(id = R.drawable.profile),
+                painter = painterResource(id = ProfilePics.profiles[profiles[name]]?:R.drawable.avatar_dp_1),
                 contentDescription = "Profile",
                 modifier = Modifier
                     .height(30.dp)
@@ -273,7 +278,7 @@ fun MessageCard(name: String, msg: String, color: String, backgroundColor: Color
             .align(Alignment.CenterVertically)
         ){
             Column {
-                Text(text = name,
+                Text(text = if (backgroundColor == Color.White) "You" else  name,
                     textAlign = TextAlign.Left,
                     fontFamily = ov_soge_bold,
                     fontSize = 15.sp,
@@ -293,5 +298,5 @@ fun MessageCard(name: String, msg: String, color: String, backgroundColor: Color
 @Preview
 @Composable
 fun Msg(){
-    MessageCard(name = "Ben", msg = "Hye whats up lets hook up a", "black", Chat)
+    MessageCard(name = "Ben", msg = "Hye whats up lets hook up a", "black", Chat, hashMapOf())
 }

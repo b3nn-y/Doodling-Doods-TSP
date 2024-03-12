@@ -7,14 +7,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
@@ -53,11 +59,13 @@ import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
 import java.time.format.TextStyle
 import androidx.compose.ui.text.*
 import com.game.doodlingdoods.screens.utils.ViewersPopUp
+import com.game.doodlingdoods.utils.rememberImeState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 
 // this is the ongoing game screen, where the live drawing is shown, along with hints, chat, players and their scores, timer etc.
+@OptIn(ExperimentalLayoutApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
 fun ViewerGameScreen(
@@ -82,6 +90,7 @@ fun ViewerGameScreen(
     }
     var isWordChosen by serverViewModel.isWordChosen
 
+
     if (serverViewModel.room.gameOver) {
         navController.navigate("LeaderBoardScreen")
     }
@@ -92,18 +101,41 @@ fun ViewerGameScreen(
         navController.navigate("DrawingScreen")
     }
 
+//    val padding by playerDetailsViewModel.isChatActive.collectAsState()
+
+//    val paddingSize = if (padding) 150 else 0
+
+    val imeState = rememberImeState()
+    val scrollState = rememberScrollState()
+
+    LaunchedEffect(key1 = imeState.value) {
+        if (imeState.value) {
+            scrollState.scrollTo(scrollState.maxValue)
+        }
+    }
+
+
+    val keyboard = WindowInsets.isImeVisible
+    Log.i("Keyboard", keyboard.toString())
+
     val increasingNumber by serverViewModel.increasingNumber.collectAsState()
     Scaffold(
         //re used our existing chat bar in drawing screen
 
         bottomBar = {
             if (isWordChosen) {
-                UpdateChat(incNum = increasingNumber, serverViewModel = serverViewModel, playerDetailsViewModel = playerDetailsViewModel)
+                UpdateChat(
+                    incNum = increasingNumber,
+                    serverViewModel = serverViewModel,
+                    playerDetailsViewModel = playerDetailsViewModel
+                )
             }
-        }
-    ) {
+        },
+
+        ) {
         Box(
             modifier = Modifier
+
                 .fillMaxSize()
                 .paint(
                     painterResource(R.drawable.background), contentScale = ContentScale.FillBounds
@@ -111,11 +143,13 @@ fun ViewerGameScreen(
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.verticalScroll(scrollState)
             ) {
                 Row(
                     modifier = Modifier
                         .padding(24.dp)
+
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -126,22 +160,15 @@ fun ViewerGameScreen(
                         fontSize = 30.sp,
                         modifier = Modifier
                             .padding(16.dp)
+                            .fillMaxWidth()
+//                            .padding(bottom = paddingSize.dp)
                             .weight(0.8f),
 
                         textAlign = TextAlign.Center,
                         color = Color.White
 
                     )
-//                    Image(
-//                        painter = painterResource(id = R.drawable.people),
-//                        contentDescription = "profile",
-//                        modifier = Modifier
-//                            .size(100.dp)
-//
-//                            .weight(0.2f),
-//                        alignment = Alignment.Center,
-//
-//                        )
+
                 }
                 Text(
                     text = "$currentPlayer's turn",
@@ -152,20 +179,23 @@ fun ViewerGameScreen(
                     color = GameBlue
 
                 )
+
+
                 Text(
                     text = roomTime,
-                    fontSize = 20.sp,
+                    fontSize = 30.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .padding(4.dp)
                         .fillMaxWidth(),
                     textAlign = TextAlign.Center,
                     style = TextStyle(
-                        color = Color.Black,
+                        color = Color.White,
                         fontSize = 20.sp
                     )
 
                 )
+
 
                 Card(
                     modifier = Modifier,
@@ -199,7 +229,7 @@ fun ViewerGameScreen(
 
 
             }
-            if (!isWordChosen){
+            if (!isWordChosen) {
                 while (playerDetailsViewModel.serverCommunicationViewModel?.playersList?.size != playerDetailsViewModel.serverCommunicationViewModel?.playerScoreHashMap?.size) {
                     playerDetailsViewModel.serverCommunicationViewModel?.playersList!!.forEach {
                         if (!playerDetailsViewModel.serverCommunicationViewModel!!.playerScoreHashMap.containsKey(
@@ -215,9 +245,14 @@ fun ViewerGameScreen(
                 }
                 // for loading other users scores
 
-                ViewersPopUp(serverViewModel.playerScoreHashMap, roundCount = serverViewModel.room.numberOfRoundsOver.toString(), profiles = serverViewModel.profilePics)
+                ViewersPopUp(
+                    serverViewModel.playerScoreHashMap,
+                    roundCount = serverViewModel.room.numberOfRoundsOver.toString(),
+                    profiles = serverViewModel.profilePics,
+                    serverViewModel
+                )
 
-                LaunchedEffect(Unit){
+                LaunchedEffect(Unit) {
                     delay(5000)
                     isPopedUp = false
                 }

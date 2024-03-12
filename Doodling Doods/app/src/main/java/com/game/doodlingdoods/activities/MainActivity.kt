@@ -6,6 +6,7 @@ import android.app.Activity
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.DisposableEffect
@@ -55,7 +56,7 @@ class MainActivity : ComponentActivity() {
             bgMusic.isLooping=true
             bgMusic.start()
         }
-
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         setContent {
 

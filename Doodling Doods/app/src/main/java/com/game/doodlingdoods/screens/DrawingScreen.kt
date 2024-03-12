@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,9 +19,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,6 +50,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,6 +63,7 @@ import com.game.doodlingdoods.drawingEssentials.LinesStorage
 import com.game.doodlingdoods.screens.utils.ChatBar
 import com.game.doodlingdoods.screens.utils.OptionsPopUp
 import com.game.doodlingdoods.ui.theme.Black
+import com.game.doodlingdoods.ui.theme.DarkBlue
 import com.game.doodlingdoods.ui.theme.Green
 import com.game.doodlingdoods.ui.theme.Red
 import com.game.doodlingdoods.ui.theme.Yellow
@@ -83,11 +88,16 @@ fun DrawingScreen(
 
 
 @Composable
-fun UpdateChat(incNum: Int, serverViewModel: ServerCommunicationViewModel, playerDetailsViewModel: PlayerDetailsViewModel){
+fun UpdateChat(
+    incNum: Int,
+    serverViewModel: ServerCommunicationViewModel,
+    playerDetailsViewModel: PlayerDetailsViewModel
+) {
     ChatBar(serverViewModel, playerDetailsViewModel)
 }
 
-@SuppressLint("MutableCollectionMutableState", "UnusedMaterial3ScaffoldPaddingParameter",
+@SuppressLint(
+    "MutableCollectionMutableState", "UnusedMaterial3ScaffoldPaddingParameter",
     "StateFlowValueCalledInComposition"
 )
 @Composable
@@ -118,10 +128,16 @@ fun UserDrawingScreen(
         navController.navigate("GameScreen")
     }
 
+//    Log.i("Padding",playerDetailsViewModel.paddingSize.toString())
+
     Scaffold(
         bottomBar = {
-            if (isWordChosen){
-                UpdateChat(incNum = increasingNumber, serverViewModel = serverViewModel, playerDetailsViewModel = playerDetailsViewModel)
+            if (isWordChosen) {
+                UpdateChat(
+                    incNum = increasingNumber,
+                    serverViewModel = serverViewModel,
+                    playerDetailsViewModel = playerDetailsViewModel
+                )
             }
 
         }
@@ -145,33 +161,32 @@ fun UserDrawingScreen(
                     Text(
                         text = serverViewModel.room.gameMode,
                         fontFamily = ov_soge_bold,
-                        fontSize = 20.sp,
+                        fontSize = 30.sp,
                         textAlign = TextAlign.Center,
                         color = Color.White,
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
                     )
-//                    Image(
-//                        painter = painterResource(id = R.drawable.people),
-//                        contentDescription = "profile",
-//                        modifier = Modifier
-////                            .clickable {
-////                                isPopedUp = !isPopedUp
-////                            }
-//                            .size(60.dp),
-//                        alignment = Alignment.Center
-//                    )
+
                 }
+
 
                 Text(
                     text = roomTime,
-                    fontSize = 20.sp,
+                    fontSize = 30.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .padding(4.dp)
                         .fillMaxWidth(),
                     textAlign = TextAlign.Center,
-                    color = Color.Black
+                    style = TextStyle(
+                        color = Color.White,
+                        fontSize = 20.sp
+                    )
+
                 )
+
                 Text(
                     text = currentWord,
                     fontFamily = ov_soge_bold,
@@ -179,26 +194,33 @@ fun UserDrawingScreen(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
-                    color = Color.White
+                    color = DarkBlue
                 )
 
                 Card(
                     modifier = Modifier.padding(15.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 20.dp)
                 ) {
-                    DrawingLogicScreen(serverViewModel, playerDetailsViewModel = playerDetailsViewModel)
+                    DrawingLogicScreen(
+                        serverViewModel,
+                        playerDetailsViewModel = playerDetailsViewModel
+                    )
                 }
 
 //                ColorBars()
             }
 
             if (!isWordChosen && (currentPlayer == playerDetailsViewModel.playerName)) {
-                OptionsPopUp(serverViewModel.drawingOptions,serverViewModel, playerDetailsViewModel)
+                OptionsPopUp(
+                    serverViewModel.drawingOptions,
+                    serverViewModel,
+                    playerDetailsViewModel
+                )
 
-                LaunchedEffect(Unit){
+                LaunchedEffect(Unit) {
                     delay(5000)
 
-                    if (!isWordChosen){
+                    if (!isWordChosen) {
                         serverViewModel.sendWord(serverViewModel.room.wordList.random())
                         serverViewModel.isWordChosen.value = true
                     }
@@ -207,8 +229,8 @@ fun UserDrawingScreen(
 //                        serverViewModel.sendRoomUpdate()
 //                        serverViewModel.isWordChosen.value = true
 //                    }
-                    Log.i("Words22",serverViewModel.room.currentWordToGuess)
-                    isPopedUp=false
+                    Log.i("Words22", serverViewModel.room.currentWordToGuess)
+                    isPopedUp = false
                 }
 
             }
@@ -220,7 +242,9 @@ fun UserDrawingScreen(
 @SuppressLint("MutableCollectionMutableState")
 @Composable
 private fun DrawingLogicScreen(
-    serverViewModel: ServerCommunicationViewModel,playerDetailsViewModel: PlayerDetailsViewModel, modifier: Modifier = Modifier.fillMaxWidth()
+    serverViewModel: ServerCommunicationViewModel,
+    playerDetailsViewModel: PlayerDetailsViewModel,
+    modifier: Modifier = Modifier.fillMaxWidth()
 
 ) {
     var width = LocalConfiguration.current.screenWidthDp - 30
@@ -271,11 +295,11 @@ private fun DrawingLogicScreen(
                 drawLine(
                     color = line.color,
                     start = Offset(
-                        ((line.start.x) * width ) ,
-                        ((line.start.y) * width )
+                        ((line.start.x) * width),
+                        ((line.start.y) * width)
                     ),
                     end = Offset(
-                        ((line.end.x) * width ) ,
+                        ((line.end.x) * width),
                         ((line.end.y) * width)
                     ),
                     strokeWidth = line.strokeWidth.toPx(),
@@ -375,7 +399,10 @@ fun RoundBoxIcon() {
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewTest() {
-    DrawingScreen(navController = NavController(LocalContext.current), playerDetailsViewModel = PlayerDetailsViewModel)
+    DrawingScreen(
+        navController = NavController(LocalContext.current),
+        playerDetailsViewModel = PlayerDetailsViewModel
+    )
 //    ColorPicker()
 }
 
