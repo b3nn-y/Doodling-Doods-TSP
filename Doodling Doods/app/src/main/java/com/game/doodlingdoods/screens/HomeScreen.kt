@@ -1,5 +1,6 @@
 package com.game.doodlingdoods.screens
 
+import android.media.MediaPlayer
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -41,6 +42,8 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
 
+    val click =  MediaPlayer.create(LocalContext.current,R.raw.click)
+
     Box(modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center){
 
@@ -59,6 +62,7 @@ fun HomeScreen(
 
             PlayOption(
                 PlayButtonClick = {
+                    click.start()
                     navController.navigate("AccountSetup")
                 }
             )

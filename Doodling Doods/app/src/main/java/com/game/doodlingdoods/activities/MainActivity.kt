@@ -3,6 +3,7 @@ package com.game.doodlingdoods.activities
 //import com.game.doodlingdoods.test.DrawingScreen
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -16,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.createGraph
+import com.game.doodlingdoods.R
 import com.game.doodlingdoods.factory.MainActivityViewModelFactory
 import com.game.doodlingdoods.screens.AccountSetup
 import com.game.doodlingdoods.screens.CreateRoomScreen
@@ -41,10 +43,19 @@ import kotlinx.coroutines.launch
 //import androidx.hilt.navigation.compose.hiltViewModel
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private lateinit var bgMusic: MediaPlayer
 
     @SuppressLint("RememberReturnType", "CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        bgMusic = MediaPlayer.create(this, R.raw.doodsbackmusic)
+
+        lifecycleScope.launch {
+            bgMusic.isLooping=true
+            bgMusic.start()
+        }
+
 
         setContent {
 
@@ -52,6 +63,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val playerDetailsViewModel: PlayerDetailsViewModel = PlayerDetailsViewModel
 
+                playerDetailsViewModel.audioIntializer(LocalContext.current)
 
                 val mainActivityViewModel:MainActivityViewModel = viewModel<MainActivityViewModel>(
                     factory = MainActivityViewModelFactory(LocalContext.current)
@@ -126,6 +138,20 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(navController = navController, graph = navGraph)
             }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (bgMusic.isPlaying) {
+            bgMusic.pause()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (!bgMusic.isPlaying) {
+            bgMusic.start()
         }
     }
 }

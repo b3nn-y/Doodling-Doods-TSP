@@ -138,7 +138,7 @@ fun UserDrawingScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
+                        .padding(24.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -147,18 +147,19 @@ fun UserDrawingScreen(
                         fontFamily = ov_soge_bold,
                         fontSize = 20.sp,
                         textAlign = TextAlign.Center,
-                        color = Color.White
+                        color = Color.White,
+                        modifier = Modifier.padding(16.dp)
                     )
-                    Image(
-                        painter = painterResource(id = R.drawable.people),
-                        contentDescription = "profile",
-                        modifier = Modifier
-//                            .clickable {
-//                                isPopedUp = !isPopedUp
-//                            }
-                            .size(60.dp),
-                        alignment = Alignment.Center
-                    )
+//                    Image(
+//                        painter = painterResource(id = R.drawable.people),
+//                        contentDescription = "profile",
+//                        modifier = Modifier
+////                            .clickable {
+////                                isPopedUp = !isPopedUp
+////                            }
+//                            .size(60.dp),
+//                        alignment = Alignment.Center
+//                    )
                 }
 
                 Text(
@@ -188,7 +189,7 @@ fun UserDrawingScreen(
                     DrawingLogicScreen(serverViewModel, playerDetailsViewModel = playerDetailsViewModel)
                 }
 
-                ColorBars()
+//                ColorBars()
             }
 
             if (!isWordChosen && (currentPlayer == playerDetailsViewModel.playerName)) {

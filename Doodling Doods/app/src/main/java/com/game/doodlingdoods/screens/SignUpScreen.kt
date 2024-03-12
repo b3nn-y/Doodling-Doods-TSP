@@ -1,6 +1,7 @@
 package com.game.doodlingdoods.screens
 
 import android.annotation.SuppressLint
+import android.media.MediaPlayer
 import android.util.Log
 import android.widget.Toast
 
@@ -121,7 +122,8 @@ private fun SignUpForms(
 
     }
     val context = LocalContext.current
-
+    
+    val click =  MediaPlayer.create(context,R.raw.click)
 
 
 
@@ -225,6 +227,7 @@ private fun SignUpForms(
                     .padding(0.dp)
                     .wrapContentHeight()
                     .clickable {
+                        click.start()
 
                         if (networkStatus.toString() == "Available") {
                             // creating account on Server

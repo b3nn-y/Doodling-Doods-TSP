@@ -71,6 +71,7 @@ private fun JoinRoom(
     val lottie by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.login_man_pencil))
 
 
+
     when (currentRoomAvailability) {
 
         "no room" -> {
@@ -165,6 +166,8 @@ private fun JoinRoom(
                         interactionSource = interactionSource,
                         indication = null
                     ) {
+                        playerDetailsViewModel.clickAudio.start()
+
                         playerDetailsViewModel.roomName = roomId
                         playerDetailsViewModel.roomPass = password
 

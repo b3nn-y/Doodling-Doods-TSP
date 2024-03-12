@@ -115,6 +115,7 @@ fun ViewerGameScreen(
             ) {
                 Row(
                     modifier = Modifier
+                        .padding(24.dp)
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
@@ -124,22 +125,23 @@ fun ViewerGameScreen(
                         fontFamily = ov_soge_bold,
                         fontSize = 30.sp,
                         modifier = Modifier
+                            .padding(16.dp)
                             .weight(0.8f),
 
                         textAlign = TextAlign.Center,
                         color = Color.White
 
                     )
-                    Image(
-                        painter = painterResource(id = R.drawable.people),
-                        contentDescription = "profile",
-                        modifier = Modifier
-                            .size(100.dp)
-
-                            .weight(0.2f),
-                        alignment = Alignment.Center,
-
-                        )
+//                    Image(
+//                        painter = painterResource(id = R.drawable.people),
+//                        contentDescription = "profile",
+//                        modifier = Modifier
+//                            .size(100.dp)
+//
+//                            .weight(0.2f),
+//                        alignment = Alignment.Center,
+//
+//                        )
                 }
                 Text(
                     text = "$currentPlayer's turn",

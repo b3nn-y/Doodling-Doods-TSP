@@ -41,6 +41,7 @@ class ServerCommunicationViewModel @Inject constructor(
     var msgId = 0
 
     var guessedWords = HashMap<String, String>()
+    var guessedPlayers = HashMap<String, Boolean>()
 //    var chatMessages = ArrayList<ChatMessages>()
 
     private val _chatMessages = MutableStateFlow(ArrayList<ChatMessages>())

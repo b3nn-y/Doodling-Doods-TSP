@@ -1,11 +1,15 @@
 package com.game.doodlingdoods.viewmodels
 
+import android.content.Context
+import android.media.MediaPlayer
+import android.provider.MediaStore.Audio.Media
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playerManager.Player
 import com.game.doodlingdoods.GameApi.KtorServerApi
+import com.game.doodlingdoods.R
 import com.game.doodlingdoods.filesForServerCommunication.RoomAvailability
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +24,9 @@ object PlayerDetailsViewModel {
     var profilePic = 0
     var admin = false
     var roomAvailability = mutableStateOf("")
+
+    lateinit var clickAudio: MediaPlayer
+    lateinit var guessAudio: MediaPlayer
 
     val currentPlayer = "Abc"
     val guessWord = "Y_u_ W_r_"
@@ -70,5 +77,22 @@ object PlayerDetailsViewModel {
     fun getPlayerData():Player{
 
         return Player(name = playerName, joinType = joinType, roomName = roomName, roomPass = roomPass, admin= admin, profile = profilePic)
+    }
+
+    fun audioIntializer(context: Context){
+        clickAudio = MediaPlayer.create(context, R.raw.click)
+        guessAudio = MediaPlayer.create(context, R.raw.guess)
+    }
+
+    fun clickAudioPlayer() {
+        CoroutineScope(Dispatchers.Default).launch {
+            clickAudio.start()
+        }
+    }
+
+    fun guessAudioPlayer() {
+//        CoroutineScope(Dispatchers.Default).launch {
+            guessAudio.start()
+//        }
     }
 }

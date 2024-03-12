@@ -226,7 +226,7 @@ private fun TopBar(
             color = Color.Blue,
             modifier = modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = 20.dp, bottom = 4.dp)
+                .padding(8.dp)
         )
 
         Text(
@@ -235,43 +235,44 @@ private fun TopBar(
             fontSize = 16.sp,
             color = Color.Blue,
             modifier = modifier
+                .padding(8.dp)
                 .align(Alignment.CenterHorizontally)
 
         )
 
-        Row(
-            modifier = Modifier
-                .padding(8.dp)
-                .align(Alignment.CenterHorizontally)
-        ) {
-
-            Image(
-                painter = painterResource(id = R.drawable.copy),
-                contentDescription = "copy image",
-                modifier = Modifier
-                    .height(40.dp)
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = null
-                    ) {
-                        //Copy
-                    }
-            )
-
-            Image(
-                painter = painterResource(id = R.drawable.share),
-                contentDescription = "share image",
-                modifier = Modifier
-                    .height(40.dp)
-                    .padding(start = 40.dp)
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = null
-                    ) {
-                        //Share
-                    }
-            )
-        }
+//        Row(
+//            modifier = Modifier
+//                .padding(8.dp)
+//                .align(Alignment.CenterHorizontally)
+//        ) {
+//
+//            Image(
+//                painter = painterResource(id = R.drawable.copy),
+//                contentDescription = "copy image",
+//                modifier = Modifier
+//                    .height(40.dp)
+//                    .clickable(
+//                        interactionSource = interactionSource,
+//                        indication = null
+//                    ) {
+//                        //Copy
+//                    }
+//            )
+//
+//            Image(
+//                painter = painterResource(id = R.drawable.share),
+//                contentDescription = "share image",
+//                modifier = Modifier
+//                    .height(40.dp)
+//                    .padding(start = 40.dp)
+//                    .clickable(
+//                        interactionSource = interactionSource,
+//                        indication = null
+//                    ) {
+//                        //Share
+//                    }
+//            )
+//        }
 
     }
 }

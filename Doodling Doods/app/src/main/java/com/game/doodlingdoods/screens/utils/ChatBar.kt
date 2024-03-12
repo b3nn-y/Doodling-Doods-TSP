@@ -72,7 +72,7 @@ fun ChatBar(
 
 //    val chatMessages by serverViewModel.chatMessages.collectAsState()
     val chatList = serverViewModel.chatListArr.value
-
+    val guessedPlayers = serverViewModel.guessedPlayers
     Column {
         Box (modifier =
         Modifier
@@ -81,8 +81,15 @@ fun ChatBar(
         ) {
             LazyColumn() {
                 items(chatList.asReversed()) {
+
                     if (it.lifeCycle){
                         MessageItem(message = it, visible = it.visible, player.playerName)
+                        if (!guessedPlayers.containsKey(it.player) && it.msgColor == "green"){
+
+                            player.guessAudioPlayer()
+
+                            guessedPlayers[it.player] = true
+                        }
                     }
                 }
             }
@@ -164,9 +171,9 @@ fun ChatBar(
 //                    }
                 }) {
                 Icon(
-                    painter = painterResource(id = R.drawable.sendmessage),
+                    painter = painterResource(id = R.drawable.send_icon_),
                     "contentDescription",
-                    tint = GameBlue
+
                 )
             }
         }

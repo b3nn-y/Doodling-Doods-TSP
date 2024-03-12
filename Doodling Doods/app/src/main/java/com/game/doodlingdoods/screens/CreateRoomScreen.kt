@@ -195,6 +195,7 @@ private fun CreateRoom(
                 modifier = Modifier
                     .fillMaxWidth(0.5f)
                     .clickable {
+                        playerDetailsViewModel.clickAudio.start()
 
                         if ( userInputFilter(roomId,password)) {
                             playerDetailsViewModel.roomName = roomId

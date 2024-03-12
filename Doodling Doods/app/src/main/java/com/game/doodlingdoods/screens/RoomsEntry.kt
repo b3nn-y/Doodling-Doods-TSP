@@ -74,6 +74,7 @@ fun RoomsEntryScreen(
 
     JoinGames(
         createRoomButtonClick = {
+            playerDetailsViewModel.clickAudio.start()
 
             playerDetailsViewModel.joinType = "create"
             navController.navigate("CreateRoom")
@@ -83,12 +84,16 @@ fun RoomsEntryScreen(
         },
 
         joinRoomButtonClick = {
+            playerDetailsViewModel.clickAudio.start()
+
             playerDetailsViewModel.joinType = "join"
             navController.navigate("JoinRoom")
             println("Join room btn")
         },
 
         leaderBoardButton = {
+            playerDetailsViewModel.clickAudio.start()
+
             navController.navigate("DashBoardScreen")
         },
 

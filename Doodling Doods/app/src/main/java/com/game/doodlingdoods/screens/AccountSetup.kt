@@ -143,6 +143,8 @@ private fun GuestScreen(
                         interactionSource = interactionSource,
                         indication = null
                     ) {
+                        playerDetailsViewModel.clickAudio.start()
+
                         navController.navigate("LoginScreen")
                     }
                     .fillMaxWidth(0.5f)
@@ -154,6 +156,7 @@ private fun GuestScreen(
                         interactionSource = interactionSource,
                         indication = null
                     ) {
+                        playerDetailsViewModel.clickAudio.start()
                         navController.navigate("SignUpScreen")
                     }
                     .fillMaxWidth(0.5f)
@@ -175,6 +178,8 @@ private fun GuestScreen(
                         interactionSource = interactionSource,
                         indication = null
                     ) {
+                        playerDetailsViewModel.clickAudio.start()
+
                         playerDetailsViewModel.playerName = guestName
                         navController.navigate("GuestAccountScreen")
                     }

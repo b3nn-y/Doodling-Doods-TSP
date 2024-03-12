@@ -1,6 +1,7 @@
 package com.game.doodlingdoods.screens
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -89,7 +90,7 @@ fun LobbyAdminScreen(
 
     Scaffold(
         topBar = {TopBar(playerDetailsViewModel = playerDetailsViewModel)},
-        bottomBar = {BottomBar(navController = navController, serverViewModel)}
+        bottomBar = {BottomBar(navController = navController, serverViewModel,playerDetailsViewModel)}
     ) {
 
         Image(
@@ -186,7 +187,7 @@ private fun TopBar(
             color = Color.Blue,
             modifier = modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = 20.dp, bottom = 4.dp)
+                .padding(16.dp)
         )
 
         Text(
@@ -196,42 +197,43 @@ private fun TopBar(
             color = Color.Blue,
             modifier = modifier
                 .align(Alignment.CenterHorizontally)
+                .padding(16.dp)
 
         )
 
-        Row(
-            modifier = Modifier
-                .padding(8.dp)
-                .align(Alignment.CenterHorizontally)
-        ) {
-
-            Image(
-                painter = painterResource(id = R.drawable.copy),
-                contentDescription = "copy image",
-                modifier = Modifier
-                    .height(40.dp)
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = null
-                    ) {
-                        //Copy
-                    }
-            )
-
-            Image(
-                painter = painterResource(id = R.drawable.share),
-                contentDescription = "share image",
-                modifier = Modifier
-                    .height(40.dp)
-                    .padding(start = 40.dp)
-                    .clickable(
-                        interactionSource = interactionSource,
-                        indication = null
-                    ) {
-                        //Share
-                    }
-            )
-        }
+//        Row(
+//            modifier = Modifier
+//                .padding(8.dp)
+//                .align(Alignment.CenterHorizontally)
+//        ) {
+//
+//            Image(
+//                painter = painterResource(id = R.drawable.copy),
+//                contentDescription = "copy image",
+//                modifier = Modifier
+//                    .height(40.dp)
+//                    .clickable(
+//                        interactionSource = interactionSource,
+//                        indication = null
+//                    ) {
+//                        //Copy
+//                    }
+//            )
+//
+//            Image(
+//                painter = painterResource(id = R.drawable.share),
+//                contentDescription = "share image",
+//                modifier = Modifier
+//                    .height(40.dp)
+//                    .padding(start = 40.dp)
+//                    .clickable(
+//                        interactionSource = interactionSource,
+//                        indication = null
+//                    ) {
+//                        //Share
+//                    }
+//            )
+//        }
 
     }
 }
@@ -241,9 +243,11 @@ private fun TopBar(
 private fun BottomBar(
     navController: NavController,
     serverCommunicationViewModel: ServerCommunicationViewModel,
+    playerDetailsViewModel: PlayerDetailsViewModel,
     modifier: Modifier = Modifier
 ) {
 
+    val context = LocalContext.current
     val interactionSource = remember { MutableInteractionSource() }
 
     Column(
@@ -260,9 +264,15 @@ private fun BottomBar(
                     interactionSource = interactionSource,
                     indication = null
                 ) {
-                    serverCommunicationViewModel.room.gameStarted = true
-                    serverCommunicationViewModel.sendRoomUpdate()
-                    navController.navigate("GameScreen")
+                    if (serverCommunicationViewModel.playersList.size>1){
+
+                        serverCommunicationViewModel.room.gameStarted = true
+                        serverCommunicationViewModel.sendRoomUpdate()
+                        navController.navigate("GameScreen")
+                    }else{
+                        Toast.makeText(context,"Need at least 2 players",Toast.LENGTH_SHORT).show()
+                    }
+
                 }
         )
     }

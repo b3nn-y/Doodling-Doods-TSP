@@ -207,6 +207,7 @@ private fun LoginForms(
                 modifier = Modifier
                     .fillMaxWidth(0.5f)
                     .clickable {
+                        playerDetailVieModel.clickAudio.start()
 
                         if (networkStatus.toString() == "Available") {
                             if (viewmodel.userInputFilter(mailId = mailId, password = password)) {

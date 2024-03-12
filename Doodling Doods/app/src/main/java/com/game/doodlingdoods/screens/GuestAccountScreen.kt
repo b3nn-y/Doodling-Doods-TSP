@@ -115,6 +115,8 @@ private fun GuestScreen(modifier: Modifier = Modifier, navController: NavControl
                         val name = guestName.trim()
 
                         if(name != ""){
+                            playerDetailsViewModel.clickAudio.start()
+
                             playerDetailsViewModel.playerName = guestName.trim().take(8)
                             println("The name in player view Model is ${playerDetailsViewModel.playerName}")
 
