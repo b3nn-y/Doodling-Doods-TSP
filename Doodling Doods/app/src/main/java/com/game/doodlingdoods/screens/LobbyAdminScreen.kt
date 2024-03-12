@@ -134,7 +134,7 @@ fun LobbyAdminScreen(
                 )
                 LazyColumn {
                     items(myList) { player->
-                        UserCard(playerName = player.name, admin = player.admin)
+                        UserCard(playerName = player.name, admin = player.admin, profile = player.profile)
                     }
                 }
             }

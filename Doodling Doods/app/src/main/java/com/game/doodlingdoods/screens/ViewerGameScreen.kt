@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.geometry.Offset
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -197,7 +198,6 @@ fun ViewerGameScreen(
 
             }
             if (!isWordChosen){
-                // for loading other users scores
                 while (playerDetailsViewModel.serverCommunicationViewModel?.playersList?.size != playerDetailsViewModel.serverCommunicationViewModel?.playerScoreHashMap?.size) {
                     playerDetailsViewModel.serverCommunicationViewModel?.playersList!!.forEach {
                         if (!playerDetailsViewModel.serverCommunicationViewModel!!.playerScoreHashMap.containsKey(
@@ -211,8 +211,9 @@ fun ViewerGameScreen(
                         }
                     }
                 }
+                // for loading other users scores
 
-                ViewersPopUp(serverViewModel.playerScoreHashMap, roundCount = serverViewModel.room.numberOfRoundsOver.toString())
+                ViewersPopUp(serverViewModel.playerScoreHashMap, roundCount = serverViewModel.room.numberOfRoundsOver.toString(), profiles = serverViewModel.profilePics)
 
                 LaunchedEffect(Unit){
                     delay(5000)
@@ -231,7 +232,7 @@ private fun ViewerCanvas(
     serverCommunicationViewModel: ServerCommunicationViewModel,
     modifier: Modifier = Modifier.fillMaxWidth()
 ) {
-
+    var width = LocalConfiguration.current.screenWidthDp - 30
 
 //    var lines = serverCommunicationViewModel.drawingCords
     val lines = serverCommunicationViewModel.drawingCords
@@ -254,8 +255,14 @@ private fun ViewerCanvas(
             lines.forEach { line ->
                 drawLine(
                     color = line.color,
-                    start = line.start,
-                    end = line.end,
+                    start = Offset(
+                        ((line.start.x) * width / 1.5F) + 20,
+                        ((line.start.y) * width / 1.5F) + 20
+                    ),
+                    end = Offset(
+                        ((line.end.x) * width / 1.5F) + 20,
+                        ((line.end.y) * width / 1.5F) + 20
+                    ),
                     strokeWidth = line.strokeWidth.toPx(),
                     cap = StrokeCap.Round
                 )

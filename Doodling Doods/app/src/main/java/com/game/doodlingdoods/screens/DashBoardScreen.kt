@@ -112,6 +112,7 @@ private fun DashBoard(
 private fun Body(
     modifier: Modifier = Modifier,
     playerScoreDesc: Map<String, Int>,
+
 ) {
     Card(
         modifier = Modifier
@@ -134,7 +135,8 @@ private fun Body(
             items(playerScoreDesc.keys.toMutableList()) { player ->
                 UserCard(
                     playerName = player,
-                    score = playerScoreDesc[player] ?: 0
+                    score = playerScoreDesc[player] ?: 0,
+
                 ) // re used from utils
             }
         }

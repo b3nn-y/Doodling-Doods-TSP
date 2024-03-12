@@ -79,6 +79,8 @@ class ServerCommunicationViewModel @Inject constructor(
     private var _isConnectedWithServer = MutableStateFlow(false)
     private var _isDataSent = MutableStateFlow(false)
 
+    var profilePics = HashMap<String, Int>()
+
     var score = 5
 
     val isConnectedWithServer: StateFlow<Boolean>
@@ -194,6 +196,9 @@ class ServerCommunicationViewModel @Inject constructor(
                 //round data
                 _roundsPlayed.value = roomData.numberOfRoundsOver
 
+                roomData.players.forEach {
+                    profilePics[it.name] = it.profile
+                }
 
                 // for popup options
                 drawingOptions = room.wordList

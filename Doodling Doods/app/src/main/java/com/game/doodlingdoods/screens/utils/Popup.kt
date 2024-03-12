@@ -1,6 +1,7 @@
 package com.game.doodlingdoods.screens.utils
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -27,6 +28,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,9 +58,11 @@ import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
 fun OptionsPopUp(
     words: ArrayList<String>,
     serverCommunicationViewModel: ServerCommunicationViewModel,
+    playerViewModel: PlayerDetailsViewModel,
     modifier: Modifier = Modifier
         .fillMaxSize(),
 ) {
+    var currentPlayer = serverCommunicationViewModel.currentPlayer.collectAsState()
 
     val progressValue = 0f
     val infiniteTransition = rememberInfiniteTransition()
@@ -68,131 +72,133 @@ fun OptionsPopUp(
         animationSpec = infiniteRepeatable(animation = tween(5000)), label = ""
     )
 
-    Image(
-        painter = painterResource(id = R.drawable.background_gradient_blue),
-        contentDescription = "Background Image",
-        modifier = Modifier
-            .fillMaxSize(),
-        contentScale = ContentScale.FillBounds
-    )
-    Column(
-        modifier = Modifier
-            .fillMaxHeight(1f),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Card(
-            colors = CardDefaults.cardColors(
-                Color.White
-            ),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 10.dp,
-                pressedElevation = 10.dp
-            ),
+    if (currentPlayer.value == playerViewModel.playerName){
+        Image(
+            painter = painterResource(id = R.drawable.background_gradient_blue),
+            contentDescription = "Background Image",
             modifier = Modifier
-                .padding(20.dp)
-                .fillMaxHeight(0.55f)
+                .fillMaxSize(),
+            contentScale = ContentScale.FillBounds
         )
-        {
-            Column(
+        Column(
+            modifier = Modifier
+                .fillMaxHeight(1f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Card(
+                colors = CardDefaults.cardColors(
+                    Color.White
+                ),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 10.dp,
+                    pressedElevation = 10.dp
+                ),
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Choose a Word",
-                    fontFamily = ov_soge_bold,
-                    fontSize = 30.sp
-                )
-
-                LinearProgressIndicator(
-                    modifier = Modifier
-                        .padding(20.dp)
-                        .height(15.dp),
-                    color = GameLightBlue,
-                    trackColor = Color.White,
-                    strokeCap = StrokeCap.Round,
-                    progress = progressAnimationValue
-                )
-
+                    .padding(20.dp)
+                    .fillMaxHeight(0.55f)
+            )
+            {
                 Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .fillMaxHeight(0.7f)
-                        .padding(10.dp)
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Card(
-                            modifier = Modifier
-                                .clickable {
-                                    serverCommunicationViewModel.userChosenWord = words[0]
-                                    serverCommunicationViewModel.sendWord(words[0])
-                                },
-                            elevation = CardDefaults.cardElevation(
-                                defaultElevation = 10.dp,
-                                pressedElevation = 10.dp
-                            )
-                        ) {
-                            Text(
-                                text = words[0],
-                                color = Color.Black,
-                                fontSize = 20.sp,
-                                fontFamily = ov_soge_bold,
-                                modifier = Modifier
-                                    .padding(20.dp)
-                            )
-                        }
+                    Text(
+                        text = "Choose a Word",
+                        fontFamily = ov_soge_bold,
+                        fontSize = 30.sp
+                    )
 
-                        Card(
-                            modifier = Modifier
-                                .clickable {
-                                    serverCommunicationViewModel.userChosenWord = words[1]
-                                    serverCommunicationViewModel.sendWord(words[1])
-                                },
-                            elevation = CardDefaults.cardElevation(
-                                defaultElevation = 10.dp,
-                                pressedElevation = 10.dp
-                            )
-                        ) {
-                            Text(
-                                text = words[1],
-                                color = Color.Black,
-                                fontSize = 20.sp,
-                                fontFamily = ov_soge_bold,
-                                modifier = Modifier
-                                    .padding(20.dp)
-                            )
-                        }
-                    }
-
-                    Card(
+                    LinearProgressIndicator(
                         modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(top = 30.dp)
-                            .clickable {
-                                serverCommunicationViewModel.userChosenWord = words[2]
-                                serverCommunicationViewModel.sendWord(words[2])
-                            },
-                        elevation = CardDefaults.cardElevation(
-                            defaultElevation = 10.dp,
-                            pressedElevation = 10.dp
-                        )
+                            .padding(20.dp)
+                            .height(15.dp),
+                        color = GameLightBlue,
+                        trackColor = Color.White,
+                        strokeCap = StrokeCap.Round,
+                        progress = progressAnimationValue
+                    )
+
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .fillMaxHeight(0.7f)
+                            .padding(10.dp)
                     ) {
-                        Text(
-                            text = words[2],
-                            color = Color.Black,
-                            fontSize = 20.sp,
-                            fontFamily = ov_soge_bold,
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Card(
+                                modifier = Modifier
+                                    .clickable {
+                                        serverCommunicationViewModel.userChosenWord = words[0]
+                                        serverCommunicationViewModel.sendWord(words[0])
+                                    },
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 10.dp,
+                                    pressedElevation = 10.dp
+                                )
+                            ) {
+                                Text(
+                                    text = words[0],
+                                    color = Color.Black,
+                                    fontSize = 20.sp,
+                                    fontFamily = ov_soge_bold,
+                                    modifier = Modifier
+                                        .padding(20.dp)
+                                )
+                            }
+
+                            Card(
+                                modifier = Modifier
+                                    .clickable {
+                                        serverCommunicationViewModel.userChosenWord = words[1]
+                                        serverCommunicationViewModel.sendWord(words[1])
+                                    },
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = 10.dp,
+                                    pressedElevation = 10.dp
+                                )
+                            ) {
+                                Text(
+                                    text = words[1],
+                                    color = Color.Black,
+                                    fontSize = 20.sp,
+                                    fontFamily = ov_soge_bold,
+                                    modifier = Modifier
+                                        .padding(20.dp)
+                                )
+                            }
+                        }
+
+                        Card(
                             modifier = Modifier
-                                .padding(20.dp)
-                        )
+                                .align(Alignment.CenterHorizontally)
+                                .padding(top = 30.dp)
+                                .clickable {
+                                    serverCommunicationViewModel.userChosenWord = words[2]
+                                    serverCommunicationViewModel.sendWord(words[2])
+                                },
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = 10.dp,
+                                pressedElevation = 10.dp
+                            )
+                        ) {
+                            Text(
+                                text = words[2],
+                                color = Color.Black,
+                                fontSize = 20.sp,
+                                fontFamily = ov_soge_bold,
+                                modifier = Modifier
+                                    .padding(20.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -205,6 +211,7 @@ fun OptionsPopUp(
 fun ViewersPopUp(
     playerScore: Map<String, Int>,
     roundCount:String,
+    profiles: HashMap<String, Int>,
     modifier: Modifier = Modifier
         .fillMaxSize(),
 ) {
@@ -212,7 +219,9 @@ fun ViewersPopUp(
 //
 //    map.put("Raghu", 999)
 //    map.put("Ram", 99)
-    ScoreCard(playerScoreDesc = playerScore, roundCount = roundCount)
+    Log.i("Hashmap55",playerScore.toString())
+    Log.i("Hashmap66",profiles.toString())
+    ScoreCard(playerScoreDesc = playerScore, roundCount = roundCount, profiles = profiles )
 
 
 }
@@ -221,6 +230,7 @@ fun ViewersPopUp(
 private fun ScoreCard(
     modifier: Modifier = Modifier,
     playerScoreDesc: Map<String, Int>,
+    profiles: HashMap<String, Int>,
     roundCount: String,
 ) {
 
@@ -314,7 +324,8 @@ private fun ScoreCard(
                     items(playerScores.keys.toMutableList()) { player ->
                         com.game.doodlingdoods.screens.UserCard(
                             playerName = player,
-                            score = playerScoreDesc[player] ?: 0
+                            score = playerScoreDesc[player] ?: 0,
+                            profile = profiles
                         ) // re used from utils
                     }
                 }
@@ -333,6 +344,6 @@ fun PreviewPopup() {
     val map = hashMapOf<String,Int>()
     map.put("Raghu",99)
     map.put("master",999)
-    ViewersPopUp(map, roundCount = "4")
+    ViewersPopUp(map, roundCount = "4", profiles = hashMapOf())
 
 }

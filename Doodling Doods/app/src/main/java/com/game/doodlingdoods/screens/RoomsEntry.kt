@@ -94,8 +94,8 @@ fun RoomsEntryScreen(
 
         connectivityObserver = connectivityObserver,
         playerName = playerDetailsViewModel.playerName,
-        roomsEntryViewModel = roomsEntryViewModel
-
+        roomsEntryViewModel = roomsEntryViewModel,
+        playerViewModel = playerDetailsViewModel
     )
 
 }
@@ -109,6 +109,7 @@ private fun JoinGames(
     connectivityObserver: ConnectivityObserver,
     playerName: String,
     roomsEntryViewModel: RoomsEntryViewModel,
+    playerViewModel: PlayerDetailsViewModel
 ) {
     val networkStatus by connectivityObserver.observe().collectAsState(
         initial = ConnectivityObserver.Status.Unavailable
@@ -184,19 +185,52 @@ private fun JoinGames(
                             }
                     )
 
+
                     val profilePic = when (counter) {
-                        0 -> R.drawable.avatar_dp_7
-                        1 -> R.drawable.avatar_dp_1
-                        2 -> R.drawable.avatar_dp_6
-                        3 -> R.drawable.avatar_dp_3
-                        4 -> R.drawable.avatar_dp_2
-                        5 -> R.drawable.avatar_dp_9
-                        6 -> R.drawable.avatar_dp_5
-                        7 -> R.drawable.avatar_dp_4
-                        8 -> R.drawable.avatar_dp_8
-                        9 -> R.drawable.avatar_dp_10
+                        0 -> {
+                            playerViewModel.profilePic = 0
+                            R.drawable.avatar_dp_1
+                        }
+                        1 -> {
+                            playerViewModel.profilePic = 1
+                            R.drawable.avatar_dp_2
+                        }
+                        2 -> {
+                            playerViewModel.profilePic = 2
+                            R.drawable.avatar_dp_3
+                        }
+                        3 -> {
+                            playerViewModel.profilePic = 3
+                            R.drawable.avatar_dp_4
+                        }
+                        4 -> {
+                            playerViewModel.profilePic = 4
+                            R.drawable.avatar_dp_5
+                        }
+                        5 -> {
+                            playerViewModel.profilePic = 5
+                            R.drawable.avatar_dp_6
+                        }
+                        6 -> {
+                            playerViewModel.profilePic = 6
+                            R.drawable.avatar_dp_7
+                        }
+                        7 -> {
+                            playerViewModel.profilePic = 7
+                            R.drawable.avatar_dp_8
+                        }
+                        8 -> {
+                            playerViewModel.profilePic = 8
+                            R.drawable.avatar_dp_9
+                        }
+                        9 -> {
+                            playerViewModel.profilePic = 9
+                            R.drawable.avatar_dp_10
+                        }
                         else -> R.drawable.profile
                     }
+
+
 
                     Image(
                         painter = painterResource(id = profilePic),
@@ -238,7 +272,12 @@ private fun JoinGames(
 
                                     joinRoomButtonClick()
                                 } else {
-                                    Toast.makeText(context, "You are not connected with server", Toast.LENGTH_SHORT)
+                                    Toast
+                                        .makeText(
+                                            context,
+                                            "You are not connected with server",
+                                            Toast.LENGTH_SHORT
+                                        )
                                         .show()
                                 }
                             }
@@ -254,10 +293,15 @@ private fun JoinGames(
                             interactionSource = interactionSource,
                             indication = null
                         ) {
-                            if (networkStatus.toString() == "Available" && roomsEntryViewModel.pingServer()){
+                            if (networkStatus.toString() == "Available" && roomsEntryViewModel.pingServer()) {
                                 createRoomButtonClick()
-                            } else{
-                                Toast.makeText(context, "You are not connected with server", Toast.LENGTH_SHORT)
+                            } else {
+                                Toast
+                                    .makeText(
+                                        context,
+                                        "You are not connected with server",
+                                        Toast.LENGTH_SHORT
+                                    )
                                     .show()
                             }
                         }
@@ -311,6 +355,7 @@ fun PrevOptions() {
         leaderBoardButton = {},
         connectivityObserver = connectivityObserver,
         playerName = "Player name",
-        roomsEntryViewModel = RoomsEntryViewModel()
+        roomsEntryViewModel = RoomsEntryViewModel(),
+        playerViewModel = PlayerDetailsViewModel
     )
 }

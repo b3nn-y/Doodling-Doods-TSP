@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.pointerInput
@@ -190,8 +191,8 @@ fun UserDrawingScreen(
                 ColorBars()
             }
 
-            if (!isWordChosen) {
-                OptionsPopUp(serverViewModel.drawingOptions,serverViewModel)
+            if (!isWordChosen && (currentPlayer == playerDetailsViewModel.playerName)) {
+                OptionsPopUp(serverViewModel.drawingOptions,serverViewModel, playerDetailsViewModel)
 
                 LaunchedEffect(Unit){
                     delay(5000)
@@ -221,6 +222,7 @@ private fun DrawingLogicScreen(
     serverViewModel: ServerCommunicationViewModel,playerDetailsViewModel: PlayerDetailsViewModel, modifier: Modifier = Modifier.fillMaxWidth()
 
 ) {
+    var width = LocalConfiguration.current.screenWidthDp - 30
     val lines by remember { mutableStateOf(mutableStateListOf<Line>()) }
     Column(
         modifier,
@@ -238,9 +240,16 @@ private fun DrawingLogicScreen(
                         change.consume()
 
                         val line = Line(
-                            start = change.position - dragAmount,
-                            end = change.position,
+                            start = Offset(
+                                (change.position - dragAmount).x / width,
+                                ((change.position - dragAmount).y) / width
+                            ),
+                            end = Offset(
+                                ((change.position.x) / width),
+                                (((change.position.y) / width))
+                            )
                         )
+
 
                         lines.add(line)
                         println(lines)
@@ -260,8 +269,14 @@ private fun DrawingLogicScreen(
             lines.forEach { line ->
                 drawLine(
                     color = line.color,
-                    start = line.start,
-                    end = line.end,
+                    start = Offset(
+                        ((line.start.x) * width ) ,
+                        ((line.start.y) * width )
+                    ),
+                    end = Offset(
+                        ((line.end.x) * width ) ,
+                        ((line.end.y) * width)
+                    ),
                     strokeWidth = line.strokeWidth.toPx(),
                     cap = StrokeCap.Round
                 )

@@ -148,7 +148,7 @@ fun LobbyJoinerScreen(
 
                 LazyColumn{
                     items(myList) { player ->
-                        PlayerCard(playerName = player.name, admin = player.admin)
+                        PlayerCard(playerName = player.name, admin = player.admin, profile = player.profile)
                     }
                 }
             }
@@ -281,9 +281,10 @@ private fun TopBar(
 private fun PlayerCard(
     modifier: Modifier = Modifier,
     playerName: String,
-    admin:Boolean
+    admin:Boolean,
+    profile: Int
 ) {
-    UserCard(playerName,admin)
+    UserCard(playerName,admin, profile = profile)
 }
 //
 //@Preview(showSystemUi = true)

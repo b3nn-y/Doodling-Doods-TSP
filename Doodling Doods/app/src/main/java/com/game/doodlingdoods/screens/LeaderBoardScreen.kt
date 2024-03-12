@@ -3,6 +3,7 @@ package com.game.doodlingdoods.screens
 
 
 import android.annotation.SuppressLint
+import android.security.identity.AccessControlProfile
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -45,6 +46,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.game.doodlingdoods.R
+import com.game.doodlingdoods.filesForServerCommunication.ProfilePics
 import com.game.doodlingdoods.ui.theme.ov_soge_bold
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 
@@ -122,15 +124,14 @@ private fun LeaderBoard(
             }
         }
 
-
         Log.i("Hashmap321","${firstThreeMap}** ${restMap}")
 
-        firstThreeMap = firstThreeMap.toList()
-            .sortedByDescending { it.second }
-            .toMap() as HashMap<String, Int>
-        restMap = restMap.toList()
-            ?.sortedByDescending { it.second }
-            ?.toMap() as HashMap<String, Int>
+        val finalFirstThreeMap = firstThreeMap.toList()
+            .sortedByDescending { it.second }.toMap()
+
+        val finalRestMap = restMap.toList()
+            .sortedByDescending { it.second }.toMap()
+
 
         Image(
             painter = painterResource(id = R.drawable.background_gradient_blue),
@@ -187,15 +188,23 @@ private fun LeaderBoard(
 
                         Image(
                             alignment = Alignment.Center,
-                            painter = painterResource(id = R.drawable.avatar1),
+                            painter = if(finalFirstThreeMap.size<=3 && finalFirstThreeMap.size >2 ) {
+                                var playerAvatar = 0
+                                serverViewModel?.room?.players?.forEach {
+                                    if (it.name == finalFirstThreeMap.keys.elementAt(2)){
+                                        playerAvatar = it.profile
+                                    }
+                                }
+                                painterResource(id = ProfilePics.profiles[playerAvatar]?:R.drawable.avatar_dp_1)
+                            } else painterResource(id = R.drawable.avatar1),
                             contentDescription = "3rd",
                             modifier = Modifier
                                 .size(80.dp)
                         )
 
                         Text(
-                            text = if(firstThreeMap.size<=3 && firstThreeMap.size >2 ) {
-                                firstThreeMap.keys.elementAt(2)
+                            text = if(finalFirstThreeMap.size<=3 && finalFirstThreeMap.size >2 ) {
+                                finalFirstThreeMap.keys.elementAt(2)
                             } else "",
                             color = Color.Black,
                             fontSize = 16.sp,
@@ -218,8 +227,8 @@ private fun LeaderBoard(
                                     .align(Alignment.Bottom)
                             )
                             Text(
-                                text = if(firstThreeMap.size<=3 && firstThreeMap.size >2) {
-                                    firstThreeMap.values.elementAt(2).toString()
+                                text = if(finalFirstThreeMap.size<=3 && finalFirstThreeMap.size >2) {
+                                    finalFirstThreeMap.values.elementAt(2).toString()
                                 } else "" ,
                                 color = Color.Black,
                                 fontSize = 16.sp,
@@ -246,7 +255,15 @@ private fun LeaderBoard(
 
                         Image(
                             alignment = Alignment.Center,
-                            painter = painterResource(id = R.drawable.avatar1),
+                            painter = if(finalFirstThreeMap.size>=0 ) {
+                                var playerAvatar = 0
+                                serverViewModel?.room?.players?.forEach {
+                                    if (it.name == finalFirstThreeMap.keys.elementAt(0)){
+                                        playerAvatar = it.profile
+                                    }
+                                }
+                                painterResource(id = ProfilePics.profiles[playerAvatar]?:R.drawable.avatar_dp_1)
+                            } else painterResource(id = R.drawable.avatar1),
                             contentDescription = "1st",
                             modifier = Modifier
                                 .size(80.dp),
@@ -254,7 +271,7 @@ private fun LeaderBoard(
                             )
 
                         Text(
-                            text = if (firstThreeMap.size>=0) firstThreeMap.keys.elementAt(0) else "",
+                            text = if (finalFirstThreeMap.size>=0) finalFirstThreeMap.keys.elementAt(0) else "",
                             color = Color.Black,
                             fontSize = 16.sp,
                             fontFamily = ov_soge_bold,
@@ -276,7 +293,7 @@ private fun LeaderBoard(
                                     .align(Alignment.Bottom)
                             )
                             Text(
-                                text = if (firstThreeMap.size>=0) firstThreeMap.values.elementAt(0).toString() else "" ,
+                                text = if (finalFirstThreeMap.size>=0) finalFirstThreeMap.values.elementAt(0).toString() else "" ,
                                 color = Color.Black,
                                 fontSize = 16.sp,
                                 fontFamily = ov_soge_bold,
@@ -302,7 +319,16 @@ private fun LeaderBoard(
                         )
                         Image(
                             alignment = Alignment.Center,
-                            painter = painterResource(id = R.drawable.avatar1),
+                            painter = if(finalFirstThreeMap.size>=1 ) {
+                                var playerAvatar = 0
+                                serverViewModel?.room?.players?.forEach {
+                                    if (it.name == finalFirstThreeMap.keys.elementAt(1)){
+                                        playerAvatar = it.profile
+                                    }
+                                }
+                                painterResource(id = ProfilePics.profiles[playerAvatar]?:R.drawable.avatar_dp_1)
+                            } else painterResource(id = R.drawable.avatar1),
+
                             contentDescription = "2nd",
                             modifier = Modifier
                                 .size(80.dp)
@@ -310,7 +336,7 @@ private fun LeaderBoard(
 
                         Text(
                             // check this part
-                            text = if (firstThreeMap.size>=1 ) firstThreeMap.keys.elementAt(1) else "",
+                            text = if (finalFirstThreeMap.size>=1 ) finalFirstThreeMap.keys.elementAt(1) else "",
                             color = Color.Black,
                             fontSize = 16.sp,
                             fontFamily = ov_soge_bold,
@@ -332,7 +358,7 @@ private fun LeaderBoard(
                                     .align(Alignment.Bottom)
                             )
                             Text(
-                                text = if (firstThreeMap.size>=1) firstThreeMap.values.elementAt(1).toString() else "",
+                                text = if (finalFirstThreeMap.size>=1) finalFirstThreeMap.values.elementAt(1).toString() else "",
                                 color = Color.Black,
                                 fontSize = 16.sp,
                                 fontFamily = ov_soge_bold,
@@ -347,12 +373,15 @@ private fun LeaderBoard(
             }
             Spacer(modifier.height(30.dp))
 
-            if (restMap.isNotEmpty() ){ // check for losers
+            if (finalRestMap.isNotEmpty() ){ // check for losers
 
-                playerScoreHashMap.let { it1 ->
-                    Body(
-                        playerScoreDesc = playerViewModel.serverCommunicationViewModel!!.playerScoreHashMap,
-                    )
+                finalRestMap.let { it1 ->
+                    serverViewModel?.profilePics?.let { it2 ->
+                        Body(
+                            playerScoreDesc = it1,
+                            profilePics = it2
+                        )
+                    }
                 }
             }
 
@@ -402,6 +431,7 @@ private fun TopBar(
 private fun Body(
     modifier: Modifier = Modifier,
     playerScoreDesc: Map<String, Int>,
+    profilePics: HashMap<String, Int>
 ) {
 
 //    val playerNames = listOf("player1", "player2", "player3", "player4", "player5","player1", "player2", "player3", "player4", "player5")
@@ -421,7 +451,8 @@ private fun Body(
             items(playerScoreDesc.keys.toMutableList()) { player ->
                 UserCard(
                     playerName = player,
-                    score = playerScoreDesc[player] ?: 0
+                    score = playerScoreDesc[player] ?: 0,
+                    profilePics
                 ) // re used from utils
             }
         }
@@ -433,7 +464,8 @@ private fun Body(
 @Composable
 fun UserCard(
     playerName: String,
-    score: Int
+    score: Int,
+    profile: HashMap<String,Int> = hashMapOf()
 //    playerPosition : Int,
 //    playerPoints : Int)
 ) {
@@ -465,7 +497,7 @@ fun UserCard(
 //            )
 
             Image(
-                painter = painterResource(id = R.drawable.avatar1),
+                painter = painterResource(id = ProfilePics.profiles[profile[playerName]]?:R.drawable.avatar_dp_1),
                 contentDescription = "Player Avatar",
                 modifier = Modifier
                     .size(80.dp)
@@ -527,14 +559,14 @@ private fun BottomBar() {
 
 }
 
-@Preview(showSystemUi = true)
-@Composable
-fun PreviewUserCard() {
-    Column {
-        UserCard(playerName = "Raghu", score = 999)
-        UserCard(playerName = "Ram", score = 999)
-    }
-}
+//@Preview(showSystemUi = true)
+//@Composable
+//fun PreviewUserCard() {
+//    Column {
+//        UserCard(playerName = "Raghu", score = 999)
+//        UserCard(playerName = "Ram", score = 999)
+//    }
+//}
 
 
 @Preview(showSystemUi = true)

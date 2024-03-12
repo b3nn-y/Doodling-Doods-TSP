@@ -17,6 +17,7 @@ object PlayerDetailsViewModel {
     var joinType = ""
     var roomName = ""
     var roomPass = ""
+    var profilePic = 0
     var admin = false
     var roomAvailability = mutableStateOf("")
 
@@ -68,6 +69,6 @@ object PlayerDetailsViewModel {
 
     fun getPlayerData():Player{
 
-        return Player(name = playerName, joinType = joinType, roomName = roomName, roomPass = roomPass, admin= admin)
+        return Player(name = playerName, joinType = joinType, roomName = roomName, roomPass = roomPass, admin= admin, profile = profilePic)
     }
 }

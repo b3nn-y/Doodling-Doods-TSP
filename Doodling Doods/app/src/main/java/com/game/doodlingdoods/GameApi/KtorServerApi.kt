@@ -4,7 +4,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object KtorServerApi {
-    val serverIp ="10.52.0.90"
+    val serverIp ="10.52.0.122"
 
     val api:KtorServer by lazy {
         Retrofit.Builder()

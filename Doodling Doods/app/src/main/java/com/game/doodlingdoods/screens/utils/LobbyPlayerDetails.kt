@@ -21,12 +21,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.game.doodlingdoods.R
+import com.game.doodlingdoods.filesForServerCommunication.ProfilePics
 import com.game.doodlingdoods.ui.theme.DarkGreen
 import com.game.doodlingdoods.ui.theme.ov_soge_bold
 
 
 @Composable
-fun UserCard(playerName:String,admin:Boolean,score:Int=0) {
+fun UserCard(playerName:String,admin:Boolean,score:Int=0, profile: Int = 0) {
     Card(
         modifier = Modifier
             .padding(8.dp)
@@ -48,7 +49,7 @@ fun UserCard(playerName:String,admin:Boolean,score:Int=0) {
         ) {
 
             Image(
-                painter = painterResource(id = R.drawable.avatar1),
+                painter = painterResource(id = ProfilePics.profiles[profile]?:R.drawable.avatar_dp_1),
                 contentDescription = "Player Avatar",
                 modifier = Modifier
                     .size(80.dp)
