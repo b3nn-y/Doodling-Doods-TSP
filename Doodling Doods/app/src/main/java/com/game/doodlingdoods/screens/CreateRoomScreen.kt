@@ -36,6 +36,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.toLowerCase
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -82,6 +84,7 @@ private fun CreateRoom(
     var password by rememberSaveable {
         mutableStateOf("")
     }
+    val context = LocalContext.current
 
     val networkStatus by connectivityObserver.observe().collectAsState(
         initial = ConnectivityObserver.Status.Unavailable
@@ -197,11 +200,14 @@ private fun CreateRoom(
                     .clickable {
                         playerDetailsViewModel.clickAudio.start()
 
-                        if ( userInputFilter(roomId,password)) {
-                            playerDetailsViewModel.roomName = roomId
-                            playerDetailsViewModel.roomPass = password
+                        if ( roomId.isNotEmpty() && password.isNotEmpty()) {
+
+                            playerDetailsViewModel.roomName = roomId.uppercase().trim()
+                            playerDetailsViewModel.roomPass = password.uppercase().trim()
                             playerDetailsViewModel.checkRoomAvailability()
+
                         }else{
+                            Toast.makeText(context,"Check your inputs",Toast.LENGTH_SHORT).show()
                             Log.i("inputfilter","wrong credentials")
                         }
                     }
@@ -225,13 +231,7 @@ fun PreviewCreateRoom() {
     CreateRoomScreen(navController = NavController(LocalContext.current))
 }
 
-private fun userInputFilter(room_id: String, password: String): Boolean {
-    val regex= Regex("^[a-zA-Z][a-zA-Z0-9_-]{2,19}\$")
 
-    return room_id.matches(regex = regex) && password.matches(regex)
-
-
-}
 
 
 

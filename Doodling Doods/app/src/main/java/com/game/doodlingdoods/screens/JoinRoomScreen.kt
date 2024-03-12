@@ -64,6 +64,7 @@ private fun JoinRoom(
     var checkAvailability by rememberSaveable {
         mutableStateOf(false)
     }
+    val context = LocalContext.current
 
     var roomAvailabilityState by playerDetailsViewModel.roomAvailability
     val currentRoomAvailability = roomAvailabilityState
@@ -166,12 +167,16 @@ private fun JoinRoom(
                         interactionSource = interactionSource,
                         indication = null
                     ) {
-                        playerDetailsViewModel.clickAudio.start()
+                        if (roomId.isNotEmpty() && password.isNotEmpty()){
+                            playerDetailsViewModel.clickAudio.start()
 
-                        playerDetailsViewModel.roomName = roomId
-                        playerDetailsViewModel.roomPass = password
+                            playerDetailsViewModel.roomName = roomId.uppercase().trim()
+                            playerDetailsViewModel.roomPass = password.uppercase().trim()
 
-                        playerDetailsViewModel.checkRoomAvailability()
+                            playerDetailsViewModel.checkRoomAvailability()
+                        }else{
+                            Toast.makeText(context,"Check your inputs",Toast.LENGTH_SHORT).show()
+                        }
 
                     }
             )

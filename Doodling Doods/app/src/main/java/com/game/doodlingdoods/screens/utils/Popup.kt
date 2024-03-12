@@ -2,6 +2,7 @@ package com.game.doodlingdoods.screens.utils
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -72,7 +73,7 @@ fun OptionsPopUp(
         animationSpec = infiniteRepeatable(animation = tween(5000)), label = ""
     )
 
-    if (currentPlayer.value == playerViewModel.playerName){
+    if (currentPlayer.value == playerViewModel.playerName) {
         Image(
             painter = painterResource(id = R.drawable.background_gradient_blue),
             contentDescription = "Background Image",
@@ -210,18 +211,14 @@ fun OptionsPopUp(
 @Composable
 fun ViewersPopUp(
     playerScore: Map<String, Int>,
-    roundCount:String,
+    roundCount: String,
     profiles: HashMap<String, Int>,
     modifier: Modifier = Modifier
         .fillMaxSize(),
 ) {
-//    val map = hashMapOf<String, Int>()
-//
-//    map.put("Raghu", 999)
-//    map.put("Ram", 99)
-    Log.i("Hashmap55",playerScore.toString())
-    Log.i("Hashmap66",profiles.toString())
-    ScoreCard(playerScoreDesc = playerScore, roundCount = roundCount, profiles = profiles )
+    Log.i("Hashmap55", playerScore.toString())
+    Log.i("Hashmap66", profiles.toString())
+    ScoreCard(playerScoreDesc = playerScore, roundCount = roundCount, profiles = profiles)
 
 
 }
@@ -242,7 +239,7 @@ private fun ScoreCard(
         targetValue = progressValue,
         animationSpec = infiniteRepeatable(animation = tween(5000)), label = ""
     )
-    val playerScores =  playerScoreDesc.toList()
+    val playerScores = playerScoreDesc.toList()
         .sortedByDescending { it.second }
         .toMap()
     Image(
@@ -272,14 +269,14 @@ private fun ScoreCard(
                 .padding(8.dp)
                 .fillMaxHeight(0.7f),
 
-        ) {
+            ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
-                modifier=modifier
+                modifier = modifier
                     .fillMaxWidth(),
 
-            ) {
+                ) {
                 Text(
                     text = "Leader Board",
                     fontSize = 28.sp,
@@ -293,7 +290,7 @@ private fun ScoreCard(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
 
-            ) {
+                ) {
                 Text(
                     text = "Rounds: ${roundCount}/5",
                     fontSize = 20.sp,
@@ -337,13 +334,136 @@ private fun ScoreCard(
 }
 
 
+@Composable
+fun HintPopup(
+    closeButton:()->Unit,
+    visible:Boolean,
+    modifier: Modifier = Modifier,
+) {
+
+    var isVisible = visible
+
+    AnimatedVisibility(visible =isVisible ) {
+        Image(
+            painter = painterResource(id = R.drawable.background_gradient_blue),
+            contentDescription = "Background Image",
+            modifier = Modifier
+                .fillMaxSize(),
+            contentScale = ContentScale.FillBounds
+        )
+
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+
+
+            Card(
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 10.dp
+                ),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White
+                ),
+
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxHeight(0.7f),
+
+                ) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = modifier
+                            .padding(8.dp)
+                            .fillMaxWidth(),
+
+                        ) {
+                        Text(
+                            text = "How to play",
+                            fontSize = 28.sp,
+                            modifier = Modifier
+                                .weight(0.9f)
+                                .padding(start = 50.dp),
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+
+                        Image(
+                            painter = painterResource(id = R.drawable.close_icon),
+                            contentDescription = "close",
+                            modifier
+                                .align(Alignment.CenterVertically)
+                                .weight(0.2f)
+                                .size(50.dp)
+                                .clickable {
+                                    closeButton()
+                                    isVisible =false
+                                }
+                        )
+
+                    }
+
+                    Text(
+                        text = "Welcome to Doodling Doods",
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 24.sp,
+                        modifier = Modifier.padding(8.dp)
+                    )
+
+                    Text(
+                        text = "How the game works?",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(8.dp)
+                    )
+
+                    Text(
+                        text = "There will be 3 rounds" +
+                                "each player gets 3 chances to draw the selected word" +
+                                "while others try to guess it" +
+                                "you can guess it in our interactive chat bar where you can communicate with other players and try win" +
+                                "points by guessing the correct word",
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(4.dp),
+                        textAlign = TextAlign.Center
+                    )
+
+                    Text(
+                        text = "How to start a game?",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    Text(
+                        text = "To play first create or join a game by entering it's room codes in the respective screens" +
+                                "or you can join ongoing game from the public rooms",
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(4.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
+    }
+}
+
+
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewPopup() {
 //    OptionsPopUp(words = arrayListOf("Word1","Word2","Word3",),PlayerDetailsViewModel.serverCommunicationViewModel)
-    val map = hashMapOf<String,Int>()
-    map.put("Raghu",99)
-    map.put("master",999)
-    ViewersPopUp(map, roundCount = "4", profiles = hashMapOf())
+    val map = hashMapOf<String, Int>()
+    map.put("Raghu", 99)
+    map.put("master", 999)
+//    ViewersPopUp(map, roundCount = "4", profiles = hashMapOf())
+
+    HintPopup(closeButton = {},visible = true)
 
 }

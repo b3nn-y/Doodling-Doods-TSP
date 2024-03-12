@@ -42,6 +42,7 @@ import androidx.navigation.NavController
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.internetConnection.ConnectivityObserver
 import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
+import com.game.doodlingdoods.screens.utils.HintPopup
 import com.game.doodlingdoods.ui.theme.GameBlue
 import com.game.doodlingdoods.viewmodels.MainActivityViewModel
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
@@ -49,7 +50,7 @@ import com.game.doodlingdoods.viewmodels.RoomsEntryViewModel
 
 //This screen shows the options to join a existing room or create a new room for others to join.
 
-@SuppressLint("CoroutineCreationDuringComposition")
+@SuppressLint("CoroutineCreationDuringComposition", "StateFlowValueCalledInComposition")
 @Composable
 fun RoomsEntryScreen(
     navController: NavController,
@@ -58,50 +59,62 @@ fun RoomsEntryScreen(
 ) {
 
     val roomsEntryViewModel = viewModel<RoomsEntryViewModel>()
-
+    Log.i("popup321", roomsEntryViewModel._isHintActive.value.toString())
     Log.i("Server", roomsEntryViewModel.pingServer().toString())
+    val hintActive by roomsEntryViewModel.isHintActive.collectAsState()
 
-    // it's checking whether the user name comes from db or guest
-    if (mainActivityViewModel.getCurrentUserName() != null) {
-        playerDetailsViewModel.playerName = mainActivityViewModel.getCurrentUserName().toString()
+    if (hintActive) {
+        HintPopup(
+            closeButton = {
+                roomsEntryViewModel._isHintActive.value = false
+            },
+            visible = true
+        )
+    } else {
+        // it's checking whether the user name comes from db or guest
+        if (mainActivityViewModel.getCurrentUserName() != null) {
+            playerDetailsViewModel.playerName =
+                mainActivityViewModel.getCurrentUserName().toString()
+        }
+
+
+        Log.i("PlayerName", playerDetailsViewModel.playerName)
+
+        val connectivityObserver: ConnectivityObserver =
+            NetworkConnectivityObserver(LocalContext.current)
+
+        JoinGames(
+            createRoomButtonClick = {
+                playerDetailsViewModel.clickAudio.start()
+
+                playerDetailsViewModel.joinType = "create"
+                navController.navigate("CreateRoom")
+                println("create room btn")
+
+
+            },
+
+            joinRoomButtonClick = {
+                playerDetailsViewModel.clickAudio.start()
+
+                playerDetailsViewModel.joinType = "join"
+                navController.navigate("JoinRoom")
+                println("Join room btn")
+            },
+
+            leaderBoardButton = {
+                playerDetailsViewModel.clickAudio.start()
+
+                navController.navigate("DashBoardScreen")
+            },
+
+            connectivityObserver = connectivityObserver,
+            playerName = playerDetailsViewModel.playerName,
+            roomsEntryViewModel = roomsEntryViewModel,
+            playerViewModel = playerDetailsViewModel
+        )
     }
 
-
-    Log.i("PlayerName", playerDetailsViewModel.playerName)
-
-    val connectivityObserver: ConnectivityObserver =
-        NetworkConnectivityObserver(LocalContext.current)
-
-    JoinGames(
-        createRoomButtonClick = {
-            playerDetailsViewModel.clickAudio.start()
-
-            playerDetailsViewModel.joinType = "create"
-            navController.navigate("CreateRoom")
-            println("create room btn")
-
-
-        },
-
-        joinRoomButtonClick = {
-            playerDetailsViewModel.clickAudio.start()
-
-            playerDetailsViewModel.joinType = "join"
-            navController.navigate("JoinRoom")
-            println("Join room btn")
-        },
-
-        leaderBoardButton = {
-            playerDetailsViewModel.clickAudio.start()
-
-            navController.navigate("DashBoardScreen")
-        },
-
-        connectivityObserver = connectivityObserver,
-        playerName = playerDetailsViewModel.playerName,
-        roomsEntryViewModel = roomsEntryViewModel,
-        playerViewModel = playerDetailsViewModel
-    )
 
 }
 
@@ -145,16 +158,16 @@ private fun JoinGames(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier.fillMaxSize()
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.leaderboard_icon),
-                    contentDescription = "Stats",
-                    modifier
-                        .padding(8.dp)
-                        .size(45.dp)
-                        .clickable {
-                            leaderBoardButton()
-                        }
-                )
+//                Image(
+//                    painter = painterResource(id = R.drawable.leaderboard_icon),
+//                    contentDescription = "Stats",
+//                    modifier
+//                        .padding(8.dp)
+//                        .size(45.dp)
+//                        .clickable {
+//                            leaderBoardButton()
+//                        }
+//                )
             }
 
             Column(
@@ -196,42 +209,52 @@ private fun JoinGames(
                             playerViewModel.profilePic = 0
                             R.drawable.avatar_dp_1
                         }
+
                         1 -> {
                             playerViewModel.profilePic = 1
                             R.drawable.avatar_dp_2
                         }
+
                         2 -> {
                             playerViewModel.profilePic = 2
                             R.drawable.avatar_dp_3
                         }
+
                         3 -> {
                             playerViewModel.profilePic = 3
                             R.drawable.avatar_dp_4
                         }
+
                         4 -> {
                             playerViewModel.profilePic = 4
                             R.drawable.avatar_dp_5
                         }
+
                         5 -> {
                             playerViewModel.profilePic = 5
                             R.drawable.avatar_dp_6
                         }
+
                         6 -> {
                             playerViewModel.profilePic = 6
                             R.drawable.avatar_dp_7
                         }
+
                         7 -> {
                             playerViewModel.profilePic = 7
                             R.drawable.avatar_dp_8
                         }
+
                         8 -> {
                             playerViewModel.profilePic = 8
                             R.drawable.avatar_dp_9
                         }
+
                         9 -> {
                             playerViewModel.profilePic = 9
                             R.drawable.avatar_dp_10
                         }
+
                         else -> R.drawable.profile
                     }
 
@@ -338,8 +361,6 @@ private fun JoinGames(
         }
     }
 }
-
-
 
 
 @Preview(showSystemUi = true)

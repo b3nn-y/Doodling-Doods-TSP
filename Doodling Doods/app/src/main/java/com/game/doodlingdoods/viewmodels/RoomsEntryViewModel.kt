@@ -2,10 +2,17 @@ package com.game.doodlingdoods.viewmodels
 
 import androidx.lifecycle.ViewModel
 import com.game.doodlingdoods.GameApi.KtorServerApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
 class RoomsEntryViewModel:ViewModel() {
+    val _isHintActive =MutableStateFlow(true)
+    val isHintActive:StateFlow<Boolean>
+        get() = _isHintActive.asStateFlow()
+
     fun pingServer(): Boolean {
         val serverAddress: String =KtorServerApi.serverIp
 
