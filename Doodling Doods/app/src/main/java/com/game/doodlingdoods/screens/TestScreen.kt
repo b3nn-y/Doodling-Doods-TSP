@@ -1,5 +1,7 @@
 package com.game.doodlingdoods.screens
 
+
+
 //@Composable
 //fun AppPreview() {
 //    val navController = rememberNavController()
@@ -32,4 +34,10 @@ package com.game.doodlingdoods.screens
 //}
 
 
+fun main() {
+    val map = hashMapOf("a" to 10, "b" to 5, "c" to 8, "d" to 15)
 
+    val sortedMap = map.toList().sortedByDescending { it.second }.toMap()
+
+    println(sortedMap)
+}
