@@ -1,6 +1,7 @@
 package com.game.doodlingdoods.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,13 +12,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -25,7 +23,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -39,19 +36,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import com.example.playerManager.Player
-import com.example.roomManager.Room
+import com.game.doodlingdoods.filesForServerCommunication.Room
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.screens.utils.UserCard
 import com.game.doodlingdoods.ui.theme.ChatBlue
-import com.game.doodlingdoods.ui.theme.DarkBlue
 import com.game.doodlingdoods.ui.theme.ov_soge_bold
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
@@ -92,7 +86,8 @@ fun LobbyAdminScreen(
         wordList = arrayListOf(),
         guessedPlayers = arrayListOf(),
         iosCords = arrayListOf(),
-        messages = arrayListOf()
+        messages = arrayListOf(),
+        wordType = "Zoho Products"
     )
 
 
@@ -140,7 +135,7 @@ fun LobbyAdminScreen(
 
             val myList = serverViewModel.playersList
 
-            GameSettings()
+            GameSettings(serverCommunicationViewModel = serverViewModel)
 
             Card(
                 modifier = Modifier
@@ -260,9 +255,15 @@ private fun BottomBar(
                     interactionSource = interactionSource,
                     indication = null
                 ) {
+                    Log.i("wordtype",serverCommunicationViewModel.room.toString())
+
                     if (serverCommunicationViewModel.playersList.size > 1) {
 
                         serverCommunicationViewModel.room.gameStarted = true
+                        serverCommunicationViewModel.room.wordType = serverCommunicationViewModel.wordType
+
+                        println("wordtype!!"+serverCommunicationViewModel.room.toString())
+
                         serverCommunicationViewModel.sendRoomUpdate()
                         navController.navigate("GameScreen")
                     } else {
@@ -279,7 +280,10 @@ private fun BottomBar(
 }
 
 @Composable
-fun GameSettings(modifier: Modifier=Modifier.fillMaxWidth()) {
+fun GameSettings(
+    serverCommunicationViewModel: ServerCommunicationViewModel,
+                 modifier: Modifier=Modifier.fillMaxWidth()
+) {
     var isZohowords by remember { mutableStateOf(true) }
     var isPublicRoom by remember { mutableStateOf(true) }
     Column(
@@ -316,6 +320,10 @@ fun GameSettings(modifier: Modifier=Modifier.fillMaxWidth()) {
                             .weight(0.5f)
                             .clickable {
                                 isZohowords = true
+                                serverCommunicationViewModel.wordType = "ZohoProducts"
+
+                                Log.i("WordType",serverCommunicationViewModel.wordType)
+
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -332,6 +340,8 @@ fun GameSettings(modifier: Modifier=Modifier.fillMaxWidth()) {
                             .weight(0.5f)
                             .clickable {
                                 isZohowords = false
+                                serverCommunicationViewModel.wordType = "Everyday Objects"
+                                Log.i("WordType",serverCommunicationViewModel.wordType)
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -352,65 +362,65 @@ fun GameSettings(modifier: Modifier=Modifier.fillMaxWidth()) {
 
         }
 
-        Card(
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 4.dp)
-                .padding(8.dp)
-                .fillMaxWidth(),
-            colors = CardDefaults.cardColors(Color.White),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 10.dp
-            )
-        ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier
-
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .border(1.dp, if (isPublicRoom) ChatBlue else Color.White)
-                            .background(if (isPublicRoom) ChatBlue else Color.White)
-                            .weight(0.5f)
-                            .clickable {
-                                isPublicRoom = true
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Public",
-                            fontSize = 15.sp,
-
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .border(1.dp, if (isPublicRoom) Color.White else ChatBlue)
-                            .background(if (isPublicRoom) Color.White else ChatBlue)
-                            .weight(0.5f)
-                            .clickable {
-                                isPublicRoom = false
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Private",
-                            fontSize = 15.sp,
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    }
-
-                }
-
-            }
-        }
+//        Card(
+//            modifier = Modifier
+//                .padding(horizontal = 16.dp, vertical = 4.dp)
+//                .padding(8.dp)
+//                .fillMaxWidth(),
+//            colors = CardDefaults.cardColors(Color.White),
+//            elevation = CardDefaults.cardElevation(
+//                defaultElevation = 10.dp
+//            )
+//        ) {
+//            Column(
+//                verticalArrangement = Arrangement.Center,
+//                horizontalAlignment = Alignment.CenterHorizontally,
+//                modifier = Modifier.fillMaxWidth()
+//            ) {
+//                Row(
+//                    verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.Center,
+//                    modifier = Modifier
+//
+//                ) {
+//                    Box(
+//                        modifier = Modifier
+//                            .border(1.dp, if (isPublicRoom) ChatBlue else Color.White)
+//                            .background(if (isPublicRoom) ChatBlue else Color.White)
+//                            .weight(0.5f)
+//                            .clickable {
+//                                isPublicRoom = true
+//                            },
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        Text(
+//                            text = "Public",
+//                            fontSize = 15.sp,
+//
+//                            modifier = Modifier.padding(8.dp)
+//                        )
+//                    }
+//                    Box(
+//                        modifier = Modifier
+//                            .border(1.dp, if (isPublicRoom) Color.White else ChatBlue)
+//                            .background(if (isPublicRoom) Color.White else ChatBlue)
+//                            .weight(0.5f)
+//                            .clickable {
+//                                isPublicRoom = false
+//                            },
+//                        contentAlignment = Alignment.Center
+//                    ) {
+//                        Text(
+//                            text = "Private",
+//                            fontSize = 15.sp,
+//                            modifier = Modifier.padding(8.dp)
+//                        )
+//                    }
+//
+//                }
+//
+//            }
+//        }
     }
 }
 
@@ -420,5 +430,5 @@ fun PreviewGameSettingsScreen() {
 //    LobbyAdminScreen(navController = NavController(LocalContext.current), playerDetailsViewModel = PlayerDetailsViewModel)
 //    BottomBar(navController = NavController(LocalContext.current), serverCommunicationViewModel = ServerCommunicationViewModel())
 //    GameSettingsScreen(navController)
-    GameSettings()
+    PlayerDetailsViewModel.serverCommunicationViewModel?.let { GameSettings(serverCommunicationViewModel = it) }
 }

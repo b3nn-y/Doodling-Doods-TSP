@@ -1,14 +1,13 @@
 package com.game.doodlingdoods.viewmodels
 
 import android.util.Log
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playerManager.Player
-import com.example.roomManager.Room
+import com.game.doodlingdoods.filesForServerCommunication.Room
 import com.game.doodlingdoods.data.RealtimeCommunicationClient
 import com.game.doodlingdoods.drawingEssentials.Line
 import com.game.doodlingdoods.drawingEssentials.LinesStorage
@@ -83,6 +82,8 @@ class ServerCommunicationViewModel @Inject constructor(
     var profilePics = HashMap<String, Int>()
 
     var score = 5
+
+    var wordType = "ZohoProducts"
 
     val isConnectedWithServer: StateFlow<Boolean>
         get() = _isConnectedWithServer.asStateFlow()

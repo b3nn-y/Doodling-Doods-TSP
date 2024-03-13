@@ -1,10 +1,6 @@
-package com.example.roomManager
+package com.game.doodlingdoods.filesForServerCommunication
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
 import com.example.playerManager.Player
-import com.game.doodlingdoods.drawingEssentials.Line
-import com.game.doodlingdoods.filesForServerCommunication.ChatMessages
 
 data class Room(
     var name:String,
@@ -29,7 +25,8 @@ data class Room(
     var numberOfRoundsOver:Int=0,
     var gameOver:Boolean = false,
     var iosCords: ArrayList<IosCords>,
-    var isWordChosen: Boolean = false
+    var isWordChosen: Boolean = false,
+    var wordType:String = "ZohoProducts",
 )
 
 
