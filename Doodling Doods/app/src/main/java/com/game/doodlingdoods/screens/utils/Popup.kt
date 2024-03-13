@@ -49,6 +49,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.game.doodlingdoods.R
+import com.game.doodlingdoods.ui.theme.ChatBlue
 
 import com.game.doodlingdoods.ui.theme.GameLightBlue
 import com.game.doodlingdoods.ui.theme.ov_soge_bold
@@ -311,7 +312,8 @@ private fun ScoreCard(
                     fontSize = 24.sp,
                     modifier = Modifier
                         .padding(8.dp),
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = ChatBlue
                 )
                 LinearProgressIndicator(
                     modifier = Modifier
@@ -441,7 +443,7 @@ fun HintPopup(
 
                     Text(
                         text = "There will be 3 rounds" +
-                                "each player gets 3 chances to draw the selected word" +
+                                " each player gets 3 chances to draw the selected word" +
                                 "while others try to guess it" +
                                 "you can guess it in our interactive chat bar where you can communicate with other players and try win" +
                                 "points by guessing the correct word",

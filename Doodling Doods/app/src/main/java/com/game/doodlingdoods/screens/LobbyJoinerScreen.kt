@@ -3,6 +3,7 @@ package com.game.doodlingdoods.screens
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -28,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -94,6 +97,10 @@ fun LobbyJoinerScreen(
             TopBar(
                 playerDetailsViewModel = playerDetailsViewModel,
                 serverViewModel = serverViewModel,
+                backBtnClick = {
+                    navController.navigate("RoomsEntry")
+                    playerDetailsViewModel.serverCommunicationViewModel?.closeCommunication()
+                }
 
             )
         },
@@ -183,92 +190,68 @@ private fun TopBar(
 
     modifier: Modifier = Modifier,
     playerDetailsViewModel: PlayerDetailsViewModel,
-    serverViewModel: ServerCommunicationViewModel
+    serverViewModel: ServerCommunicationViewModel,
+    backBtnClick:()->Unit,
 
 ) {
     val roomCreatedBy by serverViewModel.roomCreatedBy.collectAsState()
     val interactionSource = remember { MutableInteractionSource() }
 
-    Card(
-        modifier
-
-            .fillMaxWidth()
-            .padding(8.dp)
-            .padding(8.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 10.dp
-        ),
-        shape = RoundedCornerShape(20),
-        colors = CardDefaults.cardColors(
-            Color.White
-        )
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.Start
     ) {
-
-//        Text(
-//            text = "${roomCreatedBy}'s Room",
-//            fontFamily = ov_soge_bold,
-//            fontSize = 20.sp,
-//            color = Color.Black,
-//            modifier = modifier
-//                .align(Alignment.CenterHorizontally)
-//                .padding(10.dp)
-//        )
-
-        Text(
-            text = "Room Id : ${playerDetailsViewModel.roomName}",
-            fontFamily = ov_soge_bold,
-            fontSize = 16.sp,
-            color = Color.Blue,
-            modifier = modifier
-                .align(Alignment.CenterHorizontally)
+        Image(
+            painter = painterResource(id = R.drawable.back_filled),
+            contentDescription = "back",
+            modifier = Modifier
+                .size(50.dp)
                 .padding(8.dp)
-        )
-
-        Text(
-            text = "password : ${playerDetailsViewModel.roomPass}",
-            fontFamily = ov_soge_bold,
-            fontSize = 16.sp,
-            color = Color.Blue,
-            modifier = modifier
-                .padding(8.dp)
-                .align(Alignment.CenterHorizontally)
+                .clickable {
+                    backBtnClick()
+                }
 
         )
 
-//        Row(
-//            modifier = Modifier
-//                .padding(8.dp)
-//                .align(Alignment.CenterHorizontally)
-//        ) {
-//
-//            Image(
-//                painter = painterResource(id = R.drawable.copy),
-//                contentDescription = "copy image",
-//                modifier = Modifier
-//                    .height(40.dp)
-//                    .clickable(
-//                        interactionSource = interactionSource,
-//                        indication = null
-//                    ) {
-//                        //Copy
-//                    }
-//            )
-//
-//            Image(
-//                painter = painterResource(id = R.drawable.share),
-//                contentDescription = "share image",
-//                modifier = Modifier
-//                    .height(40.dp)
-//                    .padding(start = 40.dp)
-//                    .clickable(
-//                        interactionSource = interactionSource,
-//                        indication = null
-//                    ) {
-//                        //Share
-//                    }
-//            )
-//        }
+        Card(
+            modifier
 
+                .fillMaxWidth()
+                .padding(8.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 10.dp
+            ),
+            shape = RoundedCornerShape(20),
+            colors = CardDefaults.cardColors(
+                Color.White
+            )
+        ) {
+
+
+
+            Text(
+                text = "Room Id : ${playerDetailsViewModel.roomName}",
+                fontFamily = ov_soge_bold,
+                fontSize = 16.sp,
+                color = Color.Blue,
+                modifier = modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(8.dp)
+            )
+
+            Text(
+                text = "password : ${playerDetailsViewModel.roomPass}",
+                fontFamily = ov_soge_bold,
+                fontSize = 16.sp,
+                color = Color.Blue,
+                modifier = modifier
+                    .padding(8.dp)
+                    .align(Alignment.CenterHorizontally)
+
+            )
+
+
+        }
     }
 }
 
@@ -282,14 +265,14 @@ private fun PlayerCard(
 ) {
     UserCard(playerName,admin, profile = profile)
 }
-//
-//@Preview(showSystemUi = true)
-//@Composable
-//fun PreviewJoinerLobby() {
-//
-////    TopBar()
+
+@Preview(showSystemUi = true)
+@Composable
+fun PreviewJoinerLobby() {
+
+    PlayerDetailsViewModel.serverCommunicationViewModel?.let { TopBar(playerDetailsViewModel = PlayerDetailsViewModel, serverViewModel = it, backBtnClick = {}) }
 //    LobbyJoinerScreen(
 //        navController = NavController(LocalContext.current),
 //        PlayerDetailsViewModel()
 //    )
-//}
+}

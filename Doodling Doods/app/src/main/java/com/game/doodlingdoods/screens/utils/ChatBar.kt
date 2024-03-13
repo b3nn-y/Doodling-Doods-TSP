@@ -74,21 +74,27 @@ fun ChatBar(
     val chatList = serverViewModel.chatListArr.value
     val guessedPlayers = serverViewModel.guessedPlayers
     Column {
-        Box (modifier =
-        Modifier
-            .fillMaxWidth()
-            .height(100.dp)
+        Box(
+            modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(100.dp)
         ) {
             LazyColumn() {
                 items(chatList.asReversed()) {
 
-                    if (it.lifeCycle){
-                        MessageItem(message = it, visible = it.visible, player.playerName, serverViewModel.profilePics)
-                        if (!guessedPlayers.containsKey(it.player+serverViewModel.currentWord.value) && it.msgColor == "green"){
+                    if (it.lifeCycle) {
+                        MessageItem(
+                            message = it,
+                            visible = it.visible,
+                            player.playerName,
+                            serverViewModel.profilePics
+                        )
+                        if (!guessedPlayers.containsKey(it.player + serverViewModel.currentWord.value) && it.msgColor == "green") {
 
                             player.guessAudioPlayer()
 
-                            guessedPlayers[it.player+serverViewModel.currentWord.value] = true
+                            guessedPlayers[it.player + serverViewModel.currentWord.value] = true
                         }
                     }
                 }
@@ -100,21 +106,7 @@ fun ChatBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-//            IconButton(modifier = Modifier
-//                .weight(0.2f)
-//                .size(50.dp)
-//
-//                .fillMaxSize(),
-//                onClick = {
-//
-//                }) {
-//                Icon(
-//                    painter = painterResource(id = R.drawable.chat),
-//                    "contentDescription",
-//                    tint = Color.Black
-//
-//                )
-//            }
+
 
             CustomOutlinedTextField(
                 text = message,
@@ -132,43 +124,53 @@ fun ChatBar(
 
                 .fillMaxSize(),
                 onClick = {
-                    if (message.isNotEmpty()){
-                        when{
-                            (message.lowercase().contains(serverViewModel.currentWord.value.lowercase()) && serverViewModel.currentPlayer.value == player.playerName) -> {
+                    if (message.isNotEmpty()) {
+                        when {
+                            (message.lowercase()
+                                .contains(serverViewModel.currentWord.value.lowercase()) && serverViewModel.currentPlayer.value == player.playerName) -> {
                                 message = ""
                             }
-                            (serverViewModel.currentWord.value.lowercase().trim() == message.lowercase().trim()) -> {
-                                if (!serverViewModel.guessedWords.containsKey(message.lowercase().trim())){
+
+                            (serverViewModel.currentWord.value.lowercase()
+                                .trim() == message.lowercase().trim()) -> {
+                                if (!serverViewModel.guessedWords.containsKey(
+                                        message.lowercase().trim()
+                                    )
+                                ) {
                                     CoroutineScope(Dispatchers.IO).launch {
-                                        val chat = (ChatMessages(player.playerName, player.roomName,"$player${serverViewModel.msgId++}","guessed it","green",false))
+                                        val chat = (ChatMessages(
+                                            player.playerName,
+                                            player.roomName,
+                                            "$player${serverViewModel.msgId++}",
+                                            "guessed it",
+                                            "green",
+                                            false,
+                                            chat = message.lowercase().trim()
+                                        ))
                                         serverViewModel.sendChat(chat)
-                                        serverViewModel.guessedWords[message.lowercase().trim()] = "Guessed"
+                                        serverViewModel.guessedWords[message.lowercase().trim()] =
+                                            "Guessed"
                                         message = ""
                                     }
                                 }
                             }
+
                             else -> {
                                 CoroutineScope(Dispatchers.IO).launch {
-                                    val chat = (ChatMessages(player.playerName,player.roomName, "$player${serverViewModel.msgId++}",message,"black", false))
+                                    val chat = (ChatMessages(
+                                        player.playerName,
+                                        player.roomName,
+                                        "$player${serverViewModel.msgId++}",
+                                        message,
+                                        "black",
+                                        false
+                                    ))
                                     serverViewModel.sendChat(chat)
                                     message = ""
                                 }
                             }
                         }
                     }
-//                    if (serverViewModel.currentWord.value.lowercase() == message){
-//                        CoroutineScope(Dispatchers.IO).launch {
-//                            serverViewModel.room.messages.add(ChatMessages(player, "$player${serverViewModel.msgId}",message, 1,"green"))
-//                            serverViewModel.sendRoomUpdate()
-//                        }
-//                    }
-//                    else{
-//                        CoroutineScope(Dispatchers.IO).launch {
-//                            serverViewModel.room.messages.add(ChatMessages(player, "$player ${serverViewModel.msgId}",message, 1,"black"))
-//                            serverViewModel.sendRoomUpdate()
-//                            message = ""
-//                        }
-//                    }
                 }) {
                 Icon(
                     painter = painterResource(id = R.drawable.send_icon_),
@@ -216,6 +218,7 @@ private fun CustomOutlinedTextField(
         }
     }
 }
+
 @Composable
 fun MessageItem(
     message: ChatMessages,
@@ -241,27 +244,42 @@ fun MessageItem(
             .scale(scale)
             .padding(vertical = 8.dp, horizontal = 32.dp)
     ) {
-        MessageCard(name =  message.player, msg = message.msg, color = message.msgColor, backgroundColor = if (message.player == playerName) Color.White else ChatBlue, profilePics )
+        MessageCard(
+            name = message.player,
+            msg = message.msg,
+            color = message.msgColor,
+            backgroundColor = if (message.player == playerName) Color.White else ChatBlue,
+            profilePics
+        )
     }
 }
 
 
 @Composable
-fun MessageCard(name: String, msg: String, color: String, backgroundColor: Color, profiles: HashMap<String, Int>) {
-    Row (modifier = Modifier
-        .background(shape = CircleShape, color = backgroundColor)
-        .padding(vertical = 8.dp, horizontal = 5.dp)
-        .fillMaxWidth(7f)
+fun MessageCard(
+    name: String,
+    msg: String,
+    color: String,
+    backgroundColor: Color,
+    profiles: HashMap<String, Int>
+) {
+    Row(
+        modifier = Modifier
+            .background(shape = CircleShape, color = backgroundColor)
+            .padding(vertical = 8.dp, horizontal = 5.dp)
+            .fillMaxWidth(7f)
 
-    ){
+    ) {
         Box(
             modifier = Modifier
-                .padding(start = 7.5.dp,end = 4.5.dp)
+                .padding(start = 7.5.dp, end = 4.5.dp)
 
 
         ) {
             Image(
-                painter = painterResource(id = ProfilePics.profiles[profiles[name]]?:R.drawable.avatar_dp_1),
+                painter = painterResource(
+                    id = ProfilePics.profiles[profiles[name]] ?: R.drawable.avatar_dp_1
+                ),
                 contentDescription = "Profile",
                 modifier = Modifier
                     .height(30.dp)
@@ -273,18 +291,21 @@ fun MessageCard(name: String, msg: String, color: String, backgroundColor: Color
             )
         }
 
-        Box(modifier = Modifier
-            .weight(1f)
-            .align(Alignment.CenterVertically)
-        ){
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .align(Alignment.CenterVertically)
+        ) {
             Column {
-                Text(text = if (backgroundColor == Color.White) "You" else  name,
+                Text(
+                    text = if (backgroundColor == Color.White) "You" else name,
                     textAlign = TextAlign.Left,
                     fontFamily = ov_soge_bold,
                     fontSize = 15.sp,
                     color = ChatPerson
                 )
-                Text(text = msg,
+                Text(
+                    text = msg,
                     textAlign = TextAlign.Left,
                     fontFamily = ov_soge_bold,
                     fontSize = 10.sp,
@@ -297,6 +318,6 @@ fun MessageCard(name: String, msg: String, color: String, backgroundColor: Color
 
 @Preview
 @Composable
-fun Msg(){
+fun Msg() {
     MessageCard(name = "Ben", msg = "Hye whats up lets hook up a", "black", Chat, hashMapOf())
 }

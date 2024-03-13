@@ -10,12 +10,13 @@ data class ChatMessages(
     val msg: String,
     val msgColor: String,
     var visible: Boolean,
-    var lifeCycle:Boolean = true
+    var lifeCycle:Boolean = true,
+    var chat:String=""
 )
 
 data class PlayerChats(
     var chats: ArrayList<ChatMessages>,
-    var score: HashMap<String, Int>
+    var score: HashMap<String, Int>,
 )
 
 data class Chat(

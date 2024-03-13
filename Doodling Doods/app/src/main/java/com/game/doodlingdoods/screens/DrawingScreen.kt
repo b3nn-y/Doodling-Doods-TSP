@@ -131,6 +131,13 @@ fun UserDrawingScreen(
 //    Log.i("Padding",playerDetailsViewModel.paddingSize.toString())
 
     Scaffold(
+        topBar = {
+            TopBarCard(backBtnClick = {
+                navController.navigate("RoomsEntry")
+                playerDetailsViewModel.serverCommunicationViewModel?.closeCommunication()
+            }
+            )
+        },
         bottomBar = {
             if (isWordChosen) {
                 UpdateChat(
@@ -390,6 +397,33 @@ fun RoundBoxIcon() {
                 .size(40.dp)
 
                 .border(4.dp, Color.Black, shape = CircleShape)
+
+        )
+    }
+}
+
+@Composable
+private fun TopBarCard(
+    modifier: Modifier = Modifier,
+    backBtnClick: () -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.Start,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(0.dp)
+
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.back_filled),
+            contentDescription = "back",
+            modifier = Modifier
+                .size(50.dp)
+                .padding(8.dp)
+                .clickable {
+                    backBtnClick()
+                }
 
         )
     }

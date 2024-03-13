@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -106,7 +107,13 @@ fun LobbyAdminScreen(
     println("Room Updated $roomUpdates")
 
     Scaffold(
-        topBar = { TopBar(playerDetailsViewModel = playerDetailsViewModel) },
+        topBar = { TopBarCard(
+            playerDetailsViewModel = playerDetailsViewModel,
+            backBtnClick = {
+                navController.navigate("RoomsEntry")
+                playerDetailsViewModel.serverCommunicationViewModel?.closeCommunication()
+            }
+        ) },
         bottomBar = {
             BottomBar(
                 navController = navController,
@@ -180,50 +187,76 @@ fun LobbyAdminScreen(
 }
 
 @Composable
-private fun TopBar(
+private fun TopBarCard(
 
     modifier: Modifier = Modifier,
-    playerDetailsViewModel: PlayerDetailsViewModel
+    playerDetailsViewModel: PlayerDetailsViewModel,
+    backBtnClick:()->Unit,
 
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
-    Card(
-        modifier
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.Start,
+        modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .padding(8.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 10.dp
-        ),
-        shape = RoundedCornerShape(20),
-        colors = CardDefaults.cardColors(
-            Color.White
-        )
+            .padding(0.dp)
+
     ) {
-
-
-
-        Text(
-            text = "Room name :${playerDetailsViewModel.roomName}",
-            fontFamily = ov_soge_bold,
-            fontSize = 16.sp,
-            color = Color.Blue,
-            modifier = modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(16.dp)
-        )
-
-        Text(
-            text = "password : ${playerDetailsViewModel.roomPass}",
-            fontFamily = ov_soge_bold,
-            fontSize = 16.sp,
-            color = Color.Blue,
-            modifier = modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(16.dp)
+        Image(
+            painter = painterResource(id = R.drawable.back_filled),
+            contentDescription = "back",
+            modifier = Modifier
+                .size(50.dp)
+                .padding(8.dp)
+                .clickable {
+                    backBtnClick()
+                }
 
         )
+
+        Card(
+            modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 10.dp
+            ),
+            shape = RoundedCornerShape(20),
+            colors = CardDefaults.cardColors(
+                Color.White
+            )
+        ) {
+
+
+
+            Text(
+                text = "Room name : ${playerDetailsViewModel.roomName}",
+                fontFamily = ov_soge_bold,
+                fontSize = 16.sp,
+                color = Color.Blue,
+                modifier = modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(10.dp)
+            )
+
+            Text(
+                text = "password : ${playerDetailsViewModel.roomPass}",
+                fontFamily = ov_soge_bold,
+                fontSize = 16.sp,
+                color = Color.Blue,
+                modifier = modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(10.dp)
+
+            )
+
+
+        }
+
+
+
 
 
     }
@@ -255,14 +288,15 @@ private fun BottomBar(
                     interactionSource = interactionSource,
                     indication = null
                 ) {
-                    Log.i("wordtype",serverCommunicationViewModel.room.toString())
+                    Log.i("wordtype", serverCommunicationViewModel.room.toString())
 
                     if (serverCommunicationViewModel.playersList.size > 1) {
 
                         serverCommunicationViewModel.room.gameStarted = true
-                        serverCommunicationViewModel.room.wordType = serverCommunicationViewModel.wordType
+                        serverCommunicationViewModel.room.wordType =
+                            serverCommunicationViewModel.wordType
 
-                        println("wordtype!!"+serverCommunicationViewModel.room.toString())
+                        println("wordtype!!" + serverCommunicationViewModel.room.toString())
 
                         serverCommunicationViewModel.sendRoomUpdate()
                         navController.navigate("GameScreen")
@@ -322,7 +356,7 @@ fun GameSettings(
                                 isZohowords = true
                                 serverCommunicationViewModel.wordType = "ZohoProducts"
 
-                                Log.i("WordType",serverCommunicationViewModel.wordType)
+                                Log.i("WordType", serverCommunicationViewModel.wordType)
 
                             },
                         contentAlignment = Alignment.Center
@@ -341,7 +375,7 @@ fun GameSettings(
                             .clickable {
                                 isZohowords = false
                                 serverCommunicationViewModel.wordType = "Everyday Objects"
-                                Log.i("WordType",serverCommunicationViewModel.wordType)
+                                Log.i("WordType", serverCommunicationViewModel.wordType)
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -430,5 +464,9 @@ fun PreviewGameSettingsScreen() {
 //    LobbyAdminScreen(navController = NavController(LocalContext.current), playerDetailsViewModel = PlayerDetailsViewModel)
 //    BottomBar(navController = NavController(LocalContext.current), serverCommunicationViewModel = ServerCommunicationViewModel())
 //    GameSettingsScreen(navController)
-    PlayerDetailsViewModel.serverCommunicationViewModel?.let { GameSettings(serverCommunicationViewModel = it) }
+//    PlayerDetailsViewModel.serverCommunicationViewModel?.let { GameSettings(serverCommunicationViewModel = it) }
+
+    TopBarCard(playerDetailsViewModel = PlayerDetailsViewModel,) {
+        
+    }
 }

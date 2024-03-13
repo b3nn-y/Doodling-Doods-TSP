@@ -45,6 +45,7 @@ import com.game.doodlingdoods.internetConnection.ConnectivityObserver
 import com.game.doodlingdoods.internetConnection.NetworkConnectivityObserver
 import com.game.doodlingdoods.screens.utils.HintPopup
 import com.game.doodlingdoods.ui.theme.GameBlue
+import com.game.doodlingdoods.ui.theme.ov_soge_bold
 import com.game.doodlingdoods.viewmodels.MainActivityViewModel
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.RoomsEntryViewModel
@@ -64,10 +65,11 @@ fun RoomsEntryScreen(
     Log.i("Server", roomsEntryViewModel.pingServer().toString())
     val hintActive by roomsEntryViewModel.isHintActive.collectAsState()
 
-    if (hintActive) {
+    if (hintActive && !playerDetailsViewModel.isHintShowed) {
         HintPopup(
             closeButton = {
                 roomsEntryViewModel._isHintActive.value = false
+                playerDetailsViewModel.isHintShowed=true
             },
             visible = true
         )
@@ -178,8 +180,8 @@ private fun JoinGames(
             ) {
                 Text(
                     text = playerName,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 28.sp,
+                    fontFamily = ov_soge_bold,
+                    fontSize = 36.sp,
                     modifier = Modifier
                         .padding(bottom = 4.dp),
                     color = Color.White
@@ -191,10 +193,10 @@ private fun JoinGames(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.arrow_back),
+                        painter = painterResource(id = R.drawable.arrow_left_),
                         contentDescription = "backward",
                         modifier = Modifier
-                            .size(50.dp)
+                            .size(60.dp)
                             .padding(8.dp)
                             .clickable(
                                 interactionSource = interactionSource,
@@ -269,10 +271,10 @@ private fun JoinGames(
                             .padding(top = 16.dp)
                     )
                     Image(
-                        painter = painterResource(id = R.drawable.arrow_forward),
+                        painter = painterResource(id = R.drawable.arrow_right_),
                         contentDescription = "Forward",
                         modifier = Modifier
-                            .size(50.dp)
+                            .size(60.dp)
                             .padding(8.dp)
                             .clickable(
                                 interactionSource = interactionSource,

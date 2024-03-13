@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -121,6 +122,13 @@ fun ViewerGameScreen(
     val increasingNumber by serverViewModel.increasingNumber.collectAsState()
     Scaffold(
         //re used our existing chat bar in drawing screen
+        topBar = {
+            TopBarCard(backBtnClick = {
+                navController.navigate("RoomsEntry")
+                playerDetailsViewModel.serverCommunicationViewModel?.closeCommunication()
+            }
+            )
+        },
 
         bottomBar = {
             if (isWordChosen) {
@@ -312,6 +320,34 @@ private fun ViewerCanvas(
     }
 
 }
+
+@Composable
+private fun TopBarCard(
+    modifier: Modifier = Modifier,
+    backBtnClick: () -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.Start,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(0.dp)
+
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.back_filled),
+            contentDescription = "back",
+            modifier = Modifier
+                .size(50.dp)
+                .padding(8.dp)
+                .clickable {
+                    backBtnClick()
+                }
+
+        )
+    }
+}
+
 
 //
 //@Preview(showSystemUi = true)

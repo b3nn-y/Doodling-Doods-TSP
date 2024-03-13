@@ -40,6 +40,7 @@ object PlayerDetailsViewModel {
 
     var _isChatActive = MutableStateFlow(false)
 
+    var isHintShowed =false
 
     val isChatActive:StateFlow<Boolean>
         get() = _isChatActive.asStateFlow()
