@@ -34,6 +34,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -59,6 +60,7 @@ import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
 import java.time.format.TextStyle
 import androidx.compose.ui.text.*
+import com.game.doodlingdoods.drawingEssentials.Line
 import com.game.doodlingdoods.screens.utils.ViewersPopUp
 import com.game.doodlingdoods.utils.rememberImeState
 import kotlinx.coroutines.delay
@@ -156,7 +158,7 @@ fun ViewerGameScreen(
             ) {
                 Row(
                     modifier = Modifier
-                        .padding(24.dp)
+                        .padding(16.dp)
 
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -167,7 +169,7 @@ fun ViewerGameScreen(
                         fontFamily = ov_soge_bold,
                         fontSize = 30.sp,
                         modifier = Modifier
-                            .padding(16.dp)
+                            .padding(8.dp)
                             .fillMaxWidth()
 //                            .padding(bottom = paddingSize.dp)
                             .weight(0.8f),
@@ -189,20 +191,6 @@ fun ViewerGameScreen(
                 )
 
 
-                Text(
-                    text = roomTime,
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    style = TextStyle(
-                        color = Color.White,
-                        fontSize = 20.sp
-                    )
-
-                )
 
 
                 Card(
@@ -235,6 +223,21 @@ fun ViewerGameScreen(
                     )
                 }
 
+                Text(
+                    text = roomTime,
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(
+                        color = Color.DarkGray,
+                        fontSize = 20.sp
+                    )
+
+                )
+
 
             }
             if (!isWordChosen) {
@@ -261,10 +264,14 @@ fun ViewerGameScreen(
                 )
 
                 LaunchedEffect(Unit) {
+                    serverViewModel.drawingCords.clear()
                     delay(5000)
                     isPopedUp = false
                 }
             }
+
+
+
         }
 
     }

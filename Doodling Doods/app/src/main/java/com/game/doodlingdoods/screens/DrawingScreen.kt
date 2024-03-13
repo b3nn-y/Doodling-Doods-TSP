@@ -23,10 +23,12 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -41,6 +43,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -64,13 +67,16 @@ import com.game.doodlingdoods.screens.utils.ChatBar
 import com.game.doodlingdoods.screens.utils.OptionsPopUp
 import com.game.doodlingdoods.ui.theme.Black
 import com.game.doodlingdoods.ui.theme.DarkBlue
-import com.game.doodlingdoods.ui.theme.Green
-import com.game.doodlingdoods.ui.theme.Red
-import com.game.doodlingdoods.ui.theme.Yellow
+
 import com.game.doodlingdoods.ui.theme.ov_soge_bold
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
+import com.github.skydoves.colorpicker.compose.AlphaSlider
+import com.github.skydoves.colorpicker.compose.AlphaTile
+import com.github.skydoves.colorpicker.compose.BrightnessSlider
 import com.github.skydoves.colorpicker.compose.ColorEnvelope
+import com.github.skydoves.colorpicker.compose.HsvColorPicker
+import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import com.google.gson.Gson
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -161,7 +167,7 @@ fun UserDrawingScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp),
+                        .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -173,26 +179,13 @@ fun UserDrawingScreen(
                         color = Color.White,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(8.dp)
                     )
 
                 }
 
 
-                Text(
-                    text = roomTime,
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                    style = TextStyle(
-                        color = Color.White,
-                        fontSize = 20.sp
-                    )
 
-                )
 
                 Text(
                     text = currentWord,
@@ -214,8 +207,25 @@ fun UserDrawingScreen(
                     )
                 }
 
-//                ColorBars()
+                ColorBars(playerDetailsViewModel = playerDetailsViewModel)
+
+                Text(
+                    text = roomTime,
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(
+                        color = Color.White,
+                        fontSize = 20.sp
+                    )
+
+                )
             }
+
+
 
             if (!isWordChosen && (currentPlayer == playerDetailsViewModel.playerName)) {
                 OptionsPopUp(
@@ -256,6 +266,11 @@ private fun DrawingLogicScreen(
 ) {
     var width = LocalConfiguration.current.screenWidthDp - 30
     val lines by remember { mutableStateOf(mutableStateListOf<Line>()) }
+
+    val colorEnvelope by playerDetailsViewModel.currentColor.collectAsState()
+    val barColor by playerDetailsViewModel.barColor.collectAsState()
+
+
     Column(
         modifier,
         verticalArrangement = Arrangement.Center,
@@ -279,7 +294,9 @@ private fun DrawingLogicScreen(
                             end = Offset(
                                 ((change.position.x) / width),
                                 (((change.position.y) / width))
-                            )
+                            ),
+                            color = if (barColor != null) barColor ?: Color.Black else colorEnvelope?.color
+                                ?: Color.Black,
                         )
 
 
@@ -323,11 +340,12 @@ private fun DrawingLogicScreen(
 
 @Composable
 private fun ColorBars(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    playerDetailsViewModel: PlayerDetailsViewModel,
 
 
 ) {
-    val colorList = listOf(Black, Red, Yellow, Green)
+    val colorList = listOf(Black)
 
     Row(
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
@@ -337,16 +355,12 @@ private fun ColorBars(
 
             ) {
             items(items = colorList) { item ->
-                RoundBox(color = item)
+                RoundBox(color = item,playerDetailsViewModel)
             }
         }
 
-        RoundBoxIcon()
-//        Image(
-//            painter = painterResource(id = R.drawable.paint_brush),
-//            contentDescription = "paint_brush",
-//            modifier.size(40.dp)
-//        )
+        RoundBoxIcon(viewModel = playerDetailsViewModel)
+
 
     }
 
@@ -354,36 +368,90 @@ private fun ColorBars(
 }
 
 @Composable
-fun RoundBox(color: Color) {
+fun RoundBox(color: Color,
+             viewModel: PlayerDetailsViewModel) {
+    val colorList = listOf(Black)
+    val changeColor = viewModel.colorBars
     Box(
 
         modifier = Modifier
-
             .padding(6.dp)
-            .size(40.dp) // Adjust size as needed
+            .size(40.dp)
             .background(color = color, shape = CircleShape)
-            .border(4.dp, Color.Black, shape = CircleShape)
+            .border(1.dp, Color.Black, shape = CircleShape)
+            .clickable {
+                if(changeColor[colorList.indexOf(color)]){
+
+                    viewModel.updateBarColor(color = null)
+                    viewModel.updateCurrentColor(null)
+                }else {
+                    viewModel.colorBars[colorList.indexOf(color)] = true
+                    viewModel.updateBarColor(color = color)
+                    viewModel.updateCurrentColor(null)
+                }
+            }
     )
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
-fun RoundBoxIcon() {
-    var colorEnvelope by rememberSaveable {
-        mutableStateOf<ColorEnvelope?>(null)
-    }
+fun RoundBoxIcon(
+    viewModel : PlayerDetailsViewModel
+) {
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by rememberSaveable {
         mutableStateOf(false)
     }
+
+    if (isSheetOpen){
+        ModalBottomSheet(sheetState = sheetState,
+            onDismissRequest = {
+                isSheetOpen = false
+            }) {
+
+            val controller = rememberColorPickerController()
+
+            Column (modifier = Modifier.padding(10.dp)){
+                Row (modifier = Modifier.fillMaxWidth()) {
+                    AlphaTile(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                        controller = controller
+                    )
+                }
+                HsvColorPicker(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+                    .padding(10.dp),
+                    controller = controller,
+                    onColorChanged = {color ->
+                        viewModel.updateCurrentColor(color)
+                        viewModel.updateBarColor(color = null)
+                    }
+                )
+                AlphaSlider(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .height(30.dp),
+                    controller = controller
+                )
+                BrightnessSlider(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .height(30.dp),
+                    controller = controller
+                )
+            }
+        }
+    }
+
+
     Box(
-
         modifier = Modifier
-
             .padding(6.dp)
             .size(40.dp) // Adjust size as needed
-            .border(4.dp, Color.Black, shape = CircleShape)
+            .border(1.dp, Color.Black, shape = CircleShape)
             .clickable {
 //                // for color picker
 //                ColorPicker()
@@ -391,17 +459,17 @@ fun RoundBoxIcon() {
             }
     ) {
         Image(
-            painter = painterResource(id = R.drawable.rainbow_icon),
+            painter = painterResource(id = R.drawable.color_picker_icon),
             contentDescription = "color picker",
             modifier = Modifier
                 .size(40.dp)
-
-                .border(4.dp, Color.Black, shape = CircleShape)
-
+                .border(1.dp, Color.Black, shape = CircleShape)
+                .clickable {
+                    isSheetOpen = true
+                }
         )
     }
 }
-
 @Composable
 private fun TopBarCard(
     modifier: Modifier = Modifier,

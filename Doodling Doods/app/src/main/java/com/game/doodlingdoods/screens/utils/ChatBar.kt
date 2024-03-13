@@ -1,6 +1,7 @@
 package com.game.doodlingdoods.screens.utils
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -36,6 +37,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -73,6 +75,7 @@ fun ChatBar(
 //    val chatMessages by serverViewModel.chatMessages.collectAsState()
     val chatList = serverViewModel.chatListArr.value
     val guessedPlayers = serverViewModel.guessedPlayers
+    val context = LocalContext.current
     Column {
         Box(
             modifier =
@@ -152,6 +155,8 @@ fun ChatBar(
                                             "Guessed"
                                         message = ""
                                     }
+                                }else{
+                                    Toast.makeText(context,"Already guessed",Toast.LENGTH_SHORT).show()
                                 }
                             }
 

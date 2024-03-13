@@ -37,6 +37,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,6 +50,7 @@ import com.game.doodlingdoods.filesForServerCommunication.Room
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.screens.utils.UserCard
 import com.game.doodlingdoods.ui.theme.ChatBlue
+import com.game.doodlingdoods.ui.theme.DarkBlue
 import com.game.doodlingdoods.ui.theme.ov_soge_bold
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
@@ -230,27 +234,40 @@ private fun TopBarCard(
         ) {
 
 
-
             Text(
-                text = "Room name : ${playerDetailsViewModel.roomName}",
+                text = buildAnnotatedString {
+                    // Append "Room name :" in black color
+                    withStyle(style = SpanStyle(color = Color.DarkGray)) {
+                        append("Room name :")
+                    }
+                    // Append the value of roomName in black color
+                    append(" ${playerDetailsViewModel.roomName}")
+                },
                 fontFamily = ov_soge_bold,
                 fontSize = 16.sp,
-                color = Color.Blue,
+                color = DarkBlue, // Setting the overall text color to black
                 modifier = modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(10.dp)
             )
 
             Text(
-                text = "password : ${playerDetailsViewModel.roomPass}",
+                text = buildAnnotatedString {
+                    // Append "Password :" in black color
+                    withStyle(style = SpanStyle(color = Color.DarkGray)) {
+                        append("Password :")
+                    }
+                    // Append the value of roomPass in black color
+                    append(" ${playerDetailsViewModel.roomPass}")
+                },
                 fontFamily = ov_soge_bold,
                 fontSize = 16.sp,
-                color = Color.Blue,
+                color = DarkBlue, // Setting the overall text color to black
                 modifier = modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(10.dp)
-
             )
+
 
 
         }

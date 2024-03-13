@@ -6,17 +6,20 @@ import android.provider.MediaStore.Audio.Media
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playerManager.Player
 import com.game.doodlingdoods.GameApi.KtorServerApi
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.filesForServerCommunication.RoomAvailability
+import com.github.skydoves.colorpicker.compose.ColorEnvelope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
@@ -28,6 +31,31 @@ object PlayerDetailsViewModel {
     var profilePic = 0
     var admin = false
     var roomAvailability = mutableStateOf("")
+    //Color Picker
+    private val _currentColor = MutableStateFlow<ColorEnvelope?>(null)
+    private val _barColor = MutableStateFlow<Color?>(null)
+
+    val colorBars = mutableListOf(
+        false
+    )
+
+    val currentColor
+        get() = _currentColor
+
+    val barColor
+        get() = _barColor
+
+    fun updateCurrentColor(colorEnvelope: ColorEnvelope?){
+        _currentColor.update {
+            colorEnvelope
+        }
+    }
+
+    fun updateBarColor(color : Color?){
+        _barColor.update{
+            color
+        }
+    }
 
     lateinit var clickAudio: MediaPlayer
     lateinit var guessAudio: MediaPlayer

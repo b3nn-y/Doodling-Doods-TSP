@@ -8,6 +8,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,9 +39,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextIndent
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,11 +55,13 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.game.doodlingdoods.R
 import com.game.doodlingdoods.ui.theme.ChatBlue
+import com.game.doodlingdoods.ui.theme.DarkBlue
 
 import com.game.doodlingdoods.ui.theme.GameLightBlue
 import com.game.doodlingdoods.ui.theme.ov_soge_bold
 import com.game.doodlingdoods.viewmodels.PlayerDetailsViewModel
 import com.game.doodlingdoods.viewmodels.ServerCommunicationViewModel
+import kotlin.text.Typography.bullet
 
 @Composable
 fun OptionsPopUp(
@@ -313,7 +320,7 @@ private fun ScoreCard(
                     modifier = Modifier
                         .padding(8.dp),
                     fontWeight = FontWeight.Bold,
-                    color = ChatBlue
+                    color = DarkBlue
                 )
                 LinearProgressIndicator(
                     modifier = Modifier
@@ -357,7 +364,8 @@ fun HintPopup(
     visible: Boolean,
     modifier: Modifier = Modifier,
 ) {
-
+    val bulletPoints  = listOf<String>("There will be 3 rounds.", "Each Player gets 3 chances to draw.", "During that time others can guess it in our interactive chat bar.")
+    val bulletPoints2  = listOf<String>("To play first create or join a game", "by entering it's room codes in their", "respective screens.")
     var isVisible = visible
 
     AnimatedVisibility(visible = isVisible) {
@@ -386,19 +394,22 @@ fun HintPopup(
 
                 modifier = Modifier
                     .padding(8.dp)
-                    .fillMaxHeight(0.7f),
+                    .fillMaxHeight(0.7f)
+                    .background(ChatBlue),
+
 
                 ) {
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
+
                 ) {
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center,
                         modifier = modifier
-                            .padding(8.dp)
+                            .background(ChatBlue)
                             .fillMaxWidth(),
 
                         ) {
@@ -407,9 +418,10 @@ fun HintPopup(
                             fontSize = 28.sp,
                             modifier = Modifier
                                 .weight(0.9f)
-                                .padding(start = 50.dp),
+                                .padding(start = 50.dp, top = 4.dp , bottom = 4.dp),
                             fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            color= DarkBlue
                         )
 
                         Image(
@@ -419,6 +431,7 @@ fun HintPopup(
                                 .align(Alignment.CenterVertically)
                                 .weight(0.2f)
                                 .size(50.dp)
+                                .padding(4.dp)
                                 .clickable {
                                     closeButton()
                                     isVisible = false
@@ -431,39 +444,58 @@ fun HintPopup(
                         text = "Welcome to Doodling Doods",
                         fontWeight = FontWeight.ExtraBold,
                         fontSize = 24.sp,
-                        modifier = Modifier.padding(8.dp)
+                        modifier = Modifier.padding(4.dp),
+                        color = DarkBlue
+
                     )
 
                     Text(
                         text = "How the game works?",
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
-                        modifier = Modifier.padding(8.dp)
+                        modifier = Modifier.padding(16.dp),
+                        color = DarkBlue
                     )
 
+                    val paragraphStyle = ParagraphStyle(textIndent = TextIndent(restLine = 15.sp))
                     Text(
-                        text = "There will be 3 rounds" +
-                                " each player gets 3 chances to draw the selected word" +
-                                "while others try to guess it" +
-                                "you can guess it in our interactive chat bar where you can communicate with other players and try win" +
-                                "points by guessing the correct word",
+                        buildAnnotatedString {
+                            bulletPoints.forEach {
+                                withStyle(style = paragraphStyle) {
+                                    append(bullet)
+                                    append("\t\t")
+                                    append(it)
+                                }
+                            }
+                        },
                         fontSize = 20.sp,
-                        modifier = Modifier.padding(4.dp),
-                        textAlign = TextAlign.Center
+                        modifier=Modifier.padding(12.dp)
+
                     )
 
                     Text(
                         text = "How to start a game?",
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
-                        modifier = Modifier.padding(8.dp)
+                        modifier = Modifier.padding(16.dp),
+                        color = DarkBlue
                     )
+
+                    val paragraphStyles = ParagraphStyle(textIndent = TextIndent(restLine = 15.sp))
                     Text(
-                        text = "To play first create or join a game by entering it's room codes in the respective screens" +
-                                "or you can join ongoing game from the public rooms",
+                        buildAnnotatedString {
+                            bulletPoints2.forEach {
+                                withStyle(style = paragraphStyles) {
+                                    append(bullet)
+                                    append("\t\t")
+                                    append(it)
+                                }
+                            }
+                        },
                         fontSize = 20.sp,
-                        modifier = Modifier.padding(4.dp),
-                        textAlign = TextAlign.Center
+                        modifier=Modifier
+                            .padding(12.dp)
+                            .fillMaxWidth()
                     )
                 }
             }
@@ -488,6 +520,6 @@ fun PreviewPopup() {
         )
     }
 
-//    HintPopup(closeButton = {},visible = true)
+    HintPopup(closeButton = {},visible = true)
 
 }
